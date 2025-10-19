@@ -1,0 +1,13 @@
+{
+  "name": "esla-website-screenshots",
+  "version": "1.0.0",
+  "description": "Screenshot Tool für ESLA Website",
+  "type": "module",
+  "scripts": {
+    "screenshot": "node screenshot.js"
+  },
+  "dependencies": {
+    "playwright": "^1.40.0"
+  }
+}
+

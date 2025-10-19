@@ -1,0 +1,33 @@
+# Node / Next.js
+node_modules/
+.next/
+out/
+dist/
+.vercel/
+.vercel/cache/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.cache/
+coverage/
+.sourcemaps/
+.DS_Store
+
+# Env
+.env
+.env.*
+!.env.example
+
+# Editor/OS
+.vscode/
+.idea/
+
+# Playwright
+playwright-report/
+test-results/
+blob-report/
+
+# Misc
+turbo/
