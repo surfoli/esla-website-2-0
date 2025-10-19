@@ -1,0 +1,46 @@
+{
+  "name": "esla-website",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "dev:3000": "HOST=127.0.0.1 next dev --hostname 127.0.0.1 --port 3000",
+    "dev:lan": "next dev --hostname 0.0.0.0 --port 3000",
+    "dev:clean": "bash scripts/dev-clean.sh",
+    "build": "next build",
+    "start": "next start",
+    "start:4000": "HOST=127.0.0.1 next start --hostname 127.0.0.1 --port 4000",
+    "lint": "eslint"
+  },
+  "dependencies": {
+    "@sanity/client": "^7.11.2",
+    "@sanity/image-url": "^1.2.0",
+    "@vercel/blob": "^0.22.0",
+    "@vercel/kv": "^3.0.0",
+    "add-to-calendar-button": "^2.12.4",
+    "canvas-confetti": "^1.9.3",
+    "clsx": "^2.1.1",
+    "date-fns": "^4.1.0",
+    "framer-motion": "^12.23.22",
+    "lucide-react": "^0.544.0",
+    "next": "^15.5.4",
+    "next-sanity": "^11.4.2",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "react-icon": "^1.0.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3",
+    "@types/canvas-confetti": "^1.9.0",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "autoprefixer": "^10.4.20",
+    "eslint": "^9",
+    "eslint-config-next": "15.5.4",
+    "lines-and-columns": "^1.2.4",
+    "postcss": "^8.4.49",
+    "tailwindcss": "^3.4.15",
+    "typescript": "5.9.3"
+  }
+}
