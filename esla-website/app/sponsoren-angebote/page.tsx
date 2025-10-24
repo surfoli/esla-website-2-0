@@ -153,9 +153,9 @@ export default function SponsorenAngebotePage() {
           {/* Stats */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
             {statsData.map((s) => (
-              <div key={s.label} className="bg-white rounded-2xl p-6 text-center border border-slate-200 shadow-sm">
+              <div key={s.label} className="bg-esla-secondary rounded-2xl p-6 text-center border border-esla-dark shadow-sm text-white">
                 <div className="text-4xl font-black text-esla-primary mb-2">{s.value}</div>
-                <div className="text-esla-secondary/70">{s.label}</div>
+                <div className="text-white/80">{s.label}</div>
               </div>
             ))}
           </div>
@@ -170,13 +170,13 @@ export default function SponsorenAngebotePage() {
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-4">
               {valuesData.map(({ icon: Icon, title }) => (
-                <div key={title} className="bg-white rounded-xl p-8 text-center border border-slate-200 shadow-sm">
+                <div key={title} className="bg-esla-secondary rounded-xl p-8 text-center border border-esla-dark shadow-sm text-white">
                   <div className="flex justify-center mb-3">
-                    <div className="w-10 h-10 rounded-full bg-esla-secondary flex items-center justify-center">
+                    <div className="w-10 h-10 rounded-full bg-esla-primary flex items-center justify-center">
                       <Icon className="text-white" size={20} />
                     </div>
                   </div>
-                  <h3 className="text-esla-secondary font-semibold">{title}</h3>
+                  <h3 className="font-semibold">{title}</h3>
                 </div>
               ))}
             </div>
@@ -197,7 +197,7 @@ export default function SponsorenAngebotePage() {
                 return (
                   <div
                     key={pkg.name}
-                    className="relative bg-white rounded-3xl p-8 border border-slate-200 hover:border-esla-primary transition-all duration-300 transform hover:translate-y-[-5px] shadow-sm text-esla-secondary"
+                    className="relative bg-esla-secondary rounded-3xl p-8 border border-esla-dark hover:border-esla-primary transition-all duration-300 transform hover:translate-y-[-5px] shadow-sm text-white"
                     style={{ animationDelay: `${index * 0.1}s` }}
                   >
                     {pkg.featured && (
@@ -206,16 +206,16 @@ export default function SponsorenAngebotePage() {
                     <div className={`bg-gradient-to-br ${pkg.color} w-16 h-16 rounded-full flex items-center justify-center mb-6 mx-auto`}>
                       <Icon size={32} className="text-white" />
                     </div>
-                    <h3 className="text-2xl font-black text-esla-secondary text-center mb-6">
+                    <h3 className="text-2xl font-black text-center mb-6 text-white">
                       {pkg.name}
                     </h3>
                     <ul className="gap-y-3">
                       {pkg.features.map((feature) => (
                         <li key={feature} className="flex items-start gap-x-2">
-                          <span className="bg-esla-secondary rounded-md p-1 flex-shrink-0 mt-0.5">
+                          <span className="bg-esla-primary rounded-md p-1 flex-shrink-0 mt-0.5">
                             <Check size={16} className="text-white" />
                           </span>
-                          <span className="text-esla-secondary/90">{feature}</span>
+                          <span className="text-white/90">{feature}</span>
                         </li>
                       ))}
                     </ul>

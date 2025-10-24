@@ -172,8 +172,11 @@ export default function KontaktPage() {
                     </div>
                   </a>
 
-                  <div className="flex items-center gap-x-4 p-4 bg-white rounded-xl border border-slate-200">
-                    <div className="bg-esla-primary/20 p-3 rounded-lg">
+                  <a
+                    href="/standort"
+                    className="flex items-center gap-x-4 p-4 bg-white rounded-xl hover:bg-slate-50 transition-colors group border border-slate-200"
+                  >
+                    <div className="bg-esla-primary/20 p-3 rounded-lg group-hover:bg-esla-primary/30 transition-colors">
                       <MapPin size={24} className="text-esla-primary" />
                     </div>
                     <div>
@@ -183,7 +186,7 @@ export default function KontaktPage() {
                         Luzern, Schweiz
                       </div>
                     </div>
-                  </div>
+                  </a>
                 </div>
               </div>
 

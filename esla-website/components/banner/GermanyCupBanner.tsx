@@ -7,11 +7,11 @@ import Container from '@/components/ui/Container';
 
 export default function GermanyCupBanner() {
   return (
-    <Section noContainer className="bg-gradient-to-b from-[#e7cb34]/40 via-[#1a1a1a] to-[#141414] relative overflow-hidden">
+    <Section noContainer className="bg-white relative overflow-hidden pt-6 md:pt-10">
 
       <Container>
         <div className="relative z-10">
-        <div className="bg-black/30 backdrop-blur-xl rounded-3xl p-9 md:p-14 lg:p-18 border border-white/15 shadow-2xl max-w-[1100px] mx-auto">
+        <div className="bg-esla-secondary rounded-3xl p-9 md:p-14 lg:p-18 border border-white/15 shadow-2xl max-w-[1024px] mx-auto">
           <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
             {/* Left: Content */}
             <div className="gap-y-8">
@@ -64,14 +64,14 @@ export default function GermanyCupBanner() {
                   href="https://www.germany-cup.com/deutsch/germany-cup-2026/muenchen-5.---7.-juni/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="bg-white text-[#242424] hover:bg-[#f1e7b2] px-8 py-4 rounded-full font-bold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-x-2"
+                  className="bg-white text-[#242424] hover:bg-[#f1e7b2] px-8 md:px-10 py-4 rounded-full font-bold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg flex items-center justify-center gap-x-2 whitespace-nowrap md:min-w-[220px] lg:min-w-[260px]"
                 >
                   <span>Mehr Infos</span>
                   <ExternalLink size={20} />
                 </a>
                 <a
                   href="/sponsoren-angebote"
-                  className="bg-black/30 hover:bg-black/40 backdrop-blur text-white px-8 py-4 rounded-full font-bold text-lg transition-all duration-200 border border-white/25 inline-block text-center"
+                  className="bg-esla-secondary hover:bg-esla-dark text-white px-8 md:px-10 py-4 rounded-full font-bold text-lg transition-all duration-200 border border-white/25 flex items-center justify-center gap-x-2 whitespace-nowrap md:min-w-[240px] lg:min-w-[280px]"
                 >
                   Team unterstützen
                 </a>

@@ -97,13 +97,13 @@ export default function SponsorenPage() {
               </Link>
             </div>
             
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {sponsors.map((sponsor) => (
                 <div
                   key={sponsor.name}
                   className="bg-white rounded-2xl p-6 flex items-center justify-center hover:scale-105 transition-transform duration-300 shadow-xl"
                 >
-                  <div className="relative w-full h-24">
+                  <div className="relative w-full h-24 md:h-28 lg:h-32">
                     <Image
                       src={sponsor.logo}
                       alt={sponsor.name}
@@ -117,15 +117,15 @@ export default function SponsorenPage() {
           </div>
 
           {/* Gönner */}
-          <div className="bg-white rounded-3xl p-12 border border-slate-200 mb-16">
-            <h2 className="text-3xl font-black text-esla-secondary text-center mb-8">
+          <div className="bg-esla-secondary text-white rounded-3xl p-12 border border-white/10 mb-16">
+            <h2 className="text-3xl font-black text-white text-center mb-8">
               <Users className="inline-block mr-2 text-esla-primary w-7 h-7 align-[-3px]" /> GÖNNER
             </h2>
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 text-center">
               {goenner.map((name) => (
                 <div
                   key={name}
-                  className="bg-white rounded-xl p-4 border border-slate-200 text-esla-secondary font-semibold"
+                  className="bg-white/10 rounded-xl p-4 border border-white/20 text-white font-semibold"
                 >
                   {name}
                 </div>

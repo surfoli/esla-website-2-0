@@ -82,7 +82,7 @@ export default async function UpcomingMatchesServer() {
           <div className="relative z-10 max-w-4xl mx-auto text-center py-16">
             <h1 className="text-4xl md:text-5xl font-black text-white mb-4">Anstehende Spiele</h1>
             <p className="text-white/90 mb-8">Derzeit sind keine zukünftigen Spiele im Kalender erfasst.</p>
-            <a href="/spiele" className="bg-white/10 hover:bg-white/20 text-white px-6 py-3 rounded-full font-semibold border border-white/20">Alle Spiele ansehen</a>
+            <a href="/spiele" className="bg-esla-secondary hover:bg-esla-dark text-white px-6 py-3 rounded-full font-semibold border border-transparent">Alle Spiele ansehen</a>
           </div>
         </Container>
       </Section>
@@ -123,106 +123,113 @@ export default async function UpcomingMatchesServer() {
       <Container>
         <div className="relative z-10 max-w-6xl mx-auto py-12 md:py-16 w-full">
           {/* Title */}
-          <div className="text-center mb-10 md:mb-12">
-            <div className="flex items-center justify-between mb-4">
+          <div className="text-left mb-10 md:mb-12">
+            <div className="flex items-center justify-start mb-4">
               <NowBadge />
-              <span />
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-white mb-4">Anstehende Spiele</h1>
+            <h1 className="text-4xl md:text-5xl font-black text-white mb-4">Das nächste Spiel</h1>
           </div>
 
           {/* Großes nächstes Spiel */}
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-7 md:p-9 border border-white/15 shadow-2xl shadow-black/30 mb-8 w-full">
-            <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
-              <div className="flex-1">
-                <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] items-center gap-6 mb-2">
-                  <div className="min-w-0 md:justify-self-end">
-                    <span className="block text-xl sm:text-2xl md:text-3xl font-black text-white text-right leading-snug whitespace-normal sm:whitespace-nowrap">{next.homeTeam}</span>
+          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-7 md:p-10 border border-white/15 shadow-2xl shadow-black/30 mb-8 w-full">
+            <div className="flex flex-col gap-6">
+              <div className="w-full">
+                <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center justify-items-stretch gap-2 sm:gap-3 md:gap-10 mb-4">
+                  <div className="min-w-0 text-center md:text-right">
+                    <span className="block font-black text-white leading-tight whitespace-nowrap text-[clamp(12px,3.8vw,30px)] sm:text-[clamp(14px,3vw,32px)] md:text-[clamp(18px,2.4vw,34px)]">{next.homeTeam}</span>
                   </div>
-                  <div className="justify-self-center">
-                    <div className="bg-esla-dark/50 rounded-xl px-6 py-2 min-w-[90px] text-center text-white font-black">vs.</div>
+                  <div>
+                    <div className="inline-flex items-center justify-center rounded-2xl bg-white/15 border border-white/10 px-3 py-2 text-white/80 font-semibold uppercase tracking-wider text-xs sm:px-4 sm:py-2 sm:text-sm md:px-6 md:py-3 md:text-base">vs.</div>
                   </div>
-                  <div className="min-w-0">
-                    <span className="block text-xl sm:text-2xl md:text-3xl font-black text-white leading-snug whitespace-normal sm:whitespace-nowrap">{next.awayTeam}</span>
+                  <div className="min-w-0 text-center md:text-left">
+                    <span className="block font-black text-white leading-tight whitespace-nowrap text-[clamp(12px,3.8vw,30px)] sm:text-[clamp(14px,3vw,32px)] md:text-[clamp(18px,2.4vw,34px)]">{next.awayTeam}</span>
                   </div>
                 </div>
-                <div className="text-white/90 mb-2">
+                <div className="text-white/90 text-left mb-2">
                   {new Date(next.date).toLocaleDateString('de-CH', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })}
                   {next.time ? ` | ${next.time}` : ''}
                   {next.location ? ` | ${next.location}` : ''}
                 </div>
                 {next.competition && !/zugeordnet/i.test(next.competition) && (
-                  <div className="flex items-center gap-x-3 text-esla-accent mb-4">
-                    <span className="text-sm font-semibold">{next.competition}</span>
+                  <div className="text-esla-accent text-left mb-6">
+                    <span className="text-sm md:text-base font-semibold">{next.competition}</span>
                   </div>
                 )}
-                <div className="flex items-center gap-4">
-                  <JoinButton matchId={next.id} label="Klick hier wenn du teilnimmst!" calendar={nextCalendar} />
+                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6">
+                  <div className="order-2 md:order-1">
+                    <Countdown iso={iso} variant="compact" />
+                  </div>
+                  <div className="order-1 md:order-2 flex items-center justify-start md:justify-end gap-3 md:gap-5 w-full md:w-auto">
+                    <JoinButton matchId={next.id} label="Ich nehme teil" calendar={nextCalendar} />
+                  </div>
                 </div>
-              </div>
-              <div className="shrink-0">
-                <Countdown iso={iso} variant="compact" />
               </div>
             </div>
           </div>
 
-          {/* Weitere Spiele des gleichen Tages (längliche, flache Boxen, volle Breite) */}
-          {sameDay.length > 0 && (
-            <div className="space-y-4">
-              {sameDay.map((m) => {
-                const isoM = toIsoString(m.date, m.time);
-                const homeLogo = null;
-                const awayLogo = null;
-                const calendar = calendarInfo(m);
-                return (
-                  <div key={m.id} className="bg-white/10 backdrop-blur-xl rounded-2xl px-6 py-5 border border-white/15 w-full">
-                    <div className="grid gap-4">
-                      {/* Meta */}
-                      <div className="flex flex-col gap-y-1 text-white/70 text-sm">
-                        <div>
-                          {new Date(m.date).toLocaleDateString('de-CH', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' })}
-                          {m.time ? ` | ${m.time}` : ''}
-                        </div>
-                        {m.location && <div>{m.location}</div>}
-                        {m.competition && !/zugeordnet/i.test(m.competition) && (
-                          <div className="text-esla-accent font-semibold">{m.competition}</div>
-                        )}
-                      </div>
-
-                      {/* Teams + Scores */}
-                      <div className="flex flex-col gap-2">
-                        {(() => {
-                          const hasScore = typeof m.homeScore === 'number' && typeof m.awayScore === 'number';
-                          const homeScore = hasScore ? String(m.homeScore) : '—';
-                          const awayScore = hasScore ? String(m.awayScore) : '—';
-                          return (
-                            <>
-                              <div className="flex items-center justify-between gap-4">
-                                <span className="font-semibold text-base md:text-xl text-white leading-snug break-words">{m.homeTeam}</span>
-                                <span className="font-bold text-base md:text-xl text-white/90 min-w-[28px] text-right">{homeScore}</span>
-                              </div>
-                              <div className="flex items-center justify-between gap-4">
-                                <span className="font-semibold text-base md:text-xl text-white leading-snug break-words">{m.awayTeam}</span>
-                                <span className="font-bold text-base md:text-xl text-white/90 min-w-[28px] text-right">{awayScore}</span>
-                              </div>
-                            </>
-                          );
-                        })()}
-                      </div>
-
-                      {/* Actions */}
-                      <div className="flex items-center justify-center md:justify-end gap-3">
-                        <Countdown iso={isoM} />
-                        <JoinButton matchId={m.id} label="Klick hier wenn du teilnimmst!" calendar={calendar} />
-                      </div>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          )}
         </div>
       </Container>
+
+      {/* Weitere Spiele des gleichen Tages (längliche, flache Boxen, volle Breite) */}
+      {sameDay.length > 0 && (
+        <div className="relative z-10 w-full">
+          <div className="bg-white rounded-t-3xl pt-10 pb-12 shadow-[0_-20px_60px_-20px_rgba(0,0,0,0.25)]">
+            <Container>
+              <div className="max-w-6xl mx-auto space-y-4">
+                {sameDay.map((m) => {
+                  const isoM = toIsoString(m.date, m.time);
+                  const homeLogo = null;
+                  const awayLogo = null;
+                  const calendar = calendarInfo(m);
+                  return (
+                    <div key={m.id} className="bg-black/30 backdrop-blur-xl rounded-2xl px-6 py-5 border border-white/15 w-full">
+                      <div className="grid gap-4">
+                        {/* Meta */}
+                        <div className="flex flex-col gap-y-1 text-white/70 text-sm">
+                          <div>
+                            {new Date(m.date).toLocaleDateString('de-CH', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' })}
+                            {m.time ? ` | ${m.time}` : ''}
+                          </div>
+                          {m.location && <div>{m.location}</div>}
+                          {m.competition && !/zugeordnet/i.test(m.competition) && (
+                            <div className="text-esla-accent font-semibold">{m.competition}</div>
+                          )}
+                        </div>
+
+                        {/* Teams + Scores */}
+                        <div className="flex flex-col gap-2">
+                          {(() => {
+                            const hasScore = typeof m.homeScore === 'number' && typeof m.awayScore === 'number';
+                            const homeScore = hasScore ? String(m.homeScore) : '—';
+                            const awayScore = hasScore ? String(m.awayScore) : '—';
+                            return (
+                              <>
+                                <div className="flex items-center justify-between gap-4">
+                                  <span className="font-semibold text-base md:text-xl text-white leading-snug break-words">{m.homeTeam}</span>
+                                  <span className="font-bold text-base md:text-xl text-white/90 min-w-[28px] text-right">{homeScore}</span>
+                                </div>
+                                <div className="flex items-center justify-between gap-4">
+                                  <span className="font-semibold text-base md:text-xl text-white leading-snug break-words">{m.awayTeam}</span>
+                                  <span className="font-bold text-base md:text-xl text-white/90 min-w-[28px] text-right">{awayScore}</span>
+                                </div>
+                              </>
+                            );
+                          })()}
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex items-center justify-end gap-3">
+                          <JoinButton matchId={m.id} label="Klick hier wenn du teilnimmst!" calendar={calendar} />
+                        </div>
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </Container>
+          </div>
+        </div>
+      )}
     </Section>
   );
 }

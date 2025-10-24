@@ -141,66 +141,66 @@ export default function AboutPage() {
           </div>
 
           {/* What Makes Us Special */}
-          <div className="bg-white rounded-3xl p-10 md:p-12 shadow-lg mb-16 border border-slate-200">
-            <h2 className="text-3xl md:text-4xl font-black text-esla-secondary mb-10 text-center">
+          <div className="bg-esla-secondary text-white rounded-3xl p-10 md:p-12 shadow-lg mb-16 border border-white/10">
+            <h2 className="text-3xl md:text-4xl font-black text-white mb-10 text-center">
               Was uns <span className="text-esla-primary">auszeichnet</span>
             </h2>
 
             <div className="grid md:grid-cols-2 gap-8">
-              <div className="flex items-start gap-x-4 p-6 bg-white rounded-xl border border-slate-200">
+              <div className="flex items-start gap-x-4 p-6 bg-white/10 rounded-xl border border-white/20 hover:bg-white/15 transition-colors">
                 <div className="flex-shrink-0 mt-1">
                   <CheckCircle size={28} className="text-esla-primary" />
                 </div>
                 <div>
-                  <h4 className="text-esla-secondary font-black text-xl mb-2">
+                  <h4 className="text-white font-black text-xl mb-2">
                     Professionelle Leitung
                   </h4>
-                  <p className="text-esla-secondary/80 leading-relaxed">
+                  <p className="text-white/90 leading-relaxed">
                     Strukturierter Trainingsbetrieb unter Cheftrainer Luqmon Adekunle (ehem. Profispieler) – 
                     Fussball Academy in Luzern mit höchsten Standards.
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-x-4 p-6 bg-white rounded-xl border border-slate-200">
+              <div className="flex items-start gap-x-4 p-6 bg-white/10 rounded-xl border border-white/20 hover:bg-white/15 transition-colors">
                 <div className="flex-shrink-0 mt-1">
                   <CheckCircle size={28} className="text-esla-primary" />
                 </div>
                 <div>
-                  <h4 className="text-esla-secondary font-black text-xl mb-2">
+                  <h4 className="text-white font-black text-xl mb-2">
                     Ganzheitliche Förderung
                   </h4>
-                  <p className="text-esla-secondary/80 leading-relaxed">
+                  <p className="text-white/90 leading-relaxed">
                     Persönlichkeitsentwicklung als fester Bestandteil unseres Konzepts – 
                     wir formen nicht nur Fussballer, sondern starke Persönlichkeiten.
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-x-4 p-6 bg-white rounded-xl border border-slate-200">
+              <div className="flex items-start gap-x-4 p-6 bg-white/10 rounded-xl border border-white/20 hover:bg-white/15 transition-colors">
                 <div className="flex-shrink-0 mt-1">
                   <CheckCircle size={28} className="text-esla-primary" />
                 </div>
                 <div>
-                  <h4 className="text-esla-secondary font-black text-xl mb-2">
+                  <h4 className="text-white font-black text-xl mb-2">
                     Nachhaltige Perspektive
                   </h4>
-                  <p className="text-esla-secondary/80 leading-relaxed">
+                  <p className="text-white/90 leading-relaxed">
                     Fokus auf langfristige Entwicklung statt kurzfristiger Erfolge – 
                     nachhaltige Nachwuchsförderung in der Zentralschweiz.
                   </p>
                 </div>
               </div>
 
-              <div className="flex items-start gap-x-4 p-6 bg-white rounded-xl border border-slate-200">
+              <div className="flex items-start gap-x-4 p-6 bg-white/10 rounded-xl border border-white/20 hover:bg-white/15 transition-colors">
                 <div className="flex-shrink-0 mt-1">
                   <CheckCircle size={28} className="text-esla-primary" />
                 </div>
                 <div>
-                  <h4 className="text-esla-secondary font-black text-xl mb-2">
+                  <h4 className="text-white font-black text-xl mb-2">
                     Starke Gemeinschaft
                   </h4>
-                  <p className="text-esla-secondary/80 leading-relaxed">
+                  <p className="text-white/90 leading-relaxed">
                     Werteorientiertes, familiäres Umfeld – bei ESLA ist jeder Spieler Teil einer echten Fussballfamilie.
                   </p>
                 </div>

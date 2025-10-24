@@ -114,9 +114,10 @@ export default function JoinButton({ matchId, label, leaveText, calendar }: { ma
       } catch {}
       window.dispatchEvent(new CustomEvent('esla-join-change', { detail: { matchId, joined: true, count: n } }));
       setEmoji('🥳');
-      setStatusText(null);
+      setStatusText('Danke, dass du teilnimmst!');
       confetti();
       setTimeout(() => setEmoji(null), 1200);
+      setTimeout(() => setStatusText(null), 3500);
     } else {
       const n = Math.max(0, count - 1);
       setHasJoined(false);
@@ -134,15 +135,18 @@ export default function JoinButton({ matchId, label, leaveText, calendar }: { ma
   };
 
   return (
-    <div ref={containerRef} className="relative inline-flex flex-col items-start gap-2">
-      <button onClick={onToggle} className={`px-4 py-2 rounded-full font-semibold ${hasJoined ? 'bg-green-700 text-white' : 'bg-green-600 hover:bg-green-700 text-white'}`}>
+    <div ref={containerRef} className="relative inline-flex flex-row md:flex-col items-center md:items-start gap-2">
+      <button
+        onClick={onToggle}
+        className={`${hasJoined ? 'bg-green-700 text-white' : 'bg-green-600 hover:bg-green-700 text-white'} relative px-3 sm:px-4 md:px-6 lg:px-7 py-2 rounded-full font-semibold text-xs sm:text-sm md:text-base whitespace-nowrap md:min-w-[230px] lg:min-w-[260px]`}
+      >
         {hasJoined ? 'Teilnahme registriert' : (label || 'Ich nehme teil')}
+        {count > 0 && (
+          <span className="absolute -top-1 -right-1 min-w-[20px] h-[20px] px-[6px] bg-red-600 text-white text-[11px] leading-[20px] rounded-full text-center font-bold shadow-md">
+            {count}
+          </span>
+        )}
       </button>
-      {count > 0 && (
-        <span className="absolute -top-1 -right-1 min-w-[22px] h-[22px] px-[6px] bg-red-600 text-white text-[12px] leading-[22px] rounded-full text-center font-bold shadow-md">
-          {count}
-        </span>
-      )}
       {emoji && (
         <span className="absolute -top-8 right-0 text-2xl select-none">
           {emoji}
@@ -153,13 +157,13 @@ export default function JoinButton({ matchId, label, leaveText, calendar }: { ma
           href={calendarUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/15 hover:bg-white/25 text-white text-sm font-semibold border border-white/20"
+          className="inline-flex items-center justify-center gap-2 px-3 sm:px-4 md:px-6 lg:px-7 py-2 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs sm:text-sm font-semibold border border-white/20 whitespace-nowrap md:min-w-[220px] lg:min-w-[260px]"
         >
-          Zum Google Kalender
+         In Googlekalender öffnen
         </a>
       )}
       {statusText && (
-        <span className="text-sm text-white/80">{statusText}</span>
+        <span className="basis-full text-sm text-white/80 mt-1">{statusText}</span>
       )}
     </div>
   );

@@ -16,7 +16,7 @@ export default function FilterBar({ statusParam, teamParam, pageSize }: { status
             type="submit"
             name="status"
             value={v}
-            className={`px-4 py-2 rounded-full border ${statusParam === v ? 'bg-esla-primary text-white border-esla-primary' : 'text-white border-white/20 hover:bg-white/10'}`}
+            className={`px-4 py-2 rounded-full border ${statusParam === v ? 'bg-esla-primary text-white border-white/20' : 'text-white border-white/20 hover:bg-white/10'}`}
           >
             {label}
           </button>
@@ -39,7 +39,7 @@ export default function FilterBar({ statusParam, teamParam, pageSize }: { status
             type="submit"
             name="team"
             value={v}
-            className={`px-4 py-2 rounded-full border ${teamParam === v ? 'bg-white/10 text-white border-white/30' : 'text-white border-white/20 hover:bg-white/10'}`}
+            className={`px-4 py-2 rounded-full border ${teamParam === v ? 'bg-white/10 text-white border-white/20' : 'text-white border-white/20 hover:bg-white/10'}`}
           >
             {label}
           </button>

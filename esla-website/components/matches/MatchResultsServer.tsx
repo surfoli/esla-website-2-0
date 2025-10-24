@@ -129,7 +129,7 @@ export default async function MatchResultsServer() {
           <div className="text-center mt-16 md:mt-20">
             <a
               href="/spiele"
-              className="inline-block bg-esla-primary hover:bg-esla-accent text-white px-8 py-4 rounded-full font-bold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg shadow-esla-primary/50"
+              className="inline-block bg-esla-secondary hover:bg-esla-dark text-white px-8 py-4 rounded-full font-bold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg shadow-black/30 border border-transparent"
             >
               Alle Spiele ansehen
             </a>
