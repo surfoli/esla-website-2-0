@@ -3,6 +3,7 @@ import Section from '@/components/ui/Section';
 import Container from '@/components/ui/Container';
 import matchesLocal from '@/data/matches.json';
 import { getRecentMatches } from '@/lib/kv';
+import AutoShrinkText from '@/components/ui/AutoShrinkText';
 
 function isEslaTeam(name?: string) {
   if (!name) return false;
@@ -49,7 +50,32 @@ export default async function MatchResultsServer() {
                 >
                   <div className="max-w-[1024px] mx-auto">
                     <div className="flex flex-col gap-3 sm:gap-2">
-                      {/* Top row: meta + status */}
+                      {/* Row: teams + score (top) */}
+                      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 sm:gap-4 md:gap-8">
+                        <div className="min-w-0 text-left">
+                          <AutoShrinkText text={match.homeTeam} minPx={12} maxPx={36} className="block font-black text-white leading-tight whitespace-nowrap" />
+                        </div>
+                        <div className="justify-self-center">
+                          <div className="bg-esla-dark/50 rounded-xl px-2.5 py-1.5 sm:px-3.5 sm:py-2 md:px-5 md:py-3 text-center">
+                            <div className="font-black text-white leading-none text-[clamp(12px,3.2vw,18px)] sm:text-[clamp(14px,2.6vw,20px)] md:text-[clamp(16px,1.8vw,22px)]">
+                              {typeof match.homeScore === 'number' && typeof match.awayScore === 'number' ? (
+                                <>
+                                  <span className="text-white">{match.homeScore}</span>
+                                  <span className="text-white/50 mx-2">:</span>
+                                  <span className="text-white">{match.awayScore}</span>
+                                </>
+                              ) : (
+                                <span className="text-white">vs.</span>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="min-w-0 text-right">
+                          <AutoShrinkText text={match.awayTeam} minPx={12} maxPx={36} className="block font-black text-white leading-tight whitespace-nowrap" />
+                        </div>
+                      </div>
+
+                      {/* Meta + status (below) */}
                       <div className="flex flex-wrap items-center justify-between gap-2">
                         <div className="flex flex-wrap items-center gap-3 text-[11px] sm:text-xs text-white/70">
                           <span className="font-medium text-white/80">
@@ -94,29 +120,6 @@ export default async function MatchResultsServer() {
                               : <span className="text-xs sm:text-sm font-bold bg-red-600 text-white px-3 py-1 rounded-full">VERLOREN</span>;
                           })()}
                         </div>
-                      </div>
-
-                      {/* Row: teams + score */}
-                      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-5">
-                        <span className="font-semibold text-base sm:text-lg md:text-xl leading-snug break-words text-left text-white">
-                          {match.homeTeam}
-                        </span>
-                        <div className="bg-esla-dark/50 rounded-xl px-4 py-2 sm:px-5 sm:py-3 min-w-[88px] sm:min-w-[104px] flex items-center justify-center">
-                          <div className="text-lg sm:text-2xl md:text-3xl font-black text-white">
-                            {typeof match.homeScore === 'number' && typeof match.awayScore === 'number' ? (
-                              <>
-                                <span className="text-white">{match.homeScore}</span>
-                                <span className="text-white/50 mx-2">:</span>
-                                <span className="text-white">{match.awayScore}</span>
-                              </>
-                            ) : (
-                              <span className="text-white text-base sm:text-xl">vs.</span>
-                            )}
-                          </div>
-                        </div>
-                        <span className="font-semibold text-base sm:text-lg md:text-xl leading-snug break-words text-right text-white">
-                          {match.awayTeam}
-                        </span>
                       </div>
                     </div>
                   </div>

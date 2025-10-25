@@ -11,7 +11,7 @@ export default function GermanyCupBanner() {
 
       <Container>
         <div className="relative z-10">
-        <div className="bg-esla-secondary rounded-3xl p-9 md:p-14 lg:p-18 border border-white/15 shadow-2xl max-w-[1024px] mx-auto">
+        <div className="bg-esla-secondary rounded-3xl p-9 md:p-14 lg:p-18 border border-white/15 shadow-2xl w-full mx-auto">
           <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
             {/* Left: Content */}
             <div className="gap-y-8">

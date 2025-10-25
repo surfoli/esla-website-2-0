@@ -21,9 +21,22 @@ export function hasScore(m: Match): boolean {
   return typeof (m as any).homeScore === 'number' && typeof (m as any).awayScore === 'number';
 }
 
-export function computedStatus(m: Match): 'upcoming' | 'finished' {
+const LIVE_WINDOW_MS = 100 * 60 * 1000;
+
+export function isLive(m: Match): boolean {
+  if (hasScore(m) || (m as any).status === 'finished') return false;
+  const start = toMs(m);
+  const now = Date.now();
+  return now >= start && now < start + LIVE_WINDOW_MS;
+}
+
+export function computedStatus(m: Match): 'upcoming' | 'live' | 'finished' {
   if (hasScore(m) || (m as any).status === 'finished') return 'finished';
-  return toMs(m) > Date.now() ? 'upcoming' : 'finished';
+  const start = toMs(m);
+  const now = Date.now();
+  if (now < start) return 'upcoming';
+  if (now < start + LIVE_WINDOW_MS) return 'live';
+  return 'finished';
 }
 
 export function calendarInfo(match: Match) {
@@ -35,4 +48,10 @@ export function calendarInfo(match: Match) {
     location: match.location || undefined,
     description: match.competition || undefined,
   };
+}
+
+export function isHomeLocation(loc?: string): boolean {
+  if (!loc) return false;
+  const s = loc.replace(/\u00A0/g, ' ').toLowerCase();
+  return s.includes('sportplatz ruag') || (s.includes('ruag') && s.includes('emmen'));
 }

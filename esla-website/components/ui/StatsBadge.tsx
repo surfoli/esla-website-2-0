@@ -38,7 +38,7 @@ export default function StatsBadge({ className = '' }: { className?: string }) {
   if (!stats) return null;
 
   return (
-    <div className={`inline-flex flex-col items-end gap-0.5 px-3 py-1.5 rounded-2xl bg-white/10 border border-white/10 text-white text-sm ${className}`}>
+    <div className={`inline-flex flex-col items-end gap-0.5 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-white text-sm ${className}`}>
       <span className="font-semibold" aria-live="polite" suppressHydrationWarning>
         ⚽ {stats.gf} Tore geschossen! 🔥
       </span>

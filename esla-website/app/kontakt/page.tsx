@@ -1,35 +1,11 @@
 'use client';
 
-import { useState } from 'react';
 import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/footer/Footer';
-import { Mail, Phone, MapPin, Send, Instagram, Facebook, Linkedin } from 'lucide-react';
+import { Mail, Phone, MapPin, Instagram, Facebook, Linkedin } from 'lucide-react';
 
 export default function KontaktPage() {
-  const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
-    subject: '',
-    message: '',
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    // Email-Link erstellen
-    const subject = encodeURIComponent(formData.subject);
-    const bodyLines = [
-      `Name: ${formData.name}`,
-      `Email: ${formData.email}`,
-      `Telefon: ${formData.phone}`,
-      '',
-      'Nachricht:',
-      formData.message,
-    ];
-    const body = encodeURIComponent(bodyLines.join('\n'));
-    const mailtoLink = `mailto:info@teamelitesoccer.ch?subject=${subject}&body=${body}`;
-    window.location.href = mailtoLink;
-  };
+  
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
@@ -41,7 +17,7 @@ export default function KontaktPage() {
           {/* Header */}
           <div className="text-center mb-16 bg-esla-secondary text-white p-10 rounded-3xl">
             <h1 className="text-5xl md:text-7xl font-black text-white mb-4">
-              KONTAKT<span className="text-esla-primary">IERE UNS</span>
+              KONTAKTIERE <span className="text-esla-primary">UNS</span>
             </h1>
             <p className="text-white/90 text-xl">
               Wir freuen uns auf Ihre Nachricht!
@@ -49,102 +25,12 @@ export default function KontaktPage() {
           </div>
 
           <div className="grid md:grid-cols-2 gap-12">
-            
-            {/* Kontaktformular */}
-            <div className="bg-white rounded-3xl p-8 border border-slate-200">
-              <h2 className="text-3xl font-black text-esla-secondary mb-6">
-                NACHRICHT SENDEN
-              </h2>
-              
-              <form onSubmit={handleSubmit} className="gap-y-4">
-                <div>
-                  <label className="block text-esla-secondary/80 text-sm font-semibold mb-2">
-                    Name *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-esla-secondary placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-esla-primary"
-                    placeholder="Ihr Name"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-esla-secondary/80 text-sm font-semibold mb-2">
-                    Email *
-                  </label>
-                  <input
-                    type="email"
-                    required
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-esla-secondary placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-esla-primary"
-                    placeholder="ihre@email.com"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-esla-secondary/80 text-sm font-semibold mb-2">
-                    Telefon
-                  </label>
-                  <input
-                    type="tel"
-                    value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    className="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-esla-secondary placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-esla-primary"
-                    placeholder="+41 XX XXX XX XX"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-esla-secondary/80 text-sm font-semibold mb-2">
-                    Betreff *
-                  </label>
-                  <input
-                    type="text"
-                    required
-                    value={formData.subject}
-                    onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                    className="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-esla-secondary placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-esla-primary"
-                    placeholder="Worum geht es?"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-esla-secondary/80 text-sm font-semibold mb-2">
-                    Nachricht *
-                  </label>
-                  <textarea
-                    required
-                    rows={6}
-                    value={formData.message}
-                    onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full bg-white border border-slate-300 rounded-xl px-4 py-3 text-esla-secondary placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-esla-primary resize-none"
-                    placeholder="Ihre Nachricht..."
-                  />
-                </div>
-
-                <button
-                  type="submit"
-                  className="w-full bg-esla-primary hover:bg-esla-accent text-white px-8 py-4 rounded-full font-bold text-lg transition-all duration-200 transform hover:scale-105 shadow-lg shadow-esla-primary/50 flex items-center justify-center gap-x-2"
-                >
-                  <Send size={20} />
-                  <span>Nachricht senden</span>
-                </button>
-              </form>
-            </div>
-
-            {/* Kontaktinformationen */}
+            {/* Links: Direkt erreichen */}
             <div className="gap-y-8">
-              
-              {/* Direkte Kontakte */}
               <div className="bg-white rounded-3xl p-8 border border-slate-200">
                 <h2 className="text-3xl font-black text-esla-secondary mb-6">
                   DIREKT ERREICHEN
                 </h2>
-                
                 <div className="gap-y-6">
                   <a
                     href="mailto:info@teamelitesoccer.ch"
@@ -158,7 +44,6 @@ export default function KontaktPage() {
                       <div className="text-esla-secondary font-semibold">info@teamelitesoccer.ch</div>
                     </div>
                   </a>
-
                   <a
                     href="tel:+41786450755"
                     className="flex items-center gap-x-4 p-4 bg-white rounded-xl hover:bg-slate-50 transition-colors group border border-slate-200"
@@ -171,7 +56,6 @@ export default function KontaktPage() {
                       <div className="text-esla-secondary font-semibold">+41 78 645 07 55</div>
                     </div>
                   </a>
-
                   <a
                     href="/standort"
                     className="flex items-center gap-x-4 p-4 bg-white rounded-xl hover:bg-slate-50 transition-colors group border border-slate-200"
@@ -189,8 +73,10 @@ export default function KontaktPage() {
                   </a>
                 </div>
               </div>
+            </div>
 
-              {/* Social Media */}
+            {/* Rechts: Social Media */}
+            <div className="gap-y-8">
               <div className="bg-gradient-to-br from-esla-primary to-esla-accent rounded-3xl p-8">
                 <h3 className="text-2xl font-black text-white mb-4">
                   FOLGE UNS
@@ -234,16 +120,14 @@ export default function KontaktPage() {
                     <Linkedin size={32} className="text-white" />
                   </a>
                 </div>
-
+              </div>
             </div>
           </div>
 
         </div>
       </div>
-    </div>
 
       <Footer />
     </main>
   );
 }
-

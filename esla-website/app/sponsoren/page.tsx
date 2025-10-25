@@ -5,10 +5,15 @@ import Link from 'next/link';
 import { Dumbbell, Star, Sprout, Heart, Users, Sparkles } from 'lucide-react';
 
 const sponsors = [
-  { name: 'MAGAS', logo: '/images/ESLA_Sponsor_Logo_Magas.png' },
-  { name: 'Go Gemba', logo: '/images/ESLA_Sponsor_Logo_Go_Gemba.png' },
-  { name: 'TEKO Schweizer Fachschule', logo: '/images/ESLA_Sponsor_Logo_TEKO_Schweizer_Fachschule.png' },
-  { name: 'ZK Automobile AG', logo: '/images/ESLA_Sponsor_Logo_ZK_Automobile_AG.png' },
+  { name: 'MAGAS', logo: '/images/ESLA_Sponsor_Logo_Magas.png', url: 'https://magas.ch' },
+  { name: 'Go Gemba', logo: '/images/ESLA_Sponsor_Logo_Go_Gemba.png', url: 'https://gogemba.ch' },
+  { name: 'TEKO Schweizer Fachschule', logo: '/images/ESLA_Sponsor_Logo_TEKO_Schweizer_Fachschule.png', url: 'https://www.teko.ch/' },
+  { name: 'ZK Automobile AG', logo: '/images/ESLA_Sponsor_Logo_ZK_Automobile_AG.png', url: 'https://zk-automobile-ag.ch/' },
+];
+
+const partners = [
+  { name: 'Superheldenwerkstatt Flavio Räber', logo: '/images/Superheldenwerkstatt_Flavio_Raeber_Logo.png', url: 'https://www.superheldenwerkstatt.ch/' },
+  { name: 'D3 Webstudio Olivier Durand', logo: '/images/D3Webstudio_Olivier_Durand.png', url: 'https://d3webstudio.ch/' },
 ];
 
 const goenner = [
@@ -30,7 +35,7 @@ export default function SponsorenPage() {
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-5xl md:text-7xl font-black text-esla-secondary mb-6">
-              Herzlichen Dank an unsere <span className="text-esla-primary">Sponsoren und Gönner</span>
+              <span className="text-esla-primary">Herzlichen Dank</span> an alle Sponsoren, Partner und Gönner
             </h1>
             <p className="text-esla-secondary/80 text-xl max-w-4xl mx-auto leading-relaxed">
               Ohne Ihre grosszügige Unterstützung wäre der Start von Team Elitesoccer (ESLA) nicht möglich gewesen.
@@ -99,9 +104,12 @@ export default function SponsorenPage() {
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {sponsors.map((sponsor) => (
-                <div
+                <a
                   key={sponsor.name}
-                  className="bg-white rounded-2xl p-6 flex items-center justify-center hover:scale-105 transition-transform duration-300 shadow-xl"
+                  href={sponsor.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white rounded-2xl p-6 flex items-center justify-center hover:scale-105 transition-transform duration-300 shadow-xl cursor-pointer"
                 >
                   <div className="relative w-full h-24 md:h-28 lg:h-32">
                     <Image
@@ -111,7 +119,28 @@ export default function SponsorenPage() {
                       className="object-contain"
                     />
                   </div>
-                </div>
+                </a>
+              ))}
+            </div>
+          </div>
+ 
+          <div className="mb-16">
+            <h2 className="text-4xl font-black text-esla-secondary text-center mb-12">
+              <Sparkles className="inline-block mr-2 text-esla-primary w-7 h-7 align-[-3px]" /> UNSERE PARTNER
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {partners.map((partner) => (
+                <a
+                  key={partner.name}
+                  href={partner.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="bg-white rounded-2xl p-6 flex items-center justify-center shadow-xl hover:scale-105 transition-transform duration-300 cursor-pointer"
+                >
+                  <div className="relative w-full h-24 md:h-28 lg:h-32">
+                    <Image src={partner.logo} alt={partner.name} fill className="object-contain" />
+                  </div>
+                </a>
               ))}
             </div>
           </div>

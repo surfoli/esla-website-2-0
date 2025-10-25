@@ -7,6 +7,7 @@ import type { Match } from '@/types';
 import FilterBar from '@/components/spiele/FilterBar';
 import NowBadge from '@/components/ui/NowBadge';
 import StatsBadge from '@/components/ui/StatsBadge';
+import Container from '@/components/ui/Container';
 import MatchCard from '@/components/matches/MatchCard';
 import { computedStatus, toMs } from '@/lib/match';
 
@@ -42,7 +43,10 @@ export default async function SpielePage({ searchParams }: { searchParams?: { pa
 
   const matchStatus = (m: Match) => {
     if (statusParam === 'all') return true;
-    return statusParam === computedStatus(m);
+    const s = computedStatus(m);
+    if (statusParam === 'upcoming') return s === 'upcoming' || s === 'live';
+    if (statusParam === 'live') return s === 'live';
+    return s === 'finished';
   };
 
   let items: Match[] = [];
@@ -128,7 +132,7 @@ export default async function SpielePage({ searchParams }: { searchParams?: { pa
     <main className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
       <Navbar />
       <div className="pt-32 pb-20">
-        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
+        <Container>
           {/* Header */}
           <div className="text-center mb-12 bg-esla-secondary text-white p-10 rounded-3xl">
             <div className="flex items-center justify-between mb-4">
@@ -144,6 +148,24 @@ export default async function SpielePage({ searchParams }: { searchParams?: { pa
           {statusParam === 'all' ? (
             <>
               {(() => {
+                const live = (allMatches || [])
+                  .filter(matchTeam)
+                  .filter((m) => computedStatus(m) === 'live')
+                  .sort((a, b) => toMs(a) - toMs(b));
+                if (live.length === 0) return null;
+                return (
+                  <section className="mb-12">
+                    <h2 className="text-2xl md:text-3xl font-black text-esla-secondary mb-4">Aktuelle Spiele</h2>
+                    <div className="grid gap-8">
+                      {live.map((m) => (
+                        <MatchCard key={m.id} match={m} fullWidth />
+                      ))}
+                    </div>
+                  </section>
+                );
+              })()}
+
+              {(() => {
                 const upcoming = (allMatches || [])
                   .filter(matchTeam)
                   .filter((m) => computedStatus(m) === 'upcoming')
@@ -154,7 +176,7 @@ export default async function SpielePage({ searchParams }: { searchParams?: { pa
                     <h2 className="text-2xl md:text-3xl font-black text-esla-secondary mb-4">Zukünftige Spiele</h2>
                     <div className="grid gap-8">
                       {upcoming.map((m) => (
-                        <MatchCard key={m.id} match={m} />
+                        <MatchCard key={m.id} match={m} fullWidth />
                       ))}
                     </div>
                   </section>
@@ -172,7 +194,7 @@ export default async function SpielePage({ searchParams }: { searchParams?: { pa
                     <h2 className="text-2xl md:text-3xl font-black text-esla-secondary mb-4">Abgeschlossene Spiele</h2>
                     <div className="grid gap-8">
                       {finished.map((m) => (
-                        <MatchCard key={m.id} match={m} />
+                        <MatchCard key={m.id} match={m} fullWidth />
                       ))}
                     </div>
                   </section>
@@ -181,20 +203,28 @@ export default async function SpielePage({ searchParams }: { searchParams?: { pa
             </>
           ) : (
             <>
-              <div className="grid gap-8">
-                {items.map((match: Match) => (
-                  <MatchCard key={match.id} match={match} />
-                ))}
-              </div>
+              {items.length === 0 ? (
+                <div className="text-center text-esla-secondary/80 py-12">
+                  {statusParam === 'upcoming' ? 'Leider keine zukünftigen Spiele geplant.' : statusParam === 'live' ? 'Aktuell keine laufenden Spiele.' : 'Noch keine abgeschlossenen Spiele vorhanden.'}
+                </div>
+              ) : (
+                <div className="grid gap-8">
+                  {items.map((match: Match) => (
+                    <MatchCard key={match.id} match={match} fullWidth />
+                  ))}
+                </div>
+              )}
               {/* Pagination */}
-              <div className="flex justify-center items-center gap-6 mt-12">
-                <Link href={`/spiele?status=${statusParam}&team=${teamParam}&page=${Math.max(1, page - 1)}&pageSize=${pageSize}`} className={`px-5 py-3 rounded-full border ${page > 1 ? 'text-esla-secondary border-slate-300 hover:bg-slate-100' : 'text-slate-400 border-slate-200 pointer-events-none'}`}>Zurück</Link>
-                <span className="text-esla-secondary/70">Seite {page} / {totalPages}</span>
-                <Link href={`/spiele?status=${statusParam}&team=${teamParam}&page=${Math.min(totalPages, page + 1)}&pageSize=${pageSize}`} className={`px-5 py-3 rounded-full border ${page < totalPages ? 'text-esla-secondary border-slate-300 hover:bg-slate-100' : 'text-slate-400 border-slate-200 pointer-events-none'}`}>Weiter</Link>
-              </div>
+              {items.length > 0 && (
+                <div className="flex justify-center items-center gap-6 mt-12">
+                  <Link href={`/spiele?status=${statusParam}&team=${teamParam}&page=${Math.max(1, page - 1)}&pageSize=${pageSize}`} className={`px-5 py-3 rounded-full border ${page > 1 ? 'text-esla-secondary border-slate-300 hover:bg-slate-100' : 'text-slate-400 border-slate-200 pointer-events-none'}`}>Zurück</Link>
+                  <span className="text-esla-secondary/70">Seite {page} / {totalPages}</span>
+                  <Link href={`/spiele?status=${statusParam}&team=${teamParam}&page=${Math.min(totalPages, page + 1)}&pageSize=${pageSize}`} className={`px-5 py-3 rounded-full border ${page < totalPages ? 'text-esla-secondary border-slate-300 hover:bg-slate-100' : 'text-slate-400 border-slate-200 pointer-events-none'}`}>Weiter</Link>
+                </div>
+              )}
             </>
           )}
-        </div>
+        </Container>
       </div>
       <Footer />
     </main>

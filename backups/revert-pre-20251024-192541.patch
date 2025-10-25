@@ -1,0 +1,606 @@
+diff --git a/esla-website/app/spiele/page.tsx b/esla-website/app/spiele/page.tsx
+index 6323874..dca61b8 100644
+--- a/esla-website/app/spiele/page.tsx
++++ b/esla-website/app/spiele/page.tsx
+@@ -153,8 +153,8 @@ export default async function SpielePage({ searchParams }: { searchParams?: { pa
+                   <section className="mb-12">
+                     <h2 className="text-2xl md:text-3xl font-black text-esla-secondary mb-4">Zukünftige Spiele</h2>
+                     <div className="grid gap-8">
+-                      {upcoming.map((m) => (
+-                        <MatchCard key={m.id} match={m} />
++                      {upcoming.map((m, i) => (
++                        <MatchCard key={m.id} match={m as any} showCountdown={i < 3} />
+                       ))}
+                     </div>
+                   </section>
+@@ -182,8 +182,8 @@ export default async function SpielePage({ searchParams }: { searchParams?: { pa
+           ) : (
+             <>
+               <div className="grid gap-8">
+-                {items.map((match: Match) => (
+-                  <MatchCard key={match.id} match={match} />
++                {items.map((match: Match, i: number) => (
++                  <MatchCard key={match.id} match={match} showCountdown={statusParam === 'upcoming' && page === 1 && i < 3} />
+                 ))}
+               </div>
+               {/* Pagination */}
+diff --git a/esla-website/app/sponsoren/page.tsx b/esla-website/app/sponsoren/page.tsx
+index 091260c..0e4fb3f 100644
+--- a/esla-website/app/sponsoren/page.tsx
++++ b/esla-website/app/sponsoren/page.tsx
+@@ -5,10 +5,10 @@ import Link from 'next/link';
+ import { Dumbbell, Star, Sprout, Heart, Users, Sparkles } from 'lucide-react';
+ 
+ const sponsors = [
+-  { name: 'MAGAS', logo: '/images/ESLA_Sponsor_Logo_Magas.png' },
+-  { name: 'Go Gemba', logo: '/images/ESLA_Sponsor_Logo_Go_Gemba.png' },
+-  { name: 'TEKO Schweizer Fachschule', logo: '/images/ESLA_Sponsor_Logo_TEKO_Schweizer_Fachschule.png' },
+-  { name: 'ZK Automobile AG', logo: '/images/ESLA_Sponsor_Logo_ZK_Automobile_AG.png' },
++  { name: 'MAGAS', logo: '/images/ESLA_Sponsor_Logo_Magas.png', url: 'https://magas.ch' },
++  { name: 'Go Gemba', logo: '/images/ESLA_Sponsor_Logo_Go_Gemba.png', url: 'https://gogemba.ch' },
++  { name: 'TEKO Schweizer Fachschule', logo: '/images/ESLA_Sponsor_Logo_TEKO_Schweizer_Fachschule.png', url: 'https://www.teko.ch/' },
++  { name: 'ZK Automobile AG', logo: '/images/ESLA_Sponsor_Logo_ZK_Automobile_AG.png', url: 'https://zk-automobile-ag.ch/' },
+ ];
+ 
+ const goenner = [
+@@ -99,9 +99,12 @@ export default function SponsorenPage() {
+             
+             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+               {sponsors.map((sponsor) => (
+-                <div
++                <a
+                   key={sponsor.name}
+-                  className="bg-white rounded-2xl p-6 flex items-center justify-center hover:scale-105 transition-transform duration-300 shadow-xl"
++                  href={sponsor.url}
++                  target="_blank"
++                  rel="noopener noreferrer"
++                  className="bg-white rounded-2xl p-6 flex items-center justify-center hover:scale-105 transition-transform duration-300 shadow-xl cursor-pointer"
+                 >
+                   <div className="relative w-full h-24 md:h-28 lg:h-32">
+                     <Image
+@@ -111,7 +114,7 @@ export default function SponsorenPage() {
+                       className="object-contain"
+                     />
+                   </div>
+-                </div>
++                </a>
+               ))}
+             </div>
+           </div>
+diff --git a/esla-website/app/ueber-uns/page.tsx b/esla-website/app/ueber-uns/page.tsx
+index 82119d3..5f0b876 100644
+--- a/esla-website/app/ueber-uns/page.tsx
++++ b/esla-website/app/ueber-uns/page.tsx
+@@ -1,6 +1,7 @@
+ import Navbar from '@/components/navigation/Navbar';
+ import Footer from '@/components/footer/Footer';
+ import { Heart, Users, TrendingUp, Award, Handshake, CheckCircle, Shield, MapPin, Target, Zap } from 'lucide-react';
++import Link from 'next/link';
+ 
+ export default function AboutPage() {
+   return (
+@@ -22,18 +23,32 @@ export default function AboutPage() {
+               Wo Talent auf Charakter trifft.
+             </p>
+             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-esla-secondary text-base max-w-3xl mx-auto">
+-              <div className="bg-white rounded-full px-6 py-3 flex items-center gap-x-2 shadow-md">
++              <a
++                href="https://matchcenter.ifv.ch/default.aspx?v=1761431&oid=7&lng=1"
++                target="_blank"
++                rel="noopener noreferrer"
++                aria-label="Zum SFV Matchcenter"
++                className="bg-white rounded-full px-6 py-3 flex items-center gap-x-2 shadow-md hover:shadow-lg hover:bg-esla-light transition-all duration-200 transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-esla-primary/50 cursor-pointer"
++              >
+                 <Shield size={18} className="text-esla-primary flex-shrink-0" />
+                 <span className="font-semibold">Offiziell anerkannt vom SFV</span>
+-              </div>
+-              <div className="bg-white rounded-full px-6 py-3 flex items-center gap-x-2 shadow-md">
++              </a>
++              <Link
++                href="/standort"
++                aria-label="Zur Standort-Seite"
++                className="bg-white rounded-full px-6 py-3 flex items-center gap-x-2 shadow-md hover:shadow-lg hover:bg-esla-light transition-all duration-200 transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-esla-primary/50 cursor-pointer"
++              >
+                 <MapPin size={18} className="text-esla-primary flex-shrink-0" />
+                 <span className="font-semibold">Luzern – Sportplatz RUAG</span>
+-              </div>
+-              <div className="bg-white rounded-full px-6 py-3 flex items-center gap-x-2 shadow-md">
++              </Link>
++              <Link
++                href="/team"
++                aria-label="Zur Teamseite"
++                className="bg-white rounded-full px-6 py-3 flex items-center gap-x-2 shadow-md hover:shadow-lg hover:bg-esla-light transition-all duration-200 transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-esla-primary/50 cursor-pointer"
++              >
+                 <Users size={18} className="text-esla-primary flex-shrink-0" />
+                 <span className="font-semibold">Team ESLA</span>
+-              </div>
++              </Link>
+             </div>
+           </div>
+ 
+@@ -68,7 +83,7 @@ export default function AboutPage() {
+ 
+           {/* Our Values */}
+           <div className="mb-16">
+-            <h2 className="text-3xl md:text-4xl font-black text-white mb-12 text-center">
++            <h2 className="text-3xl md:text-4xl font-black text-black mb-12 text-center">
+               Unsere Werte – <span className="text-esla-primary">auf und neben dem Platz</span>
+             </h2>
+             
+diff --git a/esla-website/components/banner/GermanyCupBanner.tsx b/esla-website/components/banner/GermanyCupBanner.tsx
+index c759782..22653e9 100644
+--- a/esla-website/components/banner/GermanyCupBanner.tsx
++++ b/esla-website/components/banner/GermanyCupBanner.tsx
+@@ -11,7 +11,7 @@ export default function GermanyCupBanner() {
+ 
+       <Container>
+         <div className="relative z-10">
+-        <div className="bg-esla-secondary rounded-3xl p-9 md:p-14 lg:p-18 border border-white/15 shadow-2xl max-w-[1024px] mx-auto">
++        <div className="bg-esla-secondary rounded-3xl p-9 md:p-14 lg:p-18 border border-white/15 shadow-2xl w-full mx-auto">
+           <div className="grid md:grid-cols-2 gap-12 md:gap-16 items-center">
+             {/* Left: Content */}
+             <div className="gap-y-8">
+diff --git a/esla-website/components/hero/UpcomingMatchesServer.tsx b/esla-website/components/hero/UpcomingMatchesServer.tsx
+index 3091590..928402f 100644
+--- a/esla-website/components/hero/UpcomingMatchesServer.tsx
++++ b/esla-website/components/hero/UpcomingMatchesServer.tsx
+@@ -46,6 +46,12 @@ function calendarInfo(match: any) {
+   };
+ }
+ 
++function isHomeLocation(loc?: string) {
++  if (!loc) return false;
++  const s = loc.replace(/\u00A0/g, ' ').toLowerCase();
++  return s.includes('sportplatz ruag') || (s.includes('ruag') && s.includes('emmen'));
++}
++
+ export default async function UpcomingMatchesServer() {
+   let matches = await getAllMatches();
+   const now = Date.now();
+@@ -139,7 +145,7 @@ export default async function UpcomingMatchesServer() {
+                     <span className="block font-black text-white leading-tight whitespace-nowrap text-[clamp(12px,3.8vw,30px)] sm:text-[clamp(14px,3vw,32px)] md:text-[clamp(18px,2.4vw,34px)]">{next.homeTeam}</span>
+                   </div>
+                   <div>
+-                    <div className="inline-flex items-center justify-center rounded-2xl bg-white/15 border border-white/10 px-3 py-2 text-white/80 font-semibold uppercase tracking-wider text-xs sm:px-4 sm:py-2 sm:text-sm md:px-6 md:py-3 md:text-base">vs.</div>
++                    <div className="inline-flex items-center justify-center rounded-2xl bg-white/15 border border-white/10 px-3 py-2 sm:px-4 sm:py-2 md:px-6 md:py-3 text-white font-black leading-none text-[clamp(12px,3.5vw,20px)] sm:text-[clamp(14px,3vw,22px)] md:text-[clamp(16px,2.2vw,26px)]">vs.</div>
+                   </div>
+                   <div className="min-w-0 text-center md:text-left">
+                     <span className="block font-black text-white leading-tight whitespace-nowrap text-[clamp(12px,3.8vw,30px)] sm:text-[clamp(14px,3vw,32px)] md:text-[clamp(18px,2.4vw,34px)]">{next.awayTeam}</span>
+@@ -148,19 +154,28 @@ export default async function UpcomingMatchesServer() {
+                 <div className="text-white/90 text-left mb-2">
+                   {new Date(next.date).toLocaleDateString('de-CH', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })}
+                   {next.time ? ` | ${next.time}` : ''}
+-                  {next.location ? ` | ${next.location}` : ''}
++                  {next.location ? (
++                    <>
++                      {` | ${next.location}`}
++                      {isHomeLocation(next.location) && (
++                        <span className="ml-2 inline-flex items-center rounded-full bg-white/15 border border-white/20 px-2.5 py-0.5 text-xs font-semibold text-white/90">HEIMSPIEL</span>
++                      )}
++                    </>
++                  ) : null}
+                 </div>
+                 {next.competition && !/zugeordnet/i.test(next.competition) && (
+                   <div className="text-esla-accent text-left mb-6">
+                     <span className="text-sm md:text-base font-semibold">{next.competition}</span>
+                   </div>
+                 )}
+-                <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 md:gap-6">
++                <div className="grid grid-cols-1 md:grid-cols-[auto,1fr] items-center gap-4 md:gap-6">
+                   <div className="order-2 md:order-1">
+                     <Countdown iso={iso} variant="compact" />
+                   </div>
+-                  <div className="order-1 md:order-2 flex items-center justify-start md:justify-end gap-3 md:gap-5 w-full md:w-auto">
+-                    <JoinButton matchId={next.id} label="Ich nehme teil" calendar={nextCalendar} />
++                  <div className="order-1 md:order-2 justify-self-start w-full">
++                    <div className="flex justify-start md:justify-end">
++                      <JoinButton matchId={next.id} calendar={nextCalendar} />
++                    </div>
+                   </div>
+                 </div>
+               </div>
+@@ -190,7 +205,14 @@ export default async function UpcomingMatchesServer() {
+                             {new Date(m.date).toLocaleDateString('de-CH', { weekday: 'short', day: '2-digit', month: '2-digit', year: 'numeric' })}
+                             {m.time ? ` | ${m.time}` : ''}
+                           </div>
+-                          {m.location && <div>{m.location}</div>}
++                          {m.location && (
++                            <div>
++                              {m.location}
++                              {isHomeLocation(m.location) && (
++                                <span className="ml-2 inline-flex items-center rounded-full bg-white/15 border border-white/20 px-2 py-0.5 text-[11px] font-semibold text-white/80">HEIMSPIEL</span>
++                              )}
++                            </div>
++                          )}
+                           {m.competition && !/zugeordnet/i.test(m.competition) && (
+                             <div className="text-esla-accent font-semibold">{m.competition}</div>
+                           )}
+@@ -218,8 +240,8 @@ export default async function UpcomingMatchesServer() {
+                         </div>
+ 
+                         {/* Actions */}
+-                        <div className="flex items-center justify-end gap-3">
+-                          <JoinButton matchId={m.id} label="Klick hier wenn du teilnimmst!" calendar={calendar} />
++                        <div className="flex items-center justify-start md:justify-end gap-3">
++                          <JoinButton matchId={m.id} calendar={calendar} />
+                         </div>
+                       </div>
+                     </div>
+diff --git a/esla-website/components/matches/JoinButton.tsx b/esla-website/components/matches/JoinButton.tsx
+index bcf8367..db2d226 100644
+--- a/esla-website/components/matches/JoinButton.tsx
++++ b/esla-website/components/matches/JoinButton.tsx
+@@ -138,7 +138,7 @@ export default function JoinButton({ matchId, label, leaveText, calendar }: { ma
+     <div ref={containerRef} className="relative inline-flex flex-row md:flex-col items-center md:items-start gap-2">
+       <button
+         onClick={onToggle}
+-        className={`${hasJoined ? 'bg-green-700 text-white' : 'bg-green-600 hover:bg-green-700 text-white'} relative px-3 sm:px-4 md:px-6 lg:px-7 py-2 rounded-full font-semibold text-xs sm:text-sm md:text-base whitespace-nowrap md:min-w-[230px] lg:min-w-[260px]`}
++        className={`${hasJoined ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-white/15 hover:bg-white/25 text-white border border-white/20'} relative px-3 sm:px-4 md:px-6 lg:px-7 py-2 rounded-full font-semibold text-xs sm:text-sm md:text-base whitespace-nowrap md:min-w-[230px] lg:min-w-[260px]`}
+       >
+         {hasJoined ? 'Teilnahme registriert' : (label || 'Ich nehme teil')}
+         {count > 0 && (
+@@ -159,7 +159,7 @@ export default function JoinButton({ matchId, label, leaveText, calendar }: { ma
+           rel="noopener noreferrer"
+           className="inline-flex items-center justify-center gap-2 px-3 sm:px-4 md:px-6 lg:px-7 py-2 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs sm:text-sm font-semibold border border-white/20 whitespace-nowrap md:min-w-[220px] lg:min-w-[260px]"
+         >
+-         In Googlekalender öffnen
++          In Googlekalender speichern
+         </a>
+       )}
+       {statusText && (
+diff --git a/esla-website/components/matches/MatchCard.tsx b/esla-website/components/matches/MatchCard.tsx
+index 6e29ed6..ae81ab0 100644
+--- a/esla-website/components/matches/MatchCard.tsx
++++ b/esla-website/components/matches/MatchCard.tsx
+@@ -1,80 +1,102 @@
+ import type { Match } from '@/types';
+-import { computedStatus, isEslaTeamName, calendarInfo } from '@/lib/match';
++import { computedStatus, isEslaTeamName, calendarInfo, isHomeLocation } from '@/lib/match';
+ import JoinButton from '@/components/matches/JoinButton';
++import Countdown from '@/components/matches/Countdown';
+ 
+-export default function MatchCard({ match }: { match: Match }) {
++export default function MatchCard({ match, showCountdown = false }: { match: Match; showCountdown?: boolean }) {
+   const status = computedStatus(match);
+   const cal = calendarInfo(match);
++  const iso = `${match.date}T${(match.time && match.time.length >= 4 ? match.time : '00:00')}:00`;
+ 
+   return (
+     <div className="bg-esla-secondary backdrop-blur-md rounded-2xl p-6 md:p-8 border border-white/10 transition-all duration-300">
+       <div className="max-w-[1024px] mx-auto">
+         <div className="grid gap-5">
+-          {/* Meta */}
+-          <div className="flex flex-col gap-y-1 text-white/70 text-sm">
+-            <div>
+-              {new Date(`${match.date}T${match.time || '00:00'}:00`).toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+-              {match.time ? ` | ${match.time}` : ''}
+-            </div>
+-            {match.location && <div>{match.location}</div>}
+-            {match.competition && !/zugeordnet/i.test(match.competition) && (
+-              <div className="text-esla-accent font-semibold">{match.competition}</div>
+-            )}
+-          </div>
+ 
+-          {/* Teams + Score centered */}
+-          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] items-center gap-4 sm:gap-6">
+-            {/* Home */}
+-            <div className="min-w-0 md:justify-self-end">
+-              <div className="flex items-start sm:items-center gap-x-3 justify-end">
+-                <span className="font-semibold text-base sm:text-lg md:text-xl leading-snug break-words text-right text-white">{match.homeTeam}</span>
+-              </div>
+-            </div>
+-            {/* Score */}
+-            <div className="justify-self-center">
+-              <div className="bg-esla-dark/50 rounded-xl px-4 py-2 sm:px-5 sm:py-3 min-w-[88px] sm:min-w-[104px] text-center">
+-                <div className="text-xl sm:text-2xl md:text-3xl font-black text-white">
++          {/* Teams + Score (single line, scales) */}
++          <div className="flex flex-nowrap items-center gap-2 sm:gap-3 md:gap-6 overflow-hidden">
++            <span className="flex-1 min-w-0 block font-black text-white leading-tight whitespace-nowrap overflow-hidden text-ellipsis text-[clamp(12px,2.8vw,28px)] sm:text-[clamp(14px,2.4vw,32px)] md:text-[clamp(16px,2vw,34px)]">
++              {match.homeTeam}
++            </span>
++            <div className="flex-none">
++              <div className="bg-esla-accent rounded-xl px-4 py-2 sm:px-5 sm:py-3 min-w-[56px] sm:min-w-[84px] text-center">
++                <div className="font-black text-white leading-none text-[clamp(14px,3.6vw,28px)] sm:text-[clamp(16px,3vw,32px)] md:text-[clamp(18px,2vw,34px)]">
+                   {typeof match.homeScore === 'number' && typeof match.awayScore === 'number' ? (
+                     <>
+                       <span className="text-white">{match.homeScore}</span>
+-                      <span className="text-white/50 mx-2">:</span>
++                      <span className="text-white mx-2">:</span>
+                       <span className="text-white">{match.awayScore}</span>
+                     </>
+                   ) : (
+-                    <span className="text-white text-lg sm:text-xl">vs.</span>
++                    <span className="text-white">vs.</span>
+                   )}
+                 </div>
+               </div>
+             </div>
+-            {/* Away */}
+-            <div className="min-w-0">
+-              <div className="flex items-start sm:items-center gap-x-3">
+-                <span className="font-semibold text-base sm:text-lg md:text-xl leading-snug break-words text-white">{match.awayTeam}</span>
++            <span className="flex-1 min-w-0 block font-black text-white leading-tight whitespace-nowrap overflow-hidden text-ellipsis text-[clamp(12px,2.8vw,28px)] sm:text-[clamp(14px,2.4vw,32px)] md:text-[clamp(16px,2vw,34px)]">
++              {match.awayTeam}
++            </span>
++          </div>
++
++          {/* Footer: meta bottom-left + actions right */}
++          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3 mt-1">
++            <div className="text-white/80 text-sm">
++              <div>
++                {new Date(`${match.date}T${match.time || '00:00'}:00`).toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' })}
++                {match.time ? ` | ${match.time}` : ''}
++                {(() => {
++                  const hasScore = typeof match.homeScore === 'number' && typeof match.awayScore === 'number';
++                  if (status === 'upcoming') return <span className="ml-2 inline-flex items-center rounded-full bg-white/15 border border-white/20 px-2 py-0.5 text-[11px] font-semibold text-white/80">ANSTEHEND</span>;
++                  if (!hasScore) return <span className="ml-2 inline-flex items-center rounded-full bg-white/15 border border-white/20 px-2 py-0.5 text-[11px] font-semibold text-white/80">RESULTATE FOLGEN</span>;
++                  return <span className="ml-2 inline-flex items-center rounded-full bg-white/10 border border-white/20 px-2 py-0.5 text-[11px] font-semibold text-white/70">ABGESCHLOSSEN</span>;
++                })()}
+               </div>
++              {match.location && (
++                <div className="mt-0.5">
++                  {match.location}
++                  {isHomeLocation(match.location) && (
++                    <span className="ml-2 inline-flex items-center rounded-full bg-white/15 border border-white/20 px-2 py-0.5 text-[11px] font-semibold text-white/80">HEIMSPIEL</span>
++                  )}
++                </div>
++              )}
++              {match.competition && !/zugeordnet/i.test(match.competition) && (
++                <div className="text-esla-accent font-semibold mt-1">{match.competition}</div>
++              )}
++              {showCountdown && status === 'upcoming' ? (
++                <div className="mt-3 grid grid-cols-1 md:grid-cols-[auto,1fr] items-center gap-3 md:gap-4">
++                  <div className="order-2 md:order-1">
++                    <Countdown iso={iso} variant="compact" />
++                  </div>
++                  <div className="order-1 md:order-2 justify-self-start w-full">
++                    <div className="flex justify-start">
++                      <JoinButton matchId={match.id} calendar={cal} />
++                    </div>
++                  </div>
++                </div>
++              ) : null}
+             </div>
+-          </div>
+ 
+-          {/* Status + Join */}
+-          <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 mt-1">
+-            {(() => {
+-              if (status === 'upcoming') return <span className="text-lg font-bold text-white/80">ANSTEHEND</span>;
+-              const hasScore = typeof match.homeScore === 'number' && typeof match.awayScore === 'number';
+-              if (!hasScore) return <span className="text-xs sm:text-sm font-semibold text-white/80 bg-white/10 px-3 py-1 rounded-full">RESULTATE FOLGEN</span>;
+-              const eslaHome = isEslaTeamName(match.homeTeam);
+-              const eslaAway = isEslaTeamName(match.awayTeam);
+-              if (eslaHome || eslaAway) {
+-                const hs = match.homeScore as number; const as = match.awayScore as number;
+-                if (hs === as) return <span className="text-xs sm:text-sm font-bold bg-yellow-500 text-black px-3 py-1 rounded-full">UNENTSCHIEDEN</span>;
+-                const eslaWon = (eslaHome && hs > as) || (eslaAway && as > hs);
+-                return eslaWon
+-                  ? <span className="text-xs sm:text-sm font-bold bg-green-600 text-white px-3 py-1 rounded-full">GEWONNEN</span>
+-                  : <span className="text-xs sm:text-sm font-bold bg-red-600 text-white px-3 py-1 rounded-full">VERLOREN</span>;
+-              }
+-              return <span className="text-lg font-bold text-white/80">ABGESCHLOSSEN</span>;
+-            })()}
+-            {status === 'upcoming' ? (
+-              <JoinButton matchId={match.id} label="Klick hier wenn du teilnimmst!" calendar={cal} />
+-            ) : null}
++            <div className="flex flex-wrap items-center justify-start md:justify-end gap-3 w-full md:w-auto">
++              {(() => {
++                const hasScore = typeof match.homeScore === 'number' && typeof match.awayScore === 'number';
++                if (status === 'upcoming') return null;
++                if (!hasScore) return null;
++                const eslaHome = isEslaTeamName(match.homeTeam);
++                const eslaAway = isEslaTeamName(match.awayTeam);
++                if (eslaHome || eslaAway) {
++                  const hs = match.homeScore as number; const as = match.awayScore as number;
++                  if (hs === as) return <span className="text-xs sm:text-sm font-bold bg-yellow-500 text-black px-3 py-1 rounded-full">UNENTSCHIEDEN</span>;
++                  const eslaWon = (eslaHome && hs > as) || (eslaAway && as > hs);
++                  return eslaWon
++                    ? <span className="text-xs sm:text-sm font-bold bg-green-600 text-white px-3 py-1 rounded-full">GEWONNEN</span>
++                    : <span className="text-xs sm:text-sm font-bold bg-red-600 text-white px-3 py-1 rounded-full">VERLOREN</span>;
++                }
++                return null;
++              })()}
++              {status === 'upcoming' && !showCountdown ? (
++                <JoinButton matchId={match.id} calendar={cal} />
++              ) : null}
++            </div>
+           </div>
+         </div>
+       </div>
+diff --git a/esla-website/components/matches/MatchResultsServer.tsx b/esla-website/components/matches/MatchResultsServer.tsx
+index c720711..1bd24c2 100644
+--- a/esla-website/components/matches/MatchResultsServer.tsx
++++ b/esla-website/components/matches/MatchResultsServer.tsx
+@@ -49,43 +49,70 @@ export default async function MatchResultsServer() {
+                 >
+                   <div className="max-w-[1024px] mx-auto">
+                     <div className="flex flex-col gap-3 sm:gap-2">
+-                      {/* Top row: meta + status */}
+-                      <div className="flex flex-wrap items-center justify-between gap-2">
+-                        <div className="flex flex-wrap items-center gap-3 text-[11px] sm:text-xs text-white/70">
++                      {/* Row: teams + score (top, single-line, scales) */}
++                      <div className="flex flex-nowrap items-center gap-2 sm:gap-3 md:gap-6 overflow-hidden">
++                        <span className="flex-1 min-w-0 block font-black text-white leading-tight whitespace-nowrap overflow-hidden text-ellipsis text-[clamp(14px,2.6vw,28px)] sm:text-[clamp(16px,2.3vw,32px)] md:text-[clamp(18px,2vw,36px)]">
++                          {match.homeTeam}
++                        </span>
++                        <div className="flex-none">
++                          <div className="bg-esla-accent rounded-xl px-4 py-2 sm:px-5 sm:py-3 min-w-[56px] sm:min-w-[84px] text-center">
++                            <div className="font-black text-white leading-none text-[clamp(14px,3.6vw,28px)] sm:text-[clamp(16px,3vw,32px)] md:text-[clamp(18px,2vw,34px)]">
++                              {typeof match.homeScore === 'number' && typeof match.awayScore === 'number' ? (
++                                <>
++                                  <span className="text-white">{match.homeScore}</span>
++                                  <span className="text-white mx-2">:</span>
++                                  <span className="text-white">{match.awayScore}</span>
++                                </>
++                              ) : (
++                                <span className="text-white">vs.</span>
++                              )}
++                            </div>
++                          </div>
++                        </div>
++                        <span className="flex-1 min-w-0 block font-black text-white leading-tight whitespace-nowrap overflow-hidden text-ellipsis text-[clamp(14px,2.6vw,28px)] sm:text-[clamp(16px,2.3vw,32px)] md:text-[clamp(18px,2vw,36px)]">
++                          {match.awayTeam}
++                        </span>
++                      </div>
++
++                      {/* Competition under teams */}
++                      {(() => {
++                        if (!match.competition || /zugeordnet/i.test(match.competition)) return null;
++                        const parts = splitCompetition(match.competition);
++                        if (!parts.length) return null;
++                        return (
++                          <div className="text-esla-accent font-semibold flex flex-wrap gap-x-2 gap-y-1">
++                            {parts.map((part, idx) => (
++                              <span key={idx} className="whitespace-nowrap">{part}</span>
++                            ))}
++                          </div>
++                        );
++                      })()}
++
++                      {/* Bottom row: date/time left with gray pill, status/winner right */}
++                      <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2">
++                        <div className="text-white/70 text-[11px] sm:text-xs">
+                           <span className="font-medium text-white/80">
+                             {new Date(match.date).toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' })}
+                             {match.time ? ` · ${match.time}` : ''}
+                           </span>
+-                          {match.location && <span>{match.location}</span>}
+                           {(() => {
+-                            if (!match.competition || /zugeordnet/i.test(match.competition)) return null;
+-                            const parts = splitCompetition(match.competition);
+-                            if (!parts.length) return null;
+-                            return (
+-                              <span className="text-esla-accent font-semibold flex flex-wrap gap-x-2 gap-y-1">
+-                                {parts.map((part, idx) => (
+-                                  <span key={idx} className="whitespace-nowrap">
+-                                    {part}
+-                                  </span>
+-                                ))}
+-                              </span>
+-                            );
++                            const hs = typeof match.homeScore === 'number' ? match.homeScore : null;
++                            const as = typeof match.awayScore === 'number' ? match.awayScore : null;
++                            const finished = match.status === 'finished' || (hs !== null && as !== null);
++                            if (!finished) return <span className="ml-2 inline-flex items-center rounded-full bg-white/15 border border-white/20 px-2 py-0.5 text-[11px] font-semibold text-white/80">ANSTEHEND</span>;
++                            if (hs === null || as === null) return <span className="ml-2 inline-flex items-center rounded-full bg-white/15 border border-white/20 px-2 py-0.5 text-[11px] font-semibold text-white/80">RESULTATE FOLGEN</span>;
++                            return <span className="ml-2 inline-flex items-center rounded-full bg-white/10 border border-white/20 px-2 py-0.5 text-[11px] font-semibold text-white/70">ABGESCHLOSSEN</span>;
+                           })()}
++                          {match.location && <span className="ml-2">{match.location}</span>}
+                         </div>
+                         <div className="flex items-center gap-2">
+                           {(() => {
+                             const hs = typeof match.homeScore === 'number' ? match.homeScore : null;
+                             const as = typeof match.awayScore === 'number' ? match.awayScore : null;
+                             const finished = match.status === 'finished' || (hs !== null && as !== null);
+-                            if (!finished) {
+-                              return <span className="text-xs sm:text-sm font-bold text-white/80">ANSTEHEND</span>;
+-                            }
+-                            if (hs === null || as === null) {
+-                              return <span className="text-xs sm:text-sm font-semibold text-white/80 bg-white/10 px-3 py-1 rounded-full">RESULTATE FOLGEN</span>;
+-                            }
+-                            if (hs === as) {
+-                              return <span className="text-xs sm:text-sm font-bold bg-yellow-500 text-black px-3 py-1 rounded-full">UNENTSCHIEDEN</span>;
+-                            }
++                            if (!finished) return null;
++                            if (hs === null || as === null) return null;
++                            if (hs === as) return <span className="text-xs sm:text-sm font-bold bg-yellow-500 text-black px-3 py-1 rounded-full">UNENTSCHIEDEN</span>;
+                             const eslaHome = isEslaTeam(match.homeTeam);
+                             const eslaAway = isEslaTeam(match.awayTeam);
+                             const eslaWon = (eslaHome && (hs as number) > (as as number)) || (eslaAway && (as as number) > (hs as number));
+@@ -95,29 +122,6 @@ export default async function MatchResultsServer() {
+                           })()}
+                         </div>
+                       </div>
+-
+-                      {/* Row: teams + score */}
+-                      <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-5">
+-                        <span className="font-semibold text-base sm:text-lg md:text-xl leading-snug break-words text-left text-white">
+-                          {match.homeTeam}
+-                        </span>
+-                        <div className="bg-esla-dark/50 rounded-xl px-4 py-2 sm:px-5 sm:py-3 min-w-[88px] sm:min-w-[104px] flex items-center justify-center">
+-                          <div className="text-lg sm:text-2xl md:text-3xl font-black text-white">
+-                            {typeof match.homeScore === 'number' && typeof match.awayScore === 'number' ? (
+-                              <>
+-                                <span className="text-white">{match.homeScore}</span>
+-                                <span className="text-white/50 mx-2">:</span>
+-                                <span className="text-white">{match.awayScore}</span>
+-                              </>
+-                            ) : (
+-                              <span className="text-white text-base sm:text-xl">vs.</span>
+-                            )}
+-                          </div>
+-                        </div>
+-                        <span className="font-semibold text-base sm:text-lg md:text-xl leading-snug break-words text-right text-white">
+-                          {match.awayTeam}
+-                        </span>
+-                      </div>
+                     </div>
+                   </div>
+                 </div>
+diff --git a/esla-website/components/spiele/MatchesPreviewServer.tsx b/esla-website/components/spiele/MatchesPreviewServer.tsx
+index 8ff04f2..1f41105 100644
+--- a/esla-website/components/spiele/MatchesPreviewServer.tsx
++++ b/esla-website/components/spiele/MatchesPreviewServer.tsx
+@@ -5,7 +5,6 @@ import matchesLocal from '@/data/matches.json';
+ import type { Match } from '@/types';
+ import { computedStatus, toMs } from '@/lib/match';
+ import MatchCard from '@/components/matches/MatchCard';
+-import NowBadge from '@/components/ui/NowBadge';
+ import StatsBadge from '@/components/ui/StatsBadge';
+ 
+ export default async function MatchesPreviewServer() {
+@@ -27,13 +26,12 @@ export default async function MatchesPreviewServer() {
+     .slice(0, 3);
+ 
+   return (
+-    <Section className="bg-white pt-0 pb-4 md:pb-6">
++    <Section className="bg-white pt-8 md:pt-0 pb-6 md:pb-8">
+       <Container>
+         <div className="max-w-[1920px] mx-auto px-0 sm:px-0">
+           {/* Header (gleich wie Spiele-Seite) */}
+           <div className="text-center mb-12 bg-esla-secondary text-white p-10 rounded-3xl">
+-            <div className="flex items-center justify-between mb-4">
+-              <NowBadge />
++            <div className="flex items-center justify-center mb-4">
+               <StatsBadge />
+             </div>
+             <h2 className="text-5xl md:text-7xl font-black text-white mb-2">ALLE <span className="text-esla-primary">SPIELE</span></h2>
+@@ -42,8 +40,8 @@ export default async function MatchesPreviewServer() {
+           {/* Upcoming */}
+           {upcoming.length > 0 && (
+             <div className="grid gap-8">
+-              {upcoming.map((m) => (
+-                <MatchCard key={m.id} match={m} />
++              {upcoming.map((m: Match, i: number) => (
++                <MatchCard key={m.id} match={m} showCountdown={i < 3} />
+               ))}
+             </div>
+           )}
+diff --git a/esla-website/components/ui/StatsBadge.tsx b/esla-website/components/ui/StatsBadge.tsx
+index f290fa1..73dd268 100644
+--- a/esla-website/components/ui/StatsBadge.tsx
++++ b/esla-website/components/ui/StatsBadge.tsx
+@@ -38,7 +38,7 @@ export default function StatsBadge({ className = '' }: { className?: string }) {
+   if (!stats) return null;
+ 
+   return (
+-    <div className={`inline-flex flex-col items-end gap-0.5 px-3 py-1.5 rounded-2xl bg-white/10 border border-white/10 text-white text-sm ${className}`}>
++    <div className={`inline-flex flex-col items-end gap-0.5 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-white text-sm ${className}`}>
+       <span className="font-semibold" aria-live="polite" suppressHydrationWarning>
+         ⚽ {stats.gf} Tore geschossen! 🔥
+       </span>
+diff --git a/esla-website/lib/match.ts b/esla-website/lib/match.ts
+index 5a13ac5..ef28754 100644
+--- a/esla-website/lib/match.ts
++++ b/esla-website/lib/match.ts
+@@ -36,3 +36,9 @@ export function calendarInfo(match: Match) {
+     description: match.competition || undefined,
+   };
+ }
++
++export function isHomeLocation(loc?: string): boolean {
++  if (!loc) return false;
++  const s = loc.replace(/\u00A0/g, ' ').toLowerCase();
++  return s.includes('sportplatz ruag') || (s.includes('ruag') && s.includes('emmen'));
++}

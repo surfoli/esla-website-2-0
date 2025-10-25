@@ -15,7 +15,7 @@ export default function Navbar() {
     { href: '/ueber-uns', label: 'Über uns' },
     { href: '/trainingszeiten', label: 'Trainingszeiten' },
     { href: '/standort', label: 'Standort' },
-    { href: '/sponsoren', label: 'Sponsoren' },
+    { href: '/sponsoren', label: 'Sponsoring' },
   ];
 
   return (

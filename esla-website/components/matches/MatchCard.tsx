@@ -1,15 +1,42 @@
 import type { Match } from '@/types';
 import { computedStatus, isEslaTeamName, calendarInfo } from '@/lib/match';
+import LiveMini from '@/components/matches/LiveMini';
 import JoinButton from '@/components/matches/JoinButton';
+import AutoShrinkText from '@/components/ui/AutoShrinkText';
 
-export default function MatchCard({ match }: { match: Match }) {
+export default function MatchCard({ match, fullWidth = false }: { match: Match; fullWidth?: boolean }) {
   const status = computedStatus(match);
   const cal = calendarInfo(match);
 
   return (
     <div className="bg-esla-secondary backdrop-blur-md rounded-2xl p-6 md:p-8 border border-white/10 transition-all duration-300">
-      <div className="max-w-[1024px] mx-auto">
+      <div className={`${fullWidth ? 'w-full' : 'max-w-[1024px] mx-auto'}`}>
         <div className="grid gap-5">
+          {/* Teams row (top) */}
+          <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 sm:gap-4 md:gap-8">
+            <div className="min-w-0 text-left">
+              <AutoShrinkText text={match.homeTeam} minPx={12} maxPx={36} className="block font-black text-white leading-tight whitespace-nowrap" />
+            </div>
+            <div className="justify-self-center">
+              <div className="bg-esla-dark/50 rounded-xl px-2.5 py-1.5 sm:px-3.5 sm:py-2 md:px-5 md:py-3 text-center">
+                <div className="font-black text-white leading-none text-[clamp(12px,3.2vw,18px)] sm:text-[clamp(14px,2.6vw,20px)] md:text-[clamp(16px,1.8vw,22px)]">
+                  {typeof match.homeScore === 'number' && typeof match.awayScore === 'number' ? (
+                    <>
+                      <span className="text-white">{match.homeScore}</span>
+                      <span className="text-white/50 mx-2">:</span>
+                      <span className="text-white">{match.awayScore}</span>
+                    </>
+                  ) : (
+                    <span className="text-white">vs.</span>
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="min-w-0 text-right">
+              <AutoShrinkText text={match.awayTeam} minPx={12} maxPx={36} className="block font-black text-white leading-tight whitespace-nowrap" />
+            </div>
+          </div>
+
           {/* Meta */}
           <div className="flex flex-col gap-y-1 text-white/70 text-sm">
             <div>
@@ -22,42 +49,11 @@ export default function MatchCard({ match }: { match: Match }) {
             )}
           </div>
 
-          {/* Teams + Score centered */}
-          <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto_1fr] items-center gap-4 sm:gap-6">
-            {/* Home */}
-            <div className="min-w-0 md:justify-self-end">
-              <div className="flex items-start sm:items-center gap-x-3 justify-end">
-                <span className="font-semibold text-base sm:text-lg md:text-xl leading-snug break-words text-right text-white">{match.homeTeam}</span>
-              </div>
-            </div>
-            {/* Score */}
-            <div className="justify-self-center">
-              <div className="bg-esla-dark/50 rounded-xl px-4 py-2 sm:px-5 sm:py-3 min-w-[88px] sm:min-w-[104px] text-center">
-                <div className="text-xl sm:text-2xl md:text-3xl font-black text-white">
-                  {typeof match.homeScore === 'number' && typeof match.awayScore === 'number' ? (
-                    <>
-                      <span className="text-white">{match.homeScore}</span>
-                      <span className="text-white/50 mx-2">:</span>
-                      <span className="text-white">{match.awayScore}</span>
-                    </>
-                  ) : (
-                    <span className="text-white text-lg sm:text-xl">vs.</span>
-                  )}
-                </div>
-              </div>
-            </div>
-            {/* Away */}
-            <div className="min-w-0">
-              <div className="flex items-start sm:items-center gap-x-3">
-                <span className="font-semibold text-base sm:text-lg md:text-xl leading-snug break-words text-white">{match.awayTeam}</span>
-              </div>
-            </div>
-          </div>
-
           {/* Status + Join */}
-          <div className="flex flex-wrap items-center justify-center md:justify-end gap-3 mt-1">
+          <div className="flex flex-wrap items-center justify-start md:justify-end gap-3 mt-1">
             {(() => {
               if (status === 'upcoming') return <span className="text-lg font-bold text-white/80">ANSTEHEND</span>;
+              if (status === 'live') return <LiveMini startIso={cal.start} />;
               const hasScore = typeof match.homeScore === 'number' && typeof match.awayScore === 'number';
               if (!hasScore) return <span className="text-xs sm:text-sm font-semibold text-white/80 bg-white/10 px-3 py-1 rounded-full">RESULTATE FOLGEN</span>;
               const eslaHome = isEslaTeamName(match.homeTeam);

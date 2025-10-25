@@ -12,6 +12,11 @@ export default function Footer() {
     { name: 'ZK Automobile AG', logo: '/images/ESLA_Sponsor_Logo_ZK_Automobile_AG.png', url: 'https://zk-automobile-ag.ch/' },
   ];
 
+  const partners = [
+    { name: 'Superheldenwerkstatt Flavio Räber', logo: '/images/Superheldenwerkstatt_Flavio_Raeber_Logo.png', url: 'https://www.superheldenwerkstatt.ch/' },
+    { name: 'D3 Webstudio Olivier Durand', logo: '/images/D3Webstudio_Olivier_Durand.png', url: 'https://d3webstudio.ch/' },
+  ];
+
   const goenner = [
     'Eva Marti aus Winznau',
     'Familie Völlmin aus Ormalingen',
@@ -39,7 +44,7 @@ export default function Footer() {
                 href="/kontakt"
                 className="hidden md:inline-flex items-center gap-x-2 bg-esla-primary hover:bg-esla-accent text-white px-6 py-3 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 shadow-lg shadow-esla-primary/30"
               >
-                Sponsor oder Gönner werden
+                Team unterstützen
               </a>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 gap-7 md:gap-10 items-center justify-items-center">
@@ -49,11 +54,40 @@ export default function Footer() {
                   href={sponsor.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="relative w-full h-24 bg-white/95 rounded-xl p-4 hover:scale-105 transition-all duration-300 shadow-xl shadow-black/20 cursor-pointer"
+                  className="relative w-full h-24 bg-white rounded-xl p-4 hover:scale-105 transition-all duration-300 shadow-xl shadow-black/20 cursor-pointer"
                 >
                   <Image
                     src={sponsor.logo}
                     alt={sponsor.name}
+                    fill
+                    className="object-contain"
+                    unoptimized
+                  />
+                </a>
+              ))}
+            </div>
+          </div>
+
+          <div className="mb-12">
+            <div className="flex items-center gap-x-4 mb-6">
+              <div className="w-1 h-16 bg-white"></div>
+              <h3 className="flex flex-col">
+                <span className="text-xs text-white/60 font-medium tracking-[0.2em] mb-0.5 uppercase">UNSERE</span>
+                <span className="text-2xl md:text-3xl font-black text-esla-primary">PARTNER</span>
+              </h3>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-7 md:gap-10 items-center justify-items-center">
+              {partners.map((partner) => (
+                <a
+                  key={partner.name}
+                  href={partner.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative w-full h-24 bg-white rounded-xl p-4 hover:scale-105 transition-all duration-300 shadow-xl shadow-black/20 cursor-pointer"
+                >
+                  <Image
+                    src={partner.logo}
+                    alt={partner.name}
                     fill
                     className="object-contain"
                     unoptimized
@@ -85,7 +119,7 @@ export default function Footer() {
                 href="/kontakt"
                 className="inline-flex items-center gap-x-2 bg-esla-primary hover:bg-esla-accent text-white px-6 py-3 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 shadow-lg shadow-esla-primary/30"
               >
-                Sponsor oder Gönner werden
+                Team unterstützen
               </a>
             </div>
           </div>

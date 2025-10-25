@@ -1,6 +1,7 @@
 import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/footer/Footer';
 import { Heart, Users, TrendingUp, Award, Handshake, CheckCircle, Shield, MapPin, Target, Zap } from 'lucide-react';
+import Link from 'next/link';
 
 export default function AboutPage() {
   return (
@@ -22,18 +23,32 @@ export default function AboutPage() {
               Wo Talent auf Charakter trifft.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4 text-esla-secondary text-base max-w-3xl mx-auto">
-              <div className="bg-white rounded-full px-6 py-3 flex items-center gap-x-2 shadow-md">
+              <a
+                href="https://matchcenter.ifv.ch/default.aspx?v=1761431&oid=7&lng=1"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Zum SFV Matchcenter"
+                className="bg-white rounded-full px-6 py-3 flex items-center gap-x-2 shadow-md hover:shadow-lg hover:bg-esla-light transition-all duration-200 transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-esla-primary/50 cursor-pointer"
+              >
                 <Shield size={18} className="text-esla-primary flex-shrink-0" />
                 <span className="font-semibold">Offiziell anerkannt vom SFV</span>
-              </div>
-              <div className="bg-white rounded-full px-6 py-3 flex items-center gap-x-2 shadow-md">
+              </a>
+              <Link
+                href="/standort"
+                aria-label="Zur Standort-Seite"
+                className="bg-white rounded-full px-6 py-3 flex items-center gap-x-2 shadow-md hover:shadow-lg hover:bg-esla-light transition-all duration-200 transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-esla-primary/50 cursor-pointer"
+              >
                 <MapPin size={18} className="text-esla-primary flex-shrink-0" />
                 <span className="font-semibold">Luzern – Sportplatz RUAG</span>
-              </div>
-              <div className="bg-white rounded-full px-6 py-3 flex items-center gap-x-2 shadow-md">
+              </Link>
+              <Link
+                href="/team"
+                aria-label="Zur Teamseite"
+                className="bg-white rounded-full px-6 py-3 flex items-center gap-x-2 shadow-md hover:shadow-lg hover:bg-esla-light transition-all duration-200 transform hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-esla-primary/50 cursor-pointer"
+              >
                 <Users size={18} className="text-esla-primary flex-shrink-0" />
                 <span className="font-semibold">Team ESLA</span>
-              </div>
+              </Link>
             </div>
           </div>
 
@@ -68,7 +83,7 @@ export default function AboutPage() {
 
           {/* Our Values */}
           <div className="mb-16">
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-12 text-center">
+            <h2 className="text-3xl md:text-4xl font-black text-black mb-12 text-center">
               Unsere Werte – <span className="text-esla-primary">auf und neben dem Platz</span>
             </h2>
             

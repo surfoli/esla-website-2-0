@@ -1,0 +1,80 @@
+"use client";
+
+import { useEffect, useMemo, useState } from 'react';
+import type { Match } from '@/types';
+import { computedStatus, toMs } from '@/lib/match';
+import MatchCard from '@/components/matches/MatchCard';
+
+export default function MatchesPreviewClient({ initialMatches }: { initialMatches: Match[] }) {
+  const [matches, setMatches] = useState<Match[]>(initialMatches || []);
+
+  // Poll every 60s for fresh data
+  useEffect(() => {
+    let active = true;
+    let timer: any;
+    const load = async () => {
+      try {
+        const res = await fetch('/api/matches', { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (active && Array.isArray(data)) setMatches(data as Match[]);
+      } catch {}
+    };
+    // immediate refresh once mounted, then every 60s
+    load();
+    timer = setInterval(load, 60_000);
+    return () => {
+      active = false;
+      clearInterval(timer);
+    };
+  }, []);
+
+  const { upcomingToShow, finishedToShow } = useMemo(() => {
+    const all = matches || [];
+    const liveAll = all.filter((m) => computedStatus(m) === 'live').sort((a, b) => toMs(a) - toMs(b));
+    const upcomingOnly = all.filter((m) => computedStatus(m) === 'upcoming').sort((a, b) => toMs(a) - toMs(b));
+    const heroCandidate = liveAll[0] || upcomingOnly[0];
+    const heroId = heroCandidate?.id;
+
+    // exclude hero and live from preview, cap total 10
+    const upcomingPool = upcomingOnly.filter((m) => m.id !== heroId);
+    const finishedAll = all.filter((m) => computedStatus(m) === 'finished').sort((a, b) => toMs(b) - toMs(a));
+
+    const maxTotal = 10;
+    const up = upcomingPool.slice(0, maxTotal);
+    const remainder = Math.max(0, maxTotal - up.length);
+    const fin = finishedAll.slice(0, remainder);
+
+    return { upcomingToShow: up, finishedToShow: fin };
+  }, [matches]);
+
+  return (
+    <div>
+      {upcomingToShow.length > 0 && (
+        <section className="mb-10">
+          <h3 className="text-2xl md:text-3xl font-black text-esla-secondary mb-4">Zukünftige Spiele</h3>
+          <div className="grid gap-8">
+            {upcomingToShow.map((m) => (
+              <MatchCard key={m.id} match={m} fullWidth />
+            ))}
+          </div>
+        </section>
+      )}
+
+      {finishedToShow.length > 0 && (
+        <section className="mt-2">
+          <h3 className="text-2xl md:text-3xl font-black text-esla-secondary mb-4">Abgeschlossene Spiele</h3>
+          <div className="grid gap-8">
+            {finishedToShow.map((m) => (
+              <MatchCard key={m.id} match={m} fullWidth />
+            ))}
+          </div>
+        </section>
+      )}
+
+      <div className="text-center mt-8 md:mt-12">
+        <a href="/spiele" className="inline-block px-6 py-3 rounded-full bg-esla-secondary text-white hover:bg-esla-dark font-semibold border border-transparent">Alle Spiele ansehen</a>
+      </div>
+    </div>
+  );
+}

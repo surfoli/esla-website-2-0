@@ -2,6 +2,7 @@ import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/footer/Footer';
 import Link from 'next/link';
 import { Check, Star, TrendingUp, Award, Users, Heart, MapPin, Smartphone, Handshake, Flame, Trophy, Zap } from 'lucide-react';
+import { getTotalPlayers, getTotalStaff } from '@/data/team';
 
 // Encodiertes SVG-Muster für den Hintergrund (verhindert Parser-Probleme)
 const GRID_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse"><path d="M 10 0 L 0 0 0 10" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="0.5"/></pattern></defs><rect width="100" height="100" fill="url(#grid)"/></svg>`;
@@ -70,9 +71,12 @@ const packages = [
   },
 ];
 
+const totalPlayers = getTotalPlayers();
+const totalStaff = getTotalStaff();
 const statsData = [
   { value: '2025', label: 'Gründungsjahr' },
-  { value: '14-18', label: 'Junge Spieler' },
+  { value: String(totalPlayers), label: 'Spieler' },
+  { value: String(totalStaff), label: 'Staff' },
   { value: '2x', label: 'Training pro Woche' },
   { value: 'SFV', label: 'Offiziell anerkannt' },
 ];
@@ -151,7 +155,7 @@ export default function SponsorenAngebotePage() {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-16">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-6 mb-16">
             {statsData.map((s) => (
               <div key={s.label} className="bg-esla-secondary rounded-2xl p-6 text-center border border-esla-dark shadow-sm text-white">
                 <div className="text-4xl font-black text-esla-primary mb-2">{s.value}</div>

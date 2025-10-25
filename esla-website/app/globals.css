@@ -70,3 +70,34 @@ html {
 .animate-scale-in {
   animation: scale-in 0.4s ease-out;
 }
+
+/* ESLA – Scrolling Ticker */
+.esla-ticker {
+  position: relative;
+  overflow: hidden;
+}
+
+.esla-ticker__content {
+  display: inline-flex;
+  align-items: center;
+  white-space: nowrap;
+  min-width: 200%;
+  animation: esla-marquee 45s linear infinite;
+  will-change: transform;
+}
+
+@keyframes esla-marquee {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .esla-ticker__content {
+    animation: none !important;
+    transform: translateX(0) !important;
+  }
+}

@@ -24,36 +24,35 @@ function addMinutesIso(iso: string, minutes: number) {
 }
 
 export default function JoinButton({ matchId, label, leaveText, calendar }: { matchId: string; label?: string; leaveText?: string; calendar?: CalendarInfo }) {
-  const keyJoined = `esla_has_joined_${matchId}`;
-  const keyCount = `esla_participants_count_${matchId}`;
   const [hasJoined, setHasJoined] = useState(false);
   const [count, setCount] = useState(0);
   const [emoji, setEmoji] = useState<string | null>(null);
   const [statusText, setStatusText] = useState<string | null>(null);
+  const [pending, setPending] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
-    try {
-      const j = localStorage.getItem(keyJoined);
-      const c = localStorage.getItem(keyCount);
-      if (j === '1') setHasJoined(true);
-      if (c) setCount(parseInt(c, 10) || 0);
-    } catch {}
-    const onStorage = (e: StorageEvent) => {
-      if (!e.key) return;
-      if (e.key === keyJoined) setHasJoined(e.newValue === '1');
-      if (e.key === keyCount) setCount(parseInt(e.newValue || '0', 10) || 0);
+    let active = true;
+    const fetchState = async () => {
+      try {
+        const res = await fetch(`/api/matches/${matchId}/rsvp`, { cache: 'no-store' });
+        if (!res.ok) return;
+        const data = await res.json();
+        if (!active) return;
+        setHasJoined(Boolean(data.joined));
+        setCount(Number(data.count || 0));
+      } catch {}
     };
+    fetchState();
     const onCustom = (e: Event) => {
       const ce = e as CustomEvent<{ matchId: string; joined: boolean; count: number }>;
       if (ce.detail?.matchId !== matchId) return;
       setHasJoined(ce.detail.joined);
       setCount(ce.detail.count);
     };
-    window.addEventListener('storage', onStorage);
     window.addEventListener('esla-join-change', onCustom as EventListener);
     return () => {
-      window.removeEventListener('storage', onStorage);
+      active = false;
       window.removeEventListener('esla-join-change', onCustom as EventListener);
     };
   }, []);
@@ -103,34 +102,47 @@ export default function JoinButton({ matchId, label, leaveText, calendar }: { ma
     return url.toString();
   }, [calendar]);
 
-  const onToggle = () => {
-    if (!hasJoined) {
-      const n = count + 1;
-      setHasJoined(true);
-      setCount(n);
-      try {
-        localStorage.setItem(keyJoined, '1');
-        localStorage.setItem(keyCount, String(n));
-      } catch {}
-      window.dispatchEvent(new CustomEvent('esla-join-change', { detail: { matchId, joined: true, count: n } }));
+  const onToggle = async () => {
+    if (pending) return;
+    setPending(true);
+    const optimisticJoined = !hasJoined;
+    const optimisticCount = Math.max(0, count + (optimisticJoined ? 1 : -1));
+    setHasJoined(optimisticJoined);
+    setCount(optimisticCount);
+    window.dispatchEvent(new CustomEvent('esla-join-change', { detail: { matchId, joined: optimisticJoined, count: optimisticCount } }));
+    if (optimisticJoined) {
       setEmoji('🥳');
       setStatusText('Danke, dass du teilnimmst!');
       confetti();
       setTimeout(() => setEmoji(null), 1200);
       setTimeout(() => setStatusText(null), 3500);
     } else {
-      const n = Math.max(0, count - 1);
-      setHasJoined(false);
-      setCount(n);
-      try {
-        localStorage.setItem(keyJoined, '0');
-        localStorage.setItem(keyCount, String(n));
-      } catch {}
-      window.dispatchEvent(new CustomEvent('esla-join-change', { detail: { matchId, joined: false, count: n } }));
       setEmoji('😢');
       setStatusText(leaveText || 'Schade, dass du nicht teilnimmst!');
       setTimeout(() => setEmoji(null), 1200);
       setTimeout(() => setStatusText(null), 3500);
+    }
+    try {
+      const res = await fetch(`/api/matches/${matchId}/rsvp`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ action: optimisticJoined ? 'join' : 'leave' }),
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setHasJoined(Boolean(data.joined));
+        setCount(Number(data.count || 0));
+        window.dispatchEvent(new CustomEvent('esla-join-change', { detail: { matchId, joined: Boolean(data.joined), count: Number(data.count || 0) } }));
+      } else {
+        // revert on error
+        setHasJoined(!optimisticJoined);
+        setCount(count);
+      }
+    } catch {
+      setHasJoined(!optimisticJoined);
+      setCount(count);
+    } finally {
+      setPending(false);
     }
   };
 
@@ -138,7 +150,8 @@ export default function JoinButton({ matchId, label, leaveText, calendar }: { ma
     <div ref={containerRef} className="relative inline-flex flex-row md:flex-col items-center md:items-start gap-2">
       <button
         onClick={onToggle}
-        className={`${hasJoined ? 'bg-green-700 text-white' : 'bg-green-600 hover:bg-green-700 text-white'} relative px-3 sm:px-4 md:px-6 lg:px-7 py-2 rounded-full font-semibold text-xs sm:text-sm md:text-base whitespace-nowrap md:min-w-[230px] lg:min-w-[260px]`}
+        disabled={pending}
+        className={`${hasJoined ? 'bg-green-700 text-white' : 'bg-green-600 hover:bg-green-700 text-white'} ${pending ? 'opacity-80 cursor-not-allowed' : ''} relative px-3 sm:px-4 md:px-6 lg:px-7 py-2 rounded-full font-semibold text-xs sm:text-sm md:text-base whitespace-nowrap md:min-w-[230px] lg:min-w-[260px]`}
       >
         {hasJoined ? 'Teilnahme registriert' : (label || 'Ich nehme teil')}
         {count > 0 && (

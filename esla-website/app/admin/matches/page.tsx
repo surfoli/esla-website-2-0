@@ -156,11 +156,28 @@ export default function MatchesAdmin() {
     const dateRe = /^(?:(?:Mo|Di|Mi|Do|Fr|Sa|So|Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)\s+)?(\d{1,2})[.\/-](\d{1,2})(?:[.\/-](\d{2,4}))?$/;
     const dashRe = /^[-–—]+$/;
     const compLeadRe = /^(Meisterschaft|Cup|Freundschaftsspiel|Testspiel|Turnier)/i;
+    const compAnyRe = /(Meisterschaft|Cup|Freundschaftsspiel|Testspiel|Turnier)/i;
+    const dateTimeLineRe = /^(?:(?:Mo|Di|Mi|Do|Fr|Sa|So|Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)\s+)?\d{1,2}[.\/-]\d{1,2}(?:[.\/-]\d{2,4})?\s*\d{1,2}:\d{2}$/;
     const scoreSingleRe = /^(\d{1,2})\s*[:x]\s*(\d{1,2})$/;
     let currentDateISO: string | undefined = undefined;
+    let currentCompetition: string | undefined = undefined;
 
     for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
+      let line = lines[i];
+
+      // Wettbewerb-Header erkennen und merken (z. B. "Meisterschaft ...", "... Cup ...")
+      if (compAnyRe.test(line) && !timeRe.test(line) && !dateRe.test(line) && !dateTimeLineRe.test(line)) {
+        currentCompetition = line;
+        continue;
+      }
+
+      // Datum + Zeit auf einer Zeile unterstützen (z. B. "Sa 23.08.202510:00" oder "Sa 23.08.2025 10:00")
+      let inlineTime: string | undefined;
+      const tInline = line.match(/(\d{1,2}:\d{2})$/);
+      if (tInline) {
+        inlineTime = tInline[1];
+        line = line.replace(/(\d{1,2}:\d{2})$/, '').trim();
+      }
 
       // Datumzeile aktualisiert currentDateISO
       const dm = line.match(dateRe);
@@ -171,7 +188,12 @@ export default function MatchesAdmin() {
         let y = defaultYear;
         if (yyyy) y = yyyy.length === 2 ? 2000 + parseInt(yyyy, 10) : parseInt(yyyy, 10);
         currentDateISO = `${y}-${mm}-${dd}`;
-        continue;
+        // Wenn Zeit inline vorhanden, direkt mit Block fortfahren, sonst nächste Zeile
+        if (!inlineTime) {
+          continue;
+        } else {
+          line = inlineTime;
+        }
       }
 
       // Spiel-Block
@@ -207,17 +229,31 @@ export default function MatchesAdmin() {
 
       const comp = lines[k] || '';
       const sn = lines[k + 1] || '';
-      const loc = lines[k + 2] || '';
+      const locCandidate = lines[k + 2] || '';
 
       // Wettbewerb übernehmen, wenn vorhanden (mit heuristischer Erkennung)
       let competition = comp ? comp : '';
       if (comp && compLeadRe.test(comp)) {
         competition = comp;
+        k += 1; // Wettbewerbzeile konsumieren
+      } else if (currentCompetition) {
+        competition = currentCompetition;
       }
 
       // Spielnummer extrahieren
       const m = sn.match(/Spielnummer\s*(\d+)/i);
       const matchNumber = m ? m[1] : undefined;
+      if (m) {
+        k += 1; // Spielnummerzeile konsumieren
+      }
+
+      // Ort/Platz nur übernehmen, wenn es keine neue Datum-/Zeit-/Header-Zeile ist
+      let loc = '';
+      const next = lines[k] || '';
+      if (next && !compAnyRe.test(next) && !dateRe.test(next) && !timeRe.test(next) && !dateTimeLineRe.test(next)) {
+        loc = next;
+        k += 1; // Ortszeile konsumieren
+      }
 
       // Datum bestimmen: currentDateISO muss gesetzt sein, sonst überspringen
       const dateISO = currentDateISO || undefined;
@@ -230,7 +266,6 @@ export default function MatchesAdmin() {
         awayTeam: away,
         competition: competition || '',
         location: loc,
-        matchNumber,
         homeScore,
         awayScore,
         status: typeof homeScore === 'number' && typeof awayScore === 'number' ? 'finished' : 'upcoming',

@@ -47,52 +47,56 @@ const instagramPosts = [
 
 export default function InstagramFeed() {
   return (
-    <Section noContainer className="bg-esla-secondary">
-      {/* Instagram Grid - Full Width Collage */}
-      <div className="grid grid-cols-3 md:grid-cols-6 gap-0 mb-0">
-        {instagramPosts.map((post) => (
-          <a
-            key={post.id}
-            href={post.link}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="group relative aspect-square overflow-hidden"
-          >
-            <Image
-              src={post.imageUrl}
-              alt={post.caption}
-              fill
-              className="object-cover transition-transform duration-300 group-hover:scale-110"
-              unoptimized
-            />
-            {/* Overlay on Hover */}
-            <div className="absolute inset-0 bg-esla-dark/80 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-              <Instagram size={32} className="text-white" />
-            </div>
-          </a>
-        ))}
-      </div>
-
-      {/* Content Section Below */}
+    <Section className="bg-white !py-6 md:!py-8">
       <Container>
-        <div className="py-16 md:py-20">
-          <h2 className="text-4xl md:text-5xl font-black mb-4 text-white">
-            TEAM ELITESOCCER
-          </h2>
-          <h3 className="text-2xl md:text-3xl font-bold mb-6">
-            <span className="text-esla-primary">Social Media</span>
-          </h3>
-          <p className="text-white/90 text-lg mb-8 max-w-3xl leading-relaxed">
-            Erlebe hautnah, was hinter den Kulissen von Team Elitesoccer passiert – Trainings, Teamspirit und echte Momente. 
-            <span className="block mt-2 text-esla-primary font-semibold">#ESLA #TeamElitesoccer #NextGeneration</span>
-          </p>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="text-lg md:text-xl font-black text-esla-secondary">Folgt uns auf Instagram</h3>
           <a
             href="https://www.instagram.com/eslateamelitesoccer/"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-x-3 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white px-10 py-4 rounded-full font-bold transition-all duration-200 transform hover:scale-105 shadow-lg"
+            className="hidden sm:inline-flex items-center gap-2 text-esla-primary hover:underline font-semibold"
           >
-            <Instagram size={22} />
+            <Instagram size={18} />
+            <span>@eslateamelitesoccer</span>
+          </a>
+        </div>
+
+        <div className="relative -mx-1">
+          <div className="flex gap-3 overflow-x-auto px-1 snap-x snap-mandatory">
+            {instagramPosts.slice(0, 6).map((post) => (
+              <a
+                key={post.id}
+                href={post.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group snap-start shrink-0 w-[140px] md:w-[160px] aspect-[3/4] bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow transition-shadow"
+              >
+                <div className="relative h-full w-full">
+                  <Image
+                    src={post.imageUrl}
+                    alt={post.caption}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+                  <div className="absolute bottom-2 right-2 bg-white/90 rounded-full p-1 shadow">
+                    <Instagram size={16} className="text-esla-secondary" />
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
+        </div>
+
+        <div className="sm:hidden mt-3">
+          <a
+            href="https://www.instagram.com/eslateamelitesoccer/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 text-esla-primary hover:underline font-semibold"
+          >
+            <Instagram size={18} />
             <span>@eslateamelitesoccer</span>
           </a>
         </div>
