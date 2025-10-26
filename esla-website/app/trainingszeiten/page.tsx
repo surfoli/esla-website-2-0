@@ -53,39 +53,52 @@ export default function TrainingsPage() {
             {trainingSessions.map((team, index) => (
               <div
                 key={team.team}
-                className="bg-white rounded-3xl p-8 border border-slate-200 hover:border-esla-primary/50 transition-all duration-300 transform hover:scale-105 animate-scale-in"
+                className="rounded-3xl p-[1px] bg-gradient-to-br from-esla-primary/30 to-esla-accent/30 hover:from-esla-primary/50 hover:to-esla-accent/50 transition-all duration-300 transform hover:scale-105 animate-scale-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                {/* Team Logo & Name */}
-                <div className="flex items-center gap-x-4 mb-6">
-                  <Image
-                    src={team.logo}
-                    alt={team.team}
-                    width={60}
-                    height={60}
-                    className="rounded-lg"
-                  />
-                  <h2 className="text-2xl font-black text-esla-secondary">{team.team}</h2>
-                </div>
+                <div className="bg-white rounded-3xl p-8 border border-white/60 shadow-sm">
+                  {/* Team Logo & Name */}
+                  <div className="flex items-center gap-x-4 mb-6">
+                    <Image
+                      src={team.logo}
+                      alt={team.team}
+                      width={60}
+                      height={60}
+                      className="rounded-lg"
+                    />
+                    <h2 className="text-2xl font-black bg-gradient-to-r from-esla-secondary to-esla-primary bg-clip-text text-transparent">
+                      {team.team}
+                    </h2>
+                  </div>
 
-                {/* Sessions */}
-                <div className="gap-y-4">
-                  {team.sessions.map((session, idx) => (
-                    <div key={idx} className="bg-white rounded-xl p-4 border border-slate-200">
-                      <div className="flex items-center gap-x-2 text-esla-primary font-bold mb-2">
-                        <Calendar size={18} />
-                        <span>{session.day}</span>
+                  {/* Sessions */}
+                  <div className="gap-y-4">
+                    {team.sessions.map((session, idx) => (
+                      <div
+                        key={idx}
+                        className="rounded-xl p-4 border border-white/10 bg-esla-secondary text-white hover:border-esla-primary/40 transition-colors shadow-sm"
+                      >
+                        <div className="flex items-center gap-x-2 mb-2">
+                          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-white">
+                            <Calendar size={14} />
+                          </span>
+                          <span className="text-esla-primary font-bold">{session.day}</span>
+                        </div>
+                        <div className="flex items-center gap-x-2 mb-2">
+                          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-white">
+                            <Clock size={14} />
+                          </span>
+                          <span className="text-white font-semibold">{session.time}</span>
+                        </div>
+                        <div className="flex items-center gap-x-2 text-white/80 text-sm">
+                          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full bg-white/10 text-white">
+                            <MapPin size={12} />
+                          </span>
+                          <span>{session.location}</span>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-x-2 text-esla-secondary mb-2">
-                        <Clock size={18} />
-                        <span className="font-semibold">{session.time}</span>
-                      </div>
-                      <div className="flex items-center gap-x-2 text-esla-secondary/70 text-sm">
-                        <MapPin size={16} />
-                        <span>{session.location}</span>
-                      </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                 </div>
               </div>
             ))}

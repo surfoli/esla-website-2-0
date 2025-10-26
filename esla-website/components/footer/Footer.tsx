@@ -28,7 +28,7 @@ export default function Footer() {
   return (
     <footer className="bg-[#242424] text-white">
       {/* Sponsors & Gönner Section */}
-      <div className="border-b border-white/10 py-16 md:py-20">
+      <div className="py-16 md:py-20">
         <Container>
           {/* Sponsoren */}
           <div className="mb-12">
@@ -205,6 +205,11 @@ export default function Footer() {
                 <li>
                   <Link href="/datenschutz" className="text-white/70 hover:text-esla-primary transition-colors text-sm">
                     Datenschutzerklärung
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/datenschutz#cookies" className="text-white/70 hover:text-esla-primary transition-colors text-sm">
+                    Cookie-Einstellungen
                   </Link>
                 </li>
                 <li>

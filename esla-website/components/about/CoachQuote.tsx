@@ -3,7 +3,7 @@ import Container from '@/components/ui/Container';
 
 export default function CoachQuote() {
   return (
-    <section className="bg-esla-primary py-20 md:py-24">
+    <section className="bg-gradient-to-l from-esla-primary via-esla-dark to-esla-secondary py-20 md:py-24">
       <Container>
         <div className="flex flex-col md:flex-row items-center gap-10 md:gap-12">
           <div className="relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-white/40 shadow-2xl flex-shrink-0">

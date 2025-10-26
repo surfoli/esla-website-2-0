@@ -47,30 +47,30 @@ const instagramPosts = [
 
 export default function InstagramFeed() {
   return (
-    <Section className="bg-white !py-6 md:!py-8">
+    <Section className="bg-white !py-6 md:!py-8" noContainer>
       <Container>
         <div className="flex items-center justify-between mb-4">
-          <h3 className="text-lg md:text-xl font-black text-esla-secondary">Folgt uns auf Instagram</h3>
+          <h3 className="text-2xl md:text-3xl font-black text-esla-secondary">Folgt uns auf Instagram</h3>
           <a
             href="https://www.instagram.com/eslateamelitesoccer/"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:inline-flex items-center gap-2 text-esla-primary hover:underline font-semibold"
+            className="hidden sm:inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white font-semibold px-4 py-2 rounded-full shadow-sm transition-opacity hover:opacity-90"
           >
             <Instagram size={18} />
             <span>@eslateamelitesoccer</span>
           </a>
         </div>
 
-        <div className="relative -mx-1">
-          <div className="flex gap-3 overflow-x-auto px-1 snap-x snap-mandatory">
+        <div>
+          <div className="grid grid-cols-[repeat(auto-fit,_minmax(140px,_1fr))] sm:grid-cols-[repeat(auto-fit,_minmax(160px,_1fr))] gap-3">
             {instagramPosts.slice(0, 6).map((post) => (
               <a
                 key={post.id}
                 href={post.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group snap-start shrink-0 w-[140px] md:w-[160px] aspect-[3/4] bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow transition-shadow"
+                className="group block w-full aspect-[3/4] bg-white rounded-xl border border-gray-200 overflow-hidden shadow-sm hover:shadow transition-shadow"
               >
                 <div className="relative h-full w-full">
                   <Image
@@ -94,7 +94,7 @@ export default function InstagramFeed() {
             href="https://www.instagram.com/eslateamelitesoccer/"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 text-esla-primary hover:underline font-semibold"
+            className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-500 via-pink-500 to-orange-500 text-white font-semibold px-4 py-2 rounded-full shadow-sm transition-opacity hover:opacity-90"
           >
             <Instagram size={18} />
             <span>@eslateamelitesoccer</span>

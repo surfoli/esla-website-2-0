@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import type { Match } from '@/types';
-import { computedStatus, toMs } from '@/lib/match';
+import { computedStatus, compareByDateAsc, compareByDateDesc } from '@/lib/match';
 import MatchCard from '@/components/matches/MatchCard';
 
 export default function MatchesPreviewClient({ initialMatches }: { initialMatches: Match[] }) {
@@ -31,14 +31,14 @@ export default function MatchesPreviewClient({ initialMatches }: { initialMatche
 
   const { upcomingToShow, finishedToShow } = useMemo(() => {
     const all = matches || [];
-    const liveAll = all.filter((m) => computedStatus(m) === 'live').sort((a, b) => toMs(a) - toMs(b));
-    const upcomingOnly = all.filter((m) => computedStatus(m) === 'upcoming').sort((a, b) => toMs(a) - toMs(b));
+    const liveAll = all.filter((m) => computedStatus(m) === 'live').sort(compareByDateAsc);
+    const upcomingOnly = all.filter((m) => computedStatus(m) === 'upcoming').sort(compareByDateAsc);
     const heroCandidate = liveAll[0] || upcomingOnly[0];
     const heroId = heroCandidate?.id;
 
     // exclude hero and live from preview, cap total 10
     const upcomingPool = upcomingOnly.filter((m) => m.id !== heroId);
-    const finishedAll = all.filter((m) => computedStatus(m) === 'finished').sort((a, b) => toMs(b) - toMs(a));
+    const finishedAll = all.filter((m) => computedStatus(m) === 'finished').sort(compareByDateDesc);
 
     const maxTotal = 10;
     const up = upcomingPool.slice(0, maxTotal);

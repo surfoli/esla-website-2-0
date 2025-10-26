@@ -40,10 +40,10 @@ export default function StatsBadge({ className = '' }: { className?: string }) {
   return (
     <div className={`inline-flex flex-col items-end gap-0.5 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-white text-sm ${className}`}>
       <span className="font-semibold" aria-live="polite" suppressHydrationWarning>
-        ⚽ {stats.gf} Tore geschossen! 🔥
+        ⚽ {stats.gf} Tore geschossen!
       </span>
       <span className="font-semibold" aria-live="polite" suppressHydrationWarning>
-        🏆 {stats.wins} Siege geholt! 💪
+        🏆 {stats.wins} Siege geholt!
       </span>
     </div>
   );

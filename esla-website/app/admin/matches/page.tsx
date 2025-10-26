@@ -100,11 +100,24 @@ export default function MatchesAdmin() {
       }
     }
 
-    // parse teams
+    const normalizeTeam = (s: string) => {
+      const base = (s || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+      let t = base.replace(/^(?:team\s*)?elitesoccer\s*/i, '');
+      if (/esla/i.test(t) || /elitesoccer/i.test(base)) {
+        t = t.replace(/\s*\(.*?\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+      }
+      const l = t.toLowerCase();
+      if (/\besla\s*7\b|\besla7\b/.test(l)) return 'ESLA 7';
+      if (/\besla\s*9\b|\besla9\b/.test(l)) return 'ESLA 9';
+      if (/\besla\s*e\s*a\b|\beslaea\b/.test(l)) return 'ESLA EA';
+      if (/elitesoccer/i.test(base)) return t || base;
+      return base;
+    };
+
     const vs = teamsStr.match(vsRe);
     if (!vs) return null;
-    const homeTeam = vs[1].trim();
-    const awayTeam = vs[2].trim();
+    const homeTeam = normalizeTeam(vs[1].trim());
+    const awayTeam = normalizeTeam(vs[2].trim());
 
     // parse score
     let homeScore: number | null = null;
@@ -159,6 +172,7 @@ export default function MatchesAdmin() {
     const compAnyRe = /(Meisterschaft|Cup|Freundschaftsspiel|Testspiel|Turnier)/i;
     const dateTimeLineRe = /^(?:(?:Mo|Di|Mi|Do|Fr|Sa|So|Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)\s+)?\d{1,2}[.\/-]\d{1,2}(?:[.\/-]\d{2,4})?\s*\d{1,2}:\d{2}$/;
     const scoreSingleRe = /^(\d{1,2})\s*[:x]\s*(\d{1,2})$/;
+    const placeholderRe = /^(?:\*|f|forfait)$/i;
     let currentDateISO: string | undefined = undefined;
     let currentCompetition: string | undefined = undefined;
 
@@ -188,21 +202,141 @@ export default function MatchesAdmin() {
         let y = defaultYear;
         if (yyyy) y = yyyy.length === 2 ? 2000 + parseInt(yyyy, 10) : parseInt(yyyy, 10);
         currentDateISO = `${y}-${mm}-${dd}`;
-        // Wenn Zeit inline vorhanden, direkt mit Block fortfahren, sonst nächste Zeile
-        if (!inlineTime) {
-          continue;
-        } else {
+        // Wenn Zeit inline vorhanden, direkt mit Block fortfahren
+        if (inlineTime) {
           line = inlineTime;
+        } else {
+          // Kein Zeitwert auf der Datumzeile: versuche Block ohne Zeit
+          const homeRaw = lines[i + 1] || '';
+          const dash = lines[i + 2] || '';
+          const awayRaw = lines[i + 3] || '';
+          if (dashRe.test(dash) && homeRaw && awayRaw) {
+            const normalizeTeamImport = (s: string) => {
+              const base = (s || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+              let tName = base.replace(/^(?:team\s*)?elitesoccer\s*/i, '');
+              if (/esla/i.test(tName) || /elitesoccer/i.test(base)) {
+                tName = tName.replace(/\s*\(.*?\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+              }
+              const l = tName.toLowerCase();
+              if (/\besla\s*7\b|\besla7\b/.test(l)) return 'ESLA 7';
+              if (/\besla\s*9\b|\besla9\b/.test(l)) return 'ESLA 9';
+              if (/\besla\s*e\s*a\b|\beslaea\b/.test(l)) return 'ESLA EA';
+              if (/elitesoccer/i.test(base)) return tName || base;
+              return base;
+            };
+
+            const home = normalizeTeamImport(homeRaw);
+            const away = normalizeTeamImport(awayRaw);
+
+            let k = i + 4;
+            let homeScore: number | null = null;
+            let awayScore: number | null = null;
+
+            const s1 = lines[k] || '';
+            if (s1 && scoreSingleRe.test(s1)) {
+              const m1 = s1.match(scoreSingleRe)!;
+              homeScore = Number(m1[1]);
+              awayScore = Number(m1[2]);
+              k += 1;
+            } else if (s1 && /^\*\s*[:x]\s*\*$/.test(s1)) {
+              // Platzhalter-Score auf einer Zeile: "* : *" → keine Scores, nur konsumieren
+              k += 1;
+            } else {
+              const a = lines[k] || '';
+              const b = lines[k + 1] || '';
+              const c = lines[k + 2] || '';
+              if (/^\d{1,2}$/.test(a) && /^[:x-]$/.test(b.trim()) && /^\d{1,2}$/.test(c)) {
+                homeScore = Number(a);
+                awayScore = Number(c);
+                k += 3;
+              } else if (/^\*+$/.test(a.trim()) && /^[:x-]$/.test(b.trim()) && /^\*+$/.test(c.trim())) {
+                // Platzhalter-Score über drei Zeilen: "*" ":" "*"
+                k += 3;
+              }
+            }
+
+            // Forfait-Zeilen optional konsumieren
+            while (k < lines.length) {
+              const look = (lines[k] || '').trim();
+              if (placeholderRe.test(look)) { k += 1; continue; }
+              break;
+            }
+
+            // Wettbewerb übernehmen, wenn vorhanden (oder Header)
+            let competition = '';
+            const compLine = lines[k] || '';
+            if (compLine && compLeadRe.test(compLine)) {
+              competition = compLine;
+              k += 1;
+            }
+            if (!competition && currentCompetition) competition = currentCompetition;
+
+            // "Spielnummer …" und Trennstriche überspringen
+            while (k < lines.length) {
+              const look = (lines[k] || '').trim();
+              if (!look) { k += 1; continue; }
+              if (/^Spielnummer\s*\d+/i.test(look)) { k += 1; continue; }
+              if (dashRe.test(look)) { k += 1; continue; }
+              break;
+            }
+
+            // Ort/Platz nur übernehmen, wenn keine neue Struktur/Platzhalter beginnt
+            let loc = '';
+            const next = lines[k] || '';
+            if (next && !compAnyRe.test(next) && !dateRe.test(next) && !timeRe.test(next) && !dateTimeLineRe.test(next) && !placeholderRe.test((next || '').trim())) {
+              loc = next;
+              k += 1;
+            }
+
+            const dateISO = currentDateISO || undefined;
+            if (dateISO) {
+              res.push({
+                date: dateISO,
+                time: undefined,
+                homeTeam: home,
+                awayTeam: away,
+                competition: competition || '',
+                location: loc,
+                homeScore,
+                awayScore,
+                status: typeof homeScore === 'number' && typeof awayScore === 'number' ? 'finished' : 'upcoming',
+              });
+              i = k - 1;
+              continue;
+            } else {
+              continue;
+            }
+          } else {
+            // kein Spielblock, nächste Zeile
+            continue;
+          }
         }
       }
 
       // Spiel-Block
       if (!timeRe.test(line)) continue;
       const t = line;
-      const home = lines[i + 1] || '';
+      const homeRaw = lines[i + 1] || '';
       const dash = lines[i + 2] || '';
-      const away = lines[i + 3] || '';
-      if (!dashRe.test(dash) || !home || !away) continue;
+      const awayRaw = lines[i + 3] || '';
+      if (!dashRe.test(dash) || !homeRaw || !awayRaw) continue;
+
+      const normalizeTeamImport = (s: string) => {
+        const base = (s || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+        let tName = base.replace(/^(?:team\s*)?elitesoccer\s*/i, '');
+        if (/esla/i.test(tName) || /elitesoccer/i.test(base)) {
+          tName = tName.replace(/\s*\(.*?\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+        }
+        const l = tName.toLowerCase();
+        if (/\besla\s*7\b|\besla7\b/.test(l)) return 'ESLA 7';
+        if (/\besla\s*9\b|\besla9\b/.test(l)) return 'ESLA 9';
+        if (/\besla\s*e\s*a\b|\beslaea\b/.test(l)) return 'ESLA EA';
+        if (/elitesoccer/i.test(base)) return tName || base;
+        return base;
+      };
+
+      const home = normalizeTeamImport(homeRaw);
+      const away = normalizeTeamImport(awayRaw);
 
       let k = i + 4;
       let homeScore: number | null = null;
@@ -227,37 +361,37 @@ export default function MatchesAdmin() {
         }
       }
 
-      const comp = lines[k] || '';
-      const sn = lines[k + 1] || '';
-      const locCandidate = lines[k + 2] || '';
-
       // Wettbewerb übernehmen, wenn vorhanden (mit heuristischer Erkennung)
-      let competition = comp ? comp : '';
-      if (comp && compLeadRe.test(comp)) {
-        competition = comp;
+      let competition = '';
+      const compLine = lines[k] || '';
+      if (compLine && compLeadRe.test(compLine)) {
+        competition = compLine;
         k += 1; // Wettbewerbzeile konsumieren
-      } else if (currentCompetition) {
+      }
+      if (!competition && currentCompetition) {
         competition = currentCompetition;
       }
 
-      // Spielnummer extrahieren
-      const m = sn.match(/Spielnummer\s*(\d+)/i);
-      const matchNumber = m ? m[1] : undefined;
-      if (m) {
-        k += 1; // Spielnummerzeile konsumieren
+      // "Spielnummer …" und reine Trennstriche überspringen (mit Bounds-Check)
+      while (k < lines.length) {
+        const look = (lines[k] || '').trim();
+        if (!look) { k += 1; continue; }
+        if (/^Spielnummer\s*\d+/i.test(look)) { k += 1; continue; }
+        if (dashRe.test(look)) { k += 1; continue; }
+        break;
       }
 
       // Ort/Platz nur übernehmen, wenn es keine neue Datum-/Zeit-/Header-Zeile ist
       let loc = '';
       const next = lines[k] || '';
-      if (next && !compAnyRe.test(next) && !dateRe.test(next) && !timeRe.test(next) && !dateTimeLineRe.test(next)) {
+      if (next && !compAnyRe.test(next) && !dateRe.test(next) && !timeRe.test(next) && !dateTimeLineRe.test(next) && !placeholderRe.test((next || '').trim())) {
         loc = next;
         k += 1; // Ortszeile konsumieren
       }
 
       // Datum bestimmen: currentDateISO muss gesetzt sein, sonst überspringen
       const dateISO = currentDateISO || undefined;
-      if (!dateISO) { i += 6; continue; }
+      if (!dateISO) { i += 1; continue; }
 
       res.push({
         date: dateISO,
@@ -270,7 +404,7 @@ export default function MatchesAdmin() {
         awayScore,
         status: typeof homeScore === 'number' && typeof awayScore === 'number' ? 'finished' : 'upcoming',
       });
-      i = k + 1; // an das Ende des Blocks springen
+      i = k - 1; // an das Ende des Blocks springen (for-Schleife erhöht i anschließend)
     }
     return res;
   };

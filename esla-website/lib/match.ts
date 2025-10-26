@@ -39,6 +39,34 @@ export function computedStatus(m: Match): 'upcoming' | 'live' | 'finished' {
   return 'finished';
 }
 
+function normalizeTime(t?: string): string {
+  if (!t) return '00:00';
+  const m = /^(\d{1,2}):(\d{2})/.exec(t);
+  if (!m) return (t.length >= 5 ? t.slice(0, 5) : '00:00');
+  const hh = m[1].padStart(2, '0');
+  const mm = m[2];
+  return `${hh}:${mm}`;
+}
+
+export function dateKey(m: Match): string {
+  return `${m.date} ${normalizeTime((m as any).time as string | undefined)}`;
+}
+
+export function compareByDateAsc(a: Match, b: Match): number {
+  const ka = dateKey(a);
+  const kb = dateKey(b);
+  return ka < kb ? -1 : ka > kb ? 1 : 0;
+}
+
+export function compareByDateDesc(a: Match, b: Match): number {
+  return compareByDateAsc(b, a);
+}
+
+export function comparatorForStatus(statusParam: string) {
+  const s = (statusParam || '').toLowerCase();
+  return s === 'finished' ? compareByDateDesc : compareByDateAsc;
+}
+
 export function calendarInfo(match: Match) {
   const startIso = `${match.date}T${(match.time && match.time.length >= 4 ? match.time : '00:00')}:00`;
   return {

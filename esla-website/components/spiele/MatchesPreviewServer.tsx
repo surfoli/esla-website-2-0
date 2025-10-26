@@ -12,7 +12,7 @@ export default async function MatchesPreviewServer() {
   }
 
   return (
-    <Section className="bg-white pt-0 pb-4 md:pb-6">
+    <Section className="bg-white pt-0 pb-4 md:pb-6" noContainer>
       <Container>
         <div className="w-full">
           <div className="text-center mb-8 md:mb-10">

@@ -1,9 +1,8 @@
 import Section from '@/components/ui/Section';
-import Container from '@/components/ui/Container';
 import { getAllMatches } from '@/lib/kv';
 import matchesLocal from '@/data/matches.json';
 import type { Match } from '@/types';
-import { computedStatus, toMs, hasScore } from '@/lib/match';
+import { computedStatus, hasScore, compareByDateAsc, compareByDateDesc } from '@/lib/match';
 
 function formatDate(date: string, time?: string) {
   const d = new Date(`${date}T${(time && time.length >= 4 ? time : '00:00')}:00`);
@@ -19,42 +18,78 @@ export default async function ResultsTickerBanner() {
 
   const results = (all || [])
     .filter((m) => hasScore(m))
-    .sort((a, b) => toMs(b) - toMs(a))
+    .sort(compareByDateDesc)
     .slice(0, 3);
 
   const upcoming = (all || [])
     .filter((m) => computedStatus(m) === 'upcoming')
-    .sort((a, b) => toMs(a) - toMs(b))
+    .sort(compareByDateAsc)
     .slice(0, 3);
 
   if (results.length === 0 && upcoming.length === 0) return null;
 
-  const items: { key: string; label: string; text: string }[] = [];
+  type TickerItem = {
+    key: string;
+    type: 'result' | 'upcoming';
+    label: string;
+    home: string;
+    away: string;
+    hs?: number;
+    as?: number;
+    dateText: string;
+  };
+
+  const items: TickerItem[] = [];
 
   for (const m of results) {
     const hs = (m as any).homeScore as number;
     const as = (m as any).awayScore as number;
     items.push({
       key: `r-${m.id}`,
+      type: 'result',
       label: 'Resultat',
-      text: `${m.homeTeam} ${hs}:${as} ${m.awayTeam} — ${formatDate(m.date, m.time)}`,
+      home: m.homeTeam as string,
+      away: m.awayTeam as string,
+      hs,
+      as,
+      dateText: formatDate(m.date, m.time),
     });
   }
 
   for (const m of upcoming) {
     items.push({
       key: `u-${m.id}`,
+      type: 'upcoming',
       label: 'Anstehend',
-      text: `${m.homeTeam} vs. ${m.awayTeam} — ${formatDate(m.date, m.time)}`,
+      home: m.homeTeam as string,
+      away: m.awayTeam as string,
+      dateText: formatDate(m.date, m.time),
     });
   }
 
   const row = (
-    <div className="inline-flex items-center gap-6 md:gap-10 min-w-max pr-6">
+    <div className="inline-flex items-center gap-8 md:gap-12 min-w-max pr-8">
       {items.map((it, idx) => (
-        <div key={it.key} className="flex items-center gap-3 text-white/90">
-          <span className="text-xs font-bold uppercase tracking-wide px-2 py-1 rounded-full bg-white/10 text-white">{it.label}</span>
-          <span className="text-sm md:text-base font-semibold whitespace-nowrap">{it.text}</span>
+        <div key={it.key} className="flex items-center gap-4 text-white/90">
+          <span className="text-xs md:text-sm font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-white/10 text-white">
+            {it.label}
+          </span>
+          {it.type === 'result' ? (
+            <div className="flex items-center gap-3 md:gap-4 whitespace-nowrap">
+              <span className="text-lg md:text-2xl font-bold text-white leading-tight">{it.home}</span>
+              <span className="inline-flex items-center bg-white/10 border border-white/20 rounded-xl px-3 py-1 md:px-4 md:py-1.5 shadow-sm">
+                <span className="font-black text-white text-2xl md:text-3xl leading-none">{it.hs}</span>
+                <span className="text-white/60 mx-1 md:mx-2">:</span>
+                <span className="font-black text-white text-2xl md:text-3xl leading-none">{it.as}</span>
+              </span>
+              <span className="text-lg md:text-2xl font-bold text-white leading-tight">{it.away}</span>
+              <span className="text-esla-accent/90 text-base md:text-lg leading-tight">— {it.dateText}</span>
+            </div>
+          ) : (
+            <span className="text-lg md:text-2xl font-semibold leading-tight whitespace-nowrap text-esla-accent/90">
+              {it.home} vs. {it.away} — {it.dateText}
+            </span>
+          )}
           {idx < items.length - 1 ? <span className="opacity-50 mx-2">•</span> : null}
         </div>
       ))}
@@ -62,20 +97,18 @@ export default async function ResultsTickerBanner() {
   );
 
   return (
-    <Section noContainer className="bg-esla-secondary py-0 md:py-0 border-y border-white/10">
+    <Section noContainer className="bg-gradient-to-r from-black via-esla-dark to-esla-primary !py-0 md:!py-0 border-y border-white/10">
       <div className="relative">
-        <Container>
-          <div className="relative overflow-hidden py-3 md:py-4">
-            <div className="pointer-events-none absolute inset-y-0 left-0 w-16 bg-gradient-to-r from-esla-secondary to-transparent" />
-            <div className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-gradient-to-l from-esla-secondary to-transparent" />
-            <div className="esla-ticker">
-              <div className="esla-ticker__content">
-                {row}
-                {row}
-              </div>
+        <div className="relative overflow-hidden py-2 md:py-3">
+          <div className="pointer-events-none absolute inset-y-0 left-0 w-8 bg-gradient-to-r from-black to-transparent" />
+          <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-esla-primary to-transparent" />
+          <div className="esla-ticker">
+            <div className="esla-ticker__content">
+              {row}
+              {row}
             </div>
           </div>
-        </Container>
+        </div>
       </div>
     </Section>
   );
