@@ -6,7 +6,8 @@ export default function Countdown({ iso, variant = 'small' }: { iso: string; var
   const [left, setLeft] = useState({ d: 0, h: 0, m: 0, s: 0 });
 
   useEffect(() => {
-    const target = new Date(iso).getTime();
+    const targetDate = new Date(iso);
+    const target = Number.isNaN(targetDate.getTime()) ? Date.now() : targetDate.getTime();
     const tick = () => {
       const now = Date.now();
       const diff = Math.max(0, target - now);
@@ -41,7 +42,7 @@ export default function Countdown({ iso, variant = 'small' }: { iso: string; var
   return (
     <div className="flex gap-3 md:gap-4">
       {[['Tage', left.d], ['Std', left.h], ['Min', left.m], ['Sek', left.s]].map(([k, v]) => (
-        <div key={k as string} className={`bg-[#242424]/70 backdrop-blur-sm rounded-xl border border-white/10 text-center ${box}`}>
+        <div key={k as string} className={`bg-black/70 backdrop-blur-sm rounded-xl border border-white/10 text-center ${box}`}>
           <div className={`text-esla-primary font-black mb-1 ${num}`}>{String(v as number).padStart(2, '0')}</div>
           <div className={`text-white/80 uppercase tracking-wider font-semibold ${label}`}>{k}</div>
         </div>

@@ -1,16 +1,27 @@
 import { NextResponse } from 'next/server';
 import { getAllMatches } from '@/lib/kv';
-import { computedStatus } from '@/lib/match';
+import { computedStatus, matchesTeamName } from '@/lib/match';
 import type { Match } from '@/types';
 
 export const dynamic = 'force-dynamic';
 
-function isEslaTeam(name?: string) {
-  if (!name) return false;
-  const n = name.replace(/\u00A0/g, ' '); // NBSP -> space
-  // Sehr tolerant: zähle jedes Team mit "ESLA" als ESLA-Team
-  return /esla/i.test(n);
-}
+const TEAM_LABELS = {
+  all: 'ESLA',
+  esla7: 'ESLA 7',
+  esla9: 'ESLA 9',
+  eslaea: 'ESLA EA',
+} as const;
+
+type TeamKey = keyof typeof TEAM_LABELS;
+
+const isTeamKey = (value: string): value is TeamKey => {
+  return value === 'all' || value === 'esla7' || value === 'esla9' || value === 'eslaea';
+};
+
+const normalizeTeamParam = (value: string | null): TeamKey => {
+  const key = (value || '').toLowerCase();
+  return isTeamKey(key) ? key : 'all';
+};
 
 function toNum(v: unknown): number | null {
   if (v === null || v === undefined) return null;
@@ -18,8 +29,10 @@ function toNum(v: unknown): number | null {
   return Number.isFinite(n) ? n : null;
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    const { searchParams } = new URL(request.url);
+    const teamParam = normalizeTeamParam(searchParams.get('team'));
     const matches = await getAllMatches();
 
     let wins = 0;
@@ -31,8 +44,8 @@ export async function GET() {
     let finished = 0;
 
     for (const match of matches as Match[]) {
-      const eslaHome = isEslaTeam(match.homeTeam);
-      const eslaAway = isEslaTeam(match.awayTeam);
+      const eslaHome = matchesTeamName(match.homeTeam, teamParam);
+      const eslaAway = matchesTeamName(match.awayTeam, teamParam);
       const hs = toNum(match.homeScore);
       const as = toNum(match.awayScore);
       const status = computedStatus(match);
@@ -46,6 +59,7 @@ export async function GET() {
       finished++;
 
       if (eslaHome && eslaAway) continue; // internes Duell nicht zählen
+      if (!eslaHome && !eslaAway) continue;
 
       if (eslaHome) {
         gf += hs;
@@ -65,7 +79,19 @@ export async function GET() {
     const total = wins + draws + losses;
     const winRate = total > 0 ? Math.round((wins / total) * 100) : 0;
 
-    return NextResponse.json({ wins, draws, losses, gf, ga, upcoming, finished, winRate, total });
+    return NextResponse.json({
+      wins,
+      draws,
+      losses,
+      gf,
+      ga,
+      upcoming,
+      finished,
+      winRate,
+      total,
+      team: teamParam,
+      teamLabel: TEAM_LABELS[teamParam],
+    });
   } catch (e) {
     return NextResponse.json({ error: 'Failed to compute stats' }, { status: 500 });
   }

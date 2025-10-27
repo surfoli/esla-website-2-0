@@ -1,5 +1,6 @@
 import { kv } from '@vercel/kv';
 import type { Match } from '@/types';
+import { canonicalMatchKey, canonicalTime, normalizeMatchPayload } from '@/lib/match';
 
 const TEAMS_KEY = 'esla:teams';
 
@@ -48,8 +49,27 @@ export async function getMatchById(id: string): Promise<Match | null> {
 }
 
 export async function createMatch(match: Omit<Match, 'id'>): Promise<Match> {
+  const normalizedPayload = normalizeMatchPayload(match);
+  const candidate = { ...match, ...normalizedPayload } as Omit<Match, 'id'>;
+
+  // Check existing matches for potential duplicates by canonical identity
+  const identityKey = canonicalMatchKey(candidate);
+  const zeroKey = canonicalMatchKey({ ...candidate, time: undefined });
+
+  const existingMatches = await getAllMatches();
+  for (const existing of existingMatches) {
+    const existingKey = canonicalMatchKey(existing);
+    const existingZero = canonicalMatchKey({ ...existing, time: undefined });
+    if (existingKey === identityKey || existingKey === zeroKey || existingZero === identityKey || existingZero === zeroKey) {
+      // Merge additional info into existing match if needed
+      const updates = normalizeMatchPayload(candidate);
+      const updated = await updateMatch(existing.id, updates);
+      return updated || existing;
+    }
+  }
+
   const id = Date.now().toString();
-  const newMatch: Match = { ...match, id } as Match;
+  const newMatch: Match = { ...candidate, id } as Match;
   await kv.set(matchKey(id), newMatch);
   const score = toUnixScore(newMatch.date, newMatch.time);
   await kv.zadd(MATCH_INDEX_KEY, { score, member: id });
@@ -60,7 +80,8 @@ export async function updateMatch(id: string, updates: Partial<Match>): Promise<
   const key = matchKey(id);
   const current = (await kv.get(key)) as Match | null;
   if (!current) return null;
-  const updated = { ...current, ...updates } as Match;
+  const normalized = normalizeMatchPayload({ ...current, ...updates });
+  const updated = { ...current, ...normalized } as Match;
   await kv.set(key, updated);
   // if date/time changed, update score
   const score = toUnixScore(updated.date, updated.time);

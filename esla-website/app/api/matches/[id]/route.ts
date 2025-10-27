@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { getMatchById, updateMatch, deleteMatch } from '@/lib/kv';
 import { isAuthorized } from '@/lib/auth';
+import type { Match } from '@/types';
+import { normalizeMatchPayload } from '@/lib/match';
 
 export const dynamic = 'force-dynamic';
 
@@ -31,8 +33,9 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
-    const updated = await updateMatch(params.id, body);
+    const body = (await request.json()) as Partial<Match>;
+    const normalized = normalizeMatchPayload(body);
+    const updated = await updateMatch(params.id, normalized);
     
     if (!updated) {
       return NextResponse.json({ error: 'Match not found' }, { status: 404 });

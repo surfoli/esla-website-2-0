@@ -9,7 +9,7 @@ import NowBadge from '@/components/ui/NowBadge';
 import StatsBadge from '@/components/ui/StatsBadge';
 import Container from '@/components/ui/Container';
 import MatchCard from '@/components/matches/MatchCard';
-import { computedStatus, compareByDateAsc, compareByDateDesc, comparatorForStatus } from '@/lib/match';
+import { computedStatus, compareByDateAsc, compareByDateDesc, comparatorForStatus, displayTeamName } from '@/lib/match';
 
 export const dynamic = 'force-dynamic';
 
@@ -120,6 +120,10 @@ export default async function SpielePage({ searchParams }: { searchParams?: Matc
 
   // Build grouped lists when showing all statuses
   const matchesForSections: Match[] = statusParam === 'all' ? combinedMatches : [];
+  const hasPrevPage = page > 1;
+  const hasNextPage = page < totalPages;
+  const prevPage = hasPrevPage ? page - 1 : page;
+  const nextPage = hasNextPage ? page + 1 : page;
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
@@ -127,15 +131,20 @@ export default async function SpielePage({ searchParams }: { searchParams?: Matc
       <div className="pt-32 pb-20">
         <Container>
           {/* Header */}
-          <div className="text-center mb-12 bg-esla-secondary text-white p-10 rounded-3xl">
-            <div className="flex items-center justify-between mb-4">
+          <div className="relative text-center mb-12 bg-esla-secondary text-white p-10 pb-16 rounded-3xl">
+            <div className="flex items-center justify-between mb-4 gap-4">
               <NowBadge />
-              <StatsBadge />
+              <div className="flex flex-col items-end gap-2 text-right">
+                <StatsBadge />
+              </div>
             </div>
             <h1 className="text-5xl md:text-7xl font-black text-white mb-4">ALLE <span className="text-esla-primary">SPIELE</span></h1>
             <p className="text-white/80 text-xl">Filtere nach Team und Status</p>
             {/* Filterbar */}
             <FilterBar key={`${statusParam}-${teamParam}`} statusParam={statusParam} teamParam={teamParam} pageSize={pageSize} />
+            <div className="absolute bottom-6 right-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-sm font-semibold text-white/90">
+              {total === 1 ? '1 Suchergebnis' : `${total} Suchergebnisse`}
+            </div>
           </div>
 
           {statusParam === 'all' ? (
@@ -166,7 +175,7 @@ export default async function SpielePage({ searchParams }: { searchParams?: Matc
                 if (upcoming.length === 0) return null;
                 return (
                   <section className="mb-12">
-                    <h2 className="text-2xl md:text-3xl font-black text-esla-secondary mb-4">Zukünftige Spiele</h2>
+                    <h2 className="text-2xl md:text-3xl font-black text-esla-secondary mb-4">Anstehende Spiele</h2>
                     <div className="grid gap-8">
                       {upcoming.map((m: Match) => (
                         <MatchCard key={m.id} match={m} fullWidth />
@@ -184,7 +193,7 @@ export default async function SpielePage({ searchParams }: { searchParams?: Matc
                 if (finished.length === 0) return null;
                 return (
                   <section className="mt-14">
-                    <h2 className="text-2xl md:text-3xl font-black text-esla-secondary mb-4">Abgeschlossene Spiele</h2>
+                    <h2 className="text-2xl md:text-3xl font-black text-esla-secondary mb-4">Beendete Spiele</h2>
                     <div className="grid gap-8">
                       {finished.map((m: Match) => (
                         <MatchCard key={m.id} match={m} fullWidth />
@@ -198,7 +207,13 @@ export default async function SpielePage({ searchParams }: { searchParams?: Matc
             <>
               {items.length === 0 ? (
                 <div className="text-center text-esla-secondary/80 py-12">
-                  {statusParam === 'upcoming' ? 'Leider keine zukünftigen Spiele geplant.' : statusParam === 'live' ? 'Aktuell keine laufenden Spiele.' : statusParam === 'today' ? 'Heute stehen keine Spiele an.' : 'Noch keine abgeschlossenen Spiele vorhanden.'}
+                  {statusParam === 'upcoming'
+                    ? 'Leider keine anstehenden Spiele geplant.'
+                    : statusParam === 'live'
+                      ? 'Aktuell keine laufenden Spiele.'
+                      : statusParam === 'today'
+                        ? 'Heute stehen keine Spiele an.'
+                        : 'Noch keine beendeten Spiele vorhanden.'}
                 </div>
               ) : (
                 <div className="grid gap-8">
@@ -208,11 +223,25 @@ export default async function SpielePage({ searchParams }: { searchParams?: Matc
                 </div>
               )}
               {/* Pagination */}
-              {items.length > 0 && (
+              {items.length > 0 && (hasPrevPage || hasNextPage) && (
                 <div className="flex justify-center items-center gap-6 mt-12">
-                  <Link href={`/spiele?status=${statusParam}&team=${teamParam}&page=${Math.max(1, page - 1)}&pageSize=${pageSize}`} className={`px-5 py-3 rounded-full border ${page > 1 ? 'text-esla-secondary border-slate-300 hover:bg-slate-100' : 'text-slate-400 border-slate-200 pointer-events-none'}`}>Zurück</Link>
+                  {hasPrevPage && (
+                    <Link
+                      href={`/spiele?status=${statusParam}&team=${teamParam}&page=${prevPage}&pageSize=${pageSize}`}
+                      className="px-5 py-3 rounded-full border border-black text-white bg-black hover:bg-slate-800"
+                    >
+                      Zurück
+                    </Link>
+                  )}
                   <span className="text-esla-secondary/70">Seite {page} / {totalPages}</span>
-                  <Link href={`/spiele?status=${statusParam}&team=${teamParam}&page=${Math.min(totalPages, page + 1)}&pageSize=${pageSize}`} className={`px-5 py-3 rounded-full border ${page < totalPages ? 'text-esla-secondary border-slate-300 hover:bg-slate-100' : 'text-slate-400 border-slate-200 pointer-events-none'}`}>Weiter</Link>
+                  {hasNextPage && (
+                    <Link
+                      href={`/spiele?status=${statusParam}&team=${teamParam}&page=${nextPage}&pageSize=${pageSize}`}
+                      className="px-5 py-3 rounded-full border border-black text-white bg-black hover:bg-slate-800"
+                    >
+                      Weiter
+                    </Link>
+                  )}
                 </div>
               )}
             </>

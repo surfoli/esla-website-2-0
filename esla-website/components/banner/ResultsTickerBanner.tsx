@@ -2,12 +2,54 @@ import Section from '@/components/ui/Section';
 import { getAllMatches } from '@/lib/kv';
 import matchesFallback from '@/data/matches-fallback';
 import type { Match } from '@/types';
-import { computedStatus, hasScore, compareByDateAsc, compareByDateDesc } from '@/lib/match';
+import { computedStatus, hasScore, compareByDateAsc, compareByDateDesc, isEslaTeamName, displayTeamName } from '@/lib/match';
 
 function formatDate(date: string, time?: string) {
   const d = new Date(`${date}T${(time && time.length >= 4 ? time : '00:00')}:00`);
   const dd = d.toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' });
   return time && time.length >= 4 ? `${dd} ${time}` : dd;
+}
+
+function formatDaysUntil(date: string, time?: string): string {
+  const now = new Date();
+  const target = new Date(`${date}T${(time && time.length >= 4 ? time : '00:00')}:00`);
+
+  const diffMs = target.getTime() - now.getTime();
+  const dayMs = 24 * 60 * 60 * 1000;
+
+  if (diffMs <= 0) return 'Heute';
+  if (diffMs < dayMs) return 'Heute';
+
+  const days = Math.ceil(diffMs / dayMs);
+  if (days === 1) return 'In 1 Tag';
+  return `In ${days} Tagen`;
+}
+
+function homeAwayDescriptor(match: Match): string {
+  const homeIsEsla = isEslaTeamName(match.homeTeam);
+  const awayIsEsla = isEslaTeamName(match.awayTeam);
+
+  if (homeIsEsla && !awayIsEsla) return 'Heimspiel';
+  if (awayIsEsla && !homeIsEsla) return 'Auswärtsspiel';
+  if (homeIsEsla && awayIsEsla) return 'ESLA-Duell';
+  return 'Match';
+}
+
+function formatResultBadge(match: Match): string {
+  if (typeof match.homeScore !== 'number' || typeof match.awayScore !== 'number') return 'Resultat';
+
+  const homeIsEsla = isEslaTeamName(match.homeTeam);
+  const awayIsEsla = isEslaTeamName(match.awayTeam);
+
+  if (!homeIsEsla && !awayIsEsla) {
+    if (match.homeScore === match.awayScore) return 'Unentschieden';
+    return 'Resultat';
+  }
+
+  if (match.homeScore === match.awayScore) return 'Unentschieden';
+
+  const eslaWon = (homeIsEsla && match.homeScore > match.awayScore) || (awayIsEsla && match.awayScore > match.homeScore);
+  return eslaWon ? 'Gewonnen' : 'Verloren';
 }
 
 export default async function ResultsTickerBanner() {
@@ -45,9 +87,9 @@ export default async function ResultsTickerBanner() {
     items.push({
       key: `r-${match.id}`,
       type: 'result',
-      label: 'Resultat',
-      home: match.homeTeam,
-      away: match.awayTeam,
+      label: formatResultBadge(match),
+      home: displayTeamName(match.homeTeam),
+      away: displayTeamName(match.awayTeam),
       hs: match.homeScore,
       as: match.awayScore,
       dateText: formatDate(match.date, match.time),
@@ -58,9 +100,9 @@ export default async function ResultsTickerBanner() {
     items.push({
       key: `u-${match.id}`,
       type: 'upcoming',
-      label: 'Anstehend',
-      home: match.homeTeam,
-      away: match.awayTeam,
+      label: `${homeAwayDescriptor(match)}: ${formatDaysUntil(match.date, match.time)}`,
+      home: displayTeamName(match.homeTeam),
+      away: displayTeamName(match.awayTeam),
       dateText: formatDate(match.date, match.time),
     });
   }

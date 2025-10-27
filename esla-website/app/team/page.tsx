@@ -6,6 +6,7 @@ import Footer from '@/components/footer/Footer';
 import Image from 'next/image';
 import { Users, Shield, Zap, Target } from 'lucide-react';
 import { teams, playerGroups } from '@/data/team';
+import Container from '@/components/ui/Container';
 
  
 
@@ -72,7 +73,7 @@ export default function TeamPage() {
         <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* Header */}
-          <div className="text-center mb-12 bg-esla-secondary text-white p-10 rounded-3xl">
+          <div className="text-center mb-12 bg-black text-white p-10 rounded-3xl">
             <h1 className="text-5xl md:text-7xl font-black text-white mb-4">
               UNSER <span className="text-esla-primary">TEAM</span>
             </h1>
@@ -94,7 +95,7 @@ export default function TeamPage() {
                   className={`px-8 py-4 rounded-full font-semibold text-base md:text-lg transition-all duration-200 flex items-center gap-x-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-esla-primary focus-visible:ring-offset-2 ring-offset-white ${
                     active
                       ? 'bg-esla-primary text-white shadow-lg shadow-esla-primary/50 scale-105'
-                      : 'bg-esla-secondary/10 text-esla-secondary border border-esla-secondary/30 hover:bg-esla-secondary/20'
+                      : 'bg-black/10 text-black border border-black/30 hover:bg-black/20'
                   }`}
                 >
                   <Icon size={24} />
@@ -108,13 +109,14 @@ export default function TeamPage() {
           {selectedPosition === 'players' ? (
             <>
               {playerGroups.map((group) => (
-                <section key={group} className="mb-10">
-                  <h2 className="text-esla-secondary font-extrabold text-4xl md:text-5xl mb-6">{positionNames[group]}</h2>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                <section key={group} className="mb-12">
+                  <Container>
+                    <h2 className="text-black font-extrabold text-4xl md:text-5xl mb-6">{positionNames[group]}</h2>
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(270px,345px))] justify-start gap-8">
                     {teams[group].map((player, index) => (
                       <div
                         key={`${group}-${player.name}`}
-                        className="bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 transform hover:scale-105 animate-scale-in"
+                          className="max-w-[345px] w-full bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 transform hover:scale-105 animate-scale-in"
                         style={{ animationDelay: `${index * 0.05}s` }}
                       >
                         {/* Image */}
@@ -124,45 +126,52 @@ export default function TeamPage() {
                             alt={player.name}
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                            className="object-cover object-[center_30%]"
+                        className="object-cover object-[center_30%] rounded-t-2xl"
                           />
                         </div>
 
                         {/* Info */}
-                        <div className="p-6 bg-esla-primary">
-                          <h3 className="text-white font-bold text-xl mb-2">{player.name}</h3>
-                          <p className="text-white/90 font-semibold text-sm">{positionLabel[group]}</p>
+                        <div
+                          className="rounded-b-2xl p-5 bg-gradient-to-r from-black via-esla-dark to-esla-primary"
+                        >
+                          <h3 className="text-white font-bold text-2xl mb-3 leading-tight">{player.name}</h3>
+                          <p className="text-white/90 font-semibold text-base leading-tight">{positionLabel[group]}</p>
                         </div>
                       </div>
                     ))}
                   </div>
+                  </Container>
                 </section>
               ))}
             </>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {teams.staff.map((member, index) => (
-                <div
-                  key={`staff-${member.name}`}
-                  className="bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 transform hover:scale-105 animate-scale-in"
-                  style={{ animationDelay: `${index * 0.05}s` }}
-                >
-                  <div className="relative aspect-[3/4] bg-gradient-to-b from-esla-secondary to-esla-dark overflow-hidden">
-                    <Image
-                      src={encodePublicPath(member.image)}
-                      alt={member.name}
-                      fill
-                      sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                      className="object-cover object-[center_30%]"
-                    />
+            <Container>
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(270px,345px))] justify-start gap-8">
+                {teams.staff.map((member, index) => (
+                  <div
+                    key={`staff-${member.name}`}
+                    className="max-w-[345px] w-full bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 transform hover:scale-105 animate-scale-in"
+                    style={{ animationDelay: `${index * 0.05}s` }}
+                  >
+                    <div className="relative aspect-[3.2/4] bg-gradient-to-b from-esla-secondary to-esla-dark overflow-hidden">
+                      <Image
+                        src={encodePublicPath(member.image)}
+                        alt={member.name}
+                        fill
+                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                        className="object-cover object-[center_30%]"
+                      />
+                    </div>
+                    <div
+                      className="rounded-b-2xl p-5 bg-gradient-to-r from-black via-esla-dark to-esla-primary"
+                    >
+                      <h3 className="text-white font-bold text-2xl mb-3 leading-tight">{member.name}</h3>
+                      <p className="text-white/90 font-semibold text-base leading-tight">{member.position}</p>
+                    </div>
                   </div>
-                  <div className="p-6 bg-esla-primary">
-                    <h3 className="text-white font-bold text-xl mb-2">{member.name}</h3>
-                    <p className="text-white/90 font-semibold text-sm">{member.position}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            </Container>
           )}
 
         </div>

@@ -102,7 +102,7 @@ export default function HeroCountdown() {
       particleCount: 150,
       spread: 70,
       origin: { y: 0.6 },
-      colors: ['#c52958', '#083a62', '#e03766', '#FFD700'],
+      colors: ['#c52958', '#000000', '#e03766', '#FFD700'],
     });
     
     const newCount = participants + 1;
@@ -156,7 +156,7 @@ export default function HeroCountdown() {
           {Object.entries(timeLeft).map(([unit, value]) => (
             <div
               key={unit}
-              className="bg-[#242424]/70 backdrop-blur-sm rounded-xl p-5 md:p-6 min-w-[70px] md:min-w-[100px] border border-white/10"
+              className="bg-black/70 backdrop-blur-sm rounded-xl p-5 md:p-6 min-w-[70px] md:min-w-[100px] border border-white/10"
             >
               <div className="text-2xl md:text-4xl font-black text-esla-primary mb-2" suppressHydrationWarning>
                 {value.toString().padStart(2, '0')}

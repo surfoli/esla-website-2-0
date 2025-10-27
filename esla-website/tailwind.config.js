@@ -9,8 +9,8 @@ module.exports = {
     extend: {
       colors: {
         'esla-primary': '#c52958',
-        'esla-secondary': '#242424',
-        'esla-dark': '#141414',
+        'esla-secondary': '#000000',
+        'esla-dark': '#000000',
         'esla-light': '#F8F9FA',
         'esla-accent': '#e03766',
       },

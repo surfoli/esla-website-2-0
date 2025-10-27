@@ -9,18 +9,119 @@ type CalendarInfo = {
   durationMinutes?: number;
   location?: string;
   description?: string;
+  timeZone?: string;
 };
 
-function formatGoogleDate(iso: string) {
-  const date = new Date(iso);
-  const pad = (n: number) => n.toString().padStart(2, '0');
-  return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}T${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}`;
+type DateParts = {
+  year: number;
+  month: number;
+  day: number;
+  hour: number;
+  minute: number;
+  second: number;
+};
+
+const pad = (value: number) => value.toString().padStart(2, '0');
+
+const TZ_SUFFIX_REGEX = /(?:Z|[+-]\d{2}:?\d{2})$/;
+
+function parseNaiveParts(value: string): DateParts | null {
+  const match = value.match(/^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2})(?::(\d{2}))?/);
+  if (!match) return null;
+  return {
+    year: Number(match[1]),
+    month: Number(match[2]),
+    day: Number(match[3]),
+    hour: Number(match[4]),
+    minute: Number(match[5]),
+    second: match[6] ? Number(match[6]) : 0,
+  };
 }
 
-function addMinutesIso(iso: string, minutes: number) {
-  const date = new Date(iso);
-  date.setMinutes(date.getMinutes() + minutes);
-  return date.toISOString();
+function parseDateParts(value?: string, timeZone?: string): DateParts | null {
+  if (!value) return null;
+  if (!TZ_SUFFIX_REGEX.test(value)) {
+    return parseNaiveParts(value);
+  }
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return null;
+  if (timeZone) {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    });
+    const parts = formatter.formatToParts(date).reduce<Record<string, number>>((acc, part) => {
+      if (part.type !== 'literal') {
+        acc[part.type] = Number(part.value);
+      }
+      return acc;
+    }, {});
+    return {
+      year: parts.year ?? date.getUTCFullYear(),
+      month: (parts.month ?? 1),
+      day: parts.day ?? date.getUTCDate(),
+      hour: parts.hour ?? date.getUTCHours(),
+      minute: parts.minute ?? date.getUTCMinutes(),
+      second: parts.second ?? date.getUTCSeconds(),
+    };
+  }
+  return {
+    year: date.getUTCFullYear(),
+    month: date.getUTCMonth() + 1,
+    day: date.getUTCDate(),
+    hour: date.getUTCHours(),
+    minute: date.getUTCMinutes(),
+    second: date.getUTCSeconds(),
+  };
+}
+
+function addMinutesLocal(parts: DateParts, minutes: number, timeZone?: string): DateParts {
+  const base = new Date(Date.UTC(parts.year, parts.month - 1, parts.day, parts.hour, parts.minute, parts.second));
+  base.setUTCMinutes(base.getUTCMinutes() + minutes);
+  if (timeZone) {
+    const formatter = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      year: 'numeric',
+      month: '2-digit',
+      day: '2-digit',
+      hour: '2-digit',
+      minute: '2-digit',
+      second: '2-digit',
+      hour12: false,
+    });
+    const localized = formatter.formatToParts(base).reduce<Record<string, number>>((acc, part) => {
+      if (part.type !== 'literal') {
+        acc[part.type] = Number(part.value);
+      }
+      return acc;
+    }, {});
+    return {
+      year: localized.year ?? base.getUTCFullYear(),
+      month: localized.month ?? base.getUTCMonth() + 1,
+      day: localized.day ?? base.getUTCDate(),
+      hour: localized.hour ?? base.getUTCHours(),
+      minute: localized.minute ?? base.getUTCMinutes(),
+      second: localized.second ?? base.getUTCSeconds(),
+    };
+  }
+  return {
+    year: base.getUTCFullYear(),
+    month: base.getUTCMonth() + 1,
+    day: base.getUTCDate(),
+    hour: base.getUTCHours(),
+    minute: base.getUTCMinutes(),
+    second: base.getUTCSeconds(),
+  };
+}
+
+function formatGoogleDate(parts: DateParts) {
+  return `${parts.year}${pad(parts.month)}${pad(parts.day)}T${pad(parts.hour)}${pad(parts.minute)}${pad(parts.second)}`;
 }
 
 export default function JoinButton({ matchId, label, leaveText, calendar }: { matchId: string; label?: string; leaveText?: string; calendar?: CalendarInfo }) {
@@ -30,6 +131,7 @@ export default function JoinButton({ matchId, label, leaveText, calendar }: { ma
   const [statusText, setStatusText] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
+  const hasFetchedRef = useRef(false);
 
   useEffect(() => {
     let active = true;
@@ -43,7 +145,10 @@ export default function JoinButton({ matchId, label, leaveText, calendar }: { ma
         setCount(Number(data.count || 0));
       } catch {}
     };
-    fetchState();
+    if (!hasFetchedRef.current) {
+      void fetchState();
+      hasFetchedRef.current = true;
+    }
     const onCustom = (e: Event) => {
       const ce = e as CustomEvent<{ matchId: string; joined: boolean; count: number }>;
       if (ce.detail?.matchId !== matchId) return;
@@ -89,16 +194,20 @@ export default function JoinButton({ matchId, label, leaveText, calendar }: { ma
 
   const calendarUrl = useMemo(() => {
     if (!calendar) return null;
-    const { title, start, end, durationMinutes = 120, location, description } = calendar;
-    const startString = formatGoogleDate(start);
-    const endIso = end || addMinutesIso(start, durationMinutes);
-    const endString = formatGoogleDate(endIso);
+    const { title, start, end, durationMinutes = 120, location, description, timeZone } = calendar;
+    const startParts = parseDateParts(start, timeZone);
+    if (!startParts) return null;
+    const endParts = end ? parseDateParts(end, timeZone) : addMinutesLocal(startParts, durationMinutes, timeZone);
+    if (!endParts) return null;
+    const startString = formatGoogleDate(startParts);
+    const endString = formatGoogleDate(endParts);
     const url = new URL('https://calendar.google.com/calendar/render');
     url.searchParams.set('action', 'TEMPLATE');
     url.searchParams.set('text', title);
     url.searchParams.set('dates', `${startString}/${endString}`);
     if (location) url.searchParams.set('location', location);
     if (description) url.searchParams.set('details', description);
+    if (timeZone) url.searchParams.set('ctz', timeZone);
     return url.toString();
   }, [calendar]);
 

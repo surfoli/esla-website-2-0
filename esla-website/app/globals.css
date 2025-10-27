@@ -5,8 +5,8 @@
 :root {
   /* ESLA Brand Colors */
   --esla-primary: #c52958;
-  --esla-secondary: #083a62;
-  --esla-dark: #041f35;
+  --esla-secondary: #000000;
+  --esla-dark: #000000;
   --esla-light: #F8F9FA;
   --esla-accent: #e03766;
 
@@ -57,6 +57,8 @@ h1, h2, h3, h4, h5, h6 {
 
 html {
   scroll-behavior: smooth;
+  /* Stabilisiert Layout bei Scrollbar-Einblendung */
+  scrollbar-gutter: stable both-edges;
 }
 
 .animate-fade-in {

@@ -2,6 +2,8 @@
 
 import { useLayoutEffect, useRef, useState } from 'react';
 
+type DocumentWithFonts = Document & { fonts?: FontFaceSet };
+
 type Props = {
   text: string;
   className?: string;
@@ -12,7 +14,7 @@ type Props = {
 export default function AutoShrinkText({ text, className, minPx = 12, maxPx = 42 }: Props) {
   const wrapRef = useRef<HTMLDivElement | null>(null);
   const spanRef = useRef<HTMLSpanElement | null>(null);
-  const [size, setSize] = useState<number | undefined>(undefined);
+  const [size, setSize] = useState<number>(maxPx);
 
   useLayoutEffect(() => {
     const el = spanRef.current;
@@ -22,19 +24,39 @@ export default function AutoShrinkText({ text, className, minPx = 12, maxPx = 42
     let raf = 0;
     const fit = () => {
       if (!el || !wrap) return;
-      const available = wrap.clientWidth;
+      
+      // Verfügbare Breite ermitteln
+      const wrapWidth = wrap.getBoundingClientRect().width;
+      const parentWidth = wrap.parentElement?.getBoundingClientRect().width || 0;
+      const available = Math.floor(wrapWidth || parentWidth);
+      
+      if (!available || available < 10) return;
+
       let low = minPx;
       let high = maxPx;
       let best = minPx;
+      
       el.style.whiteSpace = 'nowrap';
+      el.style.overflow = 'visible';
+      
+      // Binäre Suche für optimale Schriftgröße
       while (low <= high) {
         const mid = Math.floor((low + high) / 2);
         el.style.fontSize = `${mid}px`;
-        // Force layout and measure against stable available width
-        const fits = el.scrollWidth <= available;
-        if (fits) { best = mid; low = mid + 1; } else { high = mid - 1; }
+        
+        // Kleine Verzögerung für stabiles Layout
+        const textWidth = Math.ceil(el.getBoundingClientRect().width);
+        
+        // Lasse 2px Puffer für Subpixel-Rendering
+        if (textWidth <= available - 2) {
+          best = mid;
+          low = mid + 1;
+        } else {
+          high = mid - 1;
+        }
       }
-      if (best !== size) setSize(best);
+      
+      setSize(best);
     };
 
     const schedule = () => {
@@ -42,18 +64,52 @@ export default function AutoShrinkText({ text, className, minPx = 12, maxPx = 42
       raf = requestAnimationFrame(fit);
     };
 
+    // Initiales Fitting
     schedule();
+    
+    // Window resize
     const onResize = () => schedule();
     window.addEventListener('resize', onResize);
+    
+    // Container-Resize beobachten
+    const ro = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(() => schedule())
+      : undefined;
+    if (ro) {
+      ro.observe(wrap);
+    }
+    
+    // Font-Loading abwarten
+    if (typeof document !== 'undefined') {
+      const fonts = (document as DocumentWithFonts).fonts;
+      fonts?.ready.then(() => schedule()).catch(() => {});
+    }
+
     return () => {
       window.removeEventListener('resize', onResize);
       cancelAnimationFrame(raf);
+      if (ro) {
+        try {
+          ro.disconnect();
+        } catch {
+          // ignore
+        }
+      }
     };
   }, [text, minPx, maxPx]);
 
   return (
-    <div ref={wrapRef} className="min-w-0">
-      <span ref={spanRef} className={className} style={size ? { fontSize: `${size}px`, lineHeight: 1.1 } : undefined}>
+    <div ref={wrapRef} className="min-w-0 w-full">
+      <span
+        ref={spanRef}
+        className={className}
+        style={{ 
+          fontSize: `${size}px`, 
+          lineHeight: 1.2,
+          display: 'inline-block',
+          whiteSpace: 'nowrap'
+        }}
+      >
         {text}
       </span>
     </div>

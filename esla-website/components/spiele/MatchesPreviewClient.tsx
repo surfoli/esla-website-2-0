@@ -41,23 +41,23 @@ export default function MatchesPreviewClient({ initialMatches }: { initialMatche
     const heroCandidate = liveAll[0] || upcomingOnly[0];
     const heroId = heroCandidate?.id;
 
-    // exclude hero and live from preview, cap total 10
+    const maxUpcoming = 2;
+    const maxFinished = 3;
+
     const upcomingPool = upcomingOnly.filter((m) => m.id !== heroId);
     const finishedAll = all.filter((m) => computedStatus(m) === 'finished').sort(compareByDateDesc);
 
-    const maxTotal = 10;
-    const up = upcomingPool.slice(0, maxTotal);
-    const remainder = Math.max(0, maxTotal - up.length);
-    const fin = finishedAll.slice(0, remainder);
+    const upcomingToShow = upcomingPool.slice(0, maxUpcoming);
+    const finishedToShow = finishedAll.slice(0, maxFinished);
 
-    return { upcomingToShow: up, finishedToShow: fin };
+    return { upcomingToShow, finishedToShow };
   }, [matches]);
 
   return (
     <div>
       {upcomingToShow.length > 0 && (
         <section className="mb-10">
-          <h3 className="text-2xl md:text-3xl font-black text-esla-secondary mb-4">Zukünftige Spiele</h3>
+          <h3 className="text-2xl md:text-3xl font-black text-esla-secondary mb-4">Anstehende Spiele</h3>
           <div className="grid gap-8">
             {upcomingToShow.map((m) => (
               <MatchCard key={m.id} match={m} fullWidth />
@@ -68,7 +68,7 @@ export default function MatchesPreviewClient({ initialMatches }: { initialMatche
 
       {finishedToShow.length > 0 && (
         <section className="mt-2">
-          <h3 className="text-2xl md:text-3xl font-black text-esla-secondary mb-4">Abgeschlossene Spiele</h3>
+          <h3 className="text-2xl md:text-3xl font-black text-esla-secondary mb-4">Beendete Spiele</h3>
           <div className="grid gap-8">
             {finishedToShow.map((m) => (
               <MatchCard key={m.id} match={m} fullWidth />

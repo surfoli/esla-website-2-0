@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from 'react';
 import Image from 'next/image';
 import { Calendar, MapPin, Trophy, ChevronRight } from 'lucide-react';
 import { Match } from '@/types';
+import { displayTeamName } from '@/lib/match';
 import Section from '@/components/ui/Section';
 import Container from '@/components/ui/Container';
 import matchesFallback from '@/data/matches-fallback';
@@ -182,7 +183,7 @@ export default function MatchResults() {
                               className="rounded-lg"
                             />
                           )}
-                          <span className="text-white font-bold text-xl">{match.homeTeam}</span>
+                          <span className="text-white font-bold text-xl">{displayTeamName(match.homeTeam)}</span>
                         </div>
                         {/* Score */}
                         <div className="bg-esla-dark/50 rounded-xl px-8 py-4 min-w-[140px] text-center">
@@ -204,7 +205,7 @@ export default function MatchResults() {
                         </div>
                         {/* Away Team */}
                         <div className="flex items-center gap-x-3">
-                          <span className="text-white font-bold text-xl">{match.awayTeam}</span>
+                          <span className="text-white font-bold text-xl">{displayTeamName(match.awayTeam)}</span>
                           {logoByTeam[match.awayTeam.toLowerCase()] && (
                             <Image
                               src={logoByTeam[match.awayTeam.toLowerCase()]}

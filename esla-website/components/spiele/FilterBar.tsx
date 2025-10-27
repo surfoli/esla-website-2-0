@@ -9,8 +9,8 @@ export default function FilterBar({ statusParam, teamParam, pageSize }: { status
           { label: 'Alle', v: 'all' },
           { label: 'Aktuelle', v: 'live' },
           { label: 'Heute', v: 'today' },
-          { label: 'Zukünftige', v: 'upcoming' },
-          { label: 'Abgeschlossene', v: 'finished' },
+          { label: 'Anstehende', v: 'upcoming' },
+          { label: 'Beendete', v: 'finished' },
         ].map(({ label, v }) => {
           const href = `/spiele?status=${v}&team=${teamParam}&page=1&pageSize=${pageSize}`;
           const active = statusParam === v;

@@ -28,7 +28,6 @@ export default function LiveMini({
 
   const segments = new Array(blocks).fill(0).map((_, i) => {
     const blockStart = i * cycle; // 0,25,50,75
-    const blockEnd = blockStart + blockMinutes; // 20,45,70,95
     const inBlock = elapsedMin - blockStart;
     const p = (inBlock - 0) / blockMinutes; // progress within the play block only
     return Math.max(0, Math.min(1, p));

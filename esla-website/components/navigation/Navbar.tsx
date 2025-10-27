@@ -19,7 +19,7 @@ export default function Navbar() {
   ];
 
   return (
-    <nav className="fixed top-0 w-full z-50 bg-[#242424]" suppressHydrationWarning>
+    <nav className="fixed top-0 w-full z-50 bg-black" suppressHydrationWarning>
       <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-20">
           {/* Logo */}
@@ -44,7 +44,7 @@ export default function Navbar() {
               <Link
                 key={link.href}
                 href={link.href}
-                className="text-white hover:text-esla-primary transition-colors duration-200 font-medium whitespace-nowrap"
+                className="text-white hover:text-esla-primary transition-colors duration-200 font-bold whitespace-nowrap"
               >
                 {link.label}
               </Link>
@@ -87,13 +87,13 @@ export default function Navbar() {
 
       {/* Mobile menu */}
       {isOpen && (
-        <div className="xl:hidden bg-[#242424]">
+        <div className="xl:hidden bg-black">
           <div className="px-4 pt-2 pb-4 space-y-2">
             {navLinks.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
-                className="block px-3 py-2 text-white/90 hover:bg-white/10 rounded-lg transition-colors"
+                className="block px-3 py-2 text-white/90 hover:bg-white/10 rounded-lg transition-colors font-bold"
                 onClick={() => setIsOpen(false)}
               >
                 {link.label}
@@ -105,14 +105,14 @@ export default function Navbar() {
               <div className="mt-1 space-y-1">
                 <Link
                   href="/team?section=staff"
-                  className="block px-3 py-2 text-white/90 hover:bg-white/10 rounded-lg transition-colors"
+                  className="block px-3 py-2 text-white/90 hover:bg-white/10 rounded-lg transition-colors font-bold"
                   onClick={() => setIsOpen(false)}
                 >
                   Staff & Trainer
                 </Link>
                 <Link
                   href="/team?section=players"
-                  className="block px-3 py-2 text-white/90 hover:bg-white/10 rounded-lg transition-colors"
+                  className="block px-3 py-2 text-white/90 hover:bg-white/10 rounded-lg transition-colors font-bold"
                   onClick={() => setIsOpen(false)}
                 >
                   Spieler

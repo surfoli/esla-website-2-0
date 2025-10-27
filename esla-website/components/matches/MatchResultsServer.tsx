@@ -3,7 +3,8 @@ import Section from '@/components/ui/Section';
 import Container from '@/components/ui/Container';
 import matchesFallback from '@/data/matches-fallback';
 import { getRecentMatches } from '@/lib/kv';
-import AutoShrinkText from '@/components/ui/AutoShrinkText';
+import MatchTeamNames from '@/components/matches/MatchTeamNames';
+import { displayTeamName, matchesTeamName } from '@/lib/match';
 
 function isEslaTeam(name?: string) {
   if (!name) return false;
@@ -52,10 +53,13 @@ export default async function MatchResultsServer() {
                     <div className="flex flex-col gap-3 sm:gap-2">
                       {/* Row: teams + score (top) */}
                       <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 sm:gap-4 md:gap-8">
-                        <div className="min-w-0 text-left">
-                          <AutoShrinkText text={match.homeTeam} minPx={12} maxPx={36} className="block font-black text-white leading-tight whitespace-nowrap" />
-                        </div>
-                        <div className="justify-self-center">
+                        <MatchTeamNames 
+                          homeTeam={displayTeamName(match.homeTeam)} 
+                          awayTeam={displayTeamName(match.awayTeam)} 
+                          minPx={14} 
+                          maxPx={60} 
+                        />
+                        <div className="justify-self-center col-start-2">
                           <div className="bg-esla-dark/50 rounded-xl px-2.5 py-1.5 sm:px-3.5 sm:py-2 md:px-5 md:py-3 text-center">
                             <div className="font-black text-white leading-none text-[clamp(12px,3.2vw,18px)] sm:text-[clamp(14px,2.6vw,20px)] md:text-[clamp(16px,1.8vw,22px)]">
                               {typeof match.homeScore === 'number' && typeof match.awayScore === 'number' ? (
@@ -69,9 +73,6 @@ export default async function MatchResultsServer() {
                               )}
                             </div>
                           </div>
-                        </div>
-                        <div className="min-w-0 text-right">
-                          <AutoShrinkText text={match.awayTeam} minPx={12} maxPx={36} className="block font-black text-white leading-tight whitespace-nowrap" />
                         </div>
                       </div>
 
@@ -107,7 +108,10 @@ export default async function MatchResultsServer() {
                               return <span className="text-xs sm:text-sm font-bold text-white/80">ANSTEHEND</span>;
                             }
                             if (hs === null || as === null) {
-                              return <span className="text-xs sm:text-sm font-semibold text-white/80 bg-white/10 px-3 py-1 rounded-full">RESULTATE FOLGEN</span>;
+                              const involvesEslaEa = matchesTeamName(match.homeTeam, 'eslaea') || matchesTeamName(match.awayTeam, 'eslaea');
+                              return involvesEslaEa ? null : (
+                                <span className="text-xs sm:text-sm font-semibold text-white/80 bg-white/10 px-3 py-1 rounded-full">RESULTATE FOLGEN</span>
+                              );
                             }
                             if (hs === as) {
                               return <span className="text-xs sm:text-sm font-bold bg-yellow-500 text-black px-3 py-1 rounded-full">UNENTSCHIEDEN</span>;

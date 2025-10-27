@@ -26,7 +26,7 @@ export default function Footer() {
   ];
 
   return (
-    <footer className="bg-[#242424] text-white">
+    <footer className="bg-black text-white">
       {/* Sponsors & Gönner Section */}
       <div className="py-16 md:py-20">
         <Container>
@@ -135,15 +135,23 @@ export default function Footer() {
           <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
             {/* Column 1: About */}
             <div className="col-span-1">
-              <Image
-                src="/images/ESLA_Website_logo.png"
-                alt="ESLA Logo"
-                width={80}
-                height={80}
-                className="mb-6"
-                unoptimized
-              />
-              <h3 className="text-xl font-bold text-white mb-4">TEAM ELITESOCCER</h3>
+              <Link
+                href="/"
+                className="inline-block group"
+                aria-label="Zur Startseite"
+              >
+                <Image
+                  src="/images/ESLA_Website_logo.png"
+                  alt="ESLA Logo"
+                  width={80}
+                  height={80}
+                  className="mb-6 transition-transform duration-200 group-hover:scale-105"
+                  unoptimized
+                />
+                <h3 className="text-xl font-bold text-white mb-4 transition-colors duration-200 group-hover:text-esla-primary">
+                  TEAM ELITESOCCER
+                </h3>
+              </Link>
               <p className="text-white/70 text-sm mb-7 leading-relaxed">
                 Elite Soccer Luqmon Adekunle - Wir entwickeln Champions, auf und neben dem Platz.
               </p>

@@ -6,7 +6,8 @@ import { getAllMatches } from '@/lib/kv';
 import Image from 'next/image';
 import matchesFallback from '@/data/matches-fallback';
 import NowBadge from '@/components/ui/NowBadge';
-import AutoShrinkText from '@/components/ui/AutoShrinkText';
+import MatchTeamNames from '@/components/matches/MatchTeamNames';
+import { displayTeamName } from '@/lib/match';
 import LiveMini from '@/components/matches/LiveMini';
 import type { Match } from '@/types';
 
@@ -41,11 +42,12 @@ function toIsoString(date: string, time?: string) {
 function calendarInfo(match: Match) {
   const startIso = toIsoString(match.date, match.time);
   return {
-    title: `${match.homeTeam} vs. ${match.awayTeam}`,
+    title: `${displayTeamName(match.homeTeam)} vs. ${displayTeamName(match.awayTeam)}`,
     start: startIso,
     durationMinutes: 120,
     location: match.location || undefined,
     description: match.competition || undefined,
+    timeZone: 'Europe/Zurich',
   };
 }
 
@@ -138,8 +140,8 @@ export default async function UpcomingMatchesServer() {
       </div>
 
       {/* Content */}
-      <Container>
-        <div className="relative z-10 max-w-6xl mx-auto py-12 md:py-16 w-full">
+      <Container className="w-full">
+        <div className="relative z-10 mx-auto py-12 md:py-16 w-full">
           {/* Title */}
           <div className="text-left mb-10 md:mb-12">
             <div className="flex items-center justify-start mb-4">
@@ -149,18 +151,23 @@ export default async function UpcomingMatchesServer() {
           </div>
 
           {/* Großes nächstes Spiel */}
-          <div className="bg-white/10 backdrop-blur-xl rounded-3xl p-7 md:p-10 border border-white/15 shadow-2xl shadow-black/30 mb-8 w-full">
+          <div className="mx-auto bg-white/10 backdrop-blur-xl rounded-3xl p-7 md:p-10 border border-white/15 shadow-2xl shadow-black/30 mb-8 w-full"
+               style={{
+                 // Verhindert initialen Breiten-Shift bei Schrift/Resize-Observer
+                 contain: 'layout style paint',
+               }}>
             <div className="flex flex-col gap-6">
               <div className="w-full">
                 <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center justify-items-stretch gap-3 sm:gap-4 md:gap-8 mb-4">
-                  <div className="min-w-0 text-left">
-                    <AutoShrinkText text={next.homeTeam} minPx={12} maxPx={46} className="block font-black text-white leading-tight whitespace-nowrap" />
-                  </div>
-                  <div className="justify-self-center">
+                  <MatchTeamNames 
+                    homeTeam={displayTeamName(next.homeTeam)} 
+                    awayTeam={displayTeamName(next.awayTeam)} 
+                    minPx={14} 
+                    maxPx={60} 
+                    awayClassName="block font-black text-white leading-tight whitespace-nowrap pr-3 sm:pr-5" 
+                  />
+                  <div className="justify-self-center col-start-2">
                     <div className="inline-flex items-center justify-center rounded-2xl bg-white/15 border border-white/10 px-2.5 py-1.5 sm:px-3.5 sm:py-2 md:px-5 md:py-3 text-white font-black leading-none text-[clamp(12px,3.2vw,18px)] sm:text-[clamp(14px,2.6vw,20px)] md:text-[clamp(16px,1.8vw,22px)]">vs.</div>
-                  </div>
-                  <div className="min-w-0 text-right">
-                    <AutoShrinkText text={next.awayTeam} minPx={12} maxPx={46} className="block font-black text-white leading-tight whitespace-nowrap" />
                   </div>
                 </div>
                 <div className="text-white/90 text-left mb-2">
@@ -178,7 +185,7 @@ export default async function UpcomingMatchesServer() {
                     {isLive ? <LiveMini startIso={iso} /> : <Countdown iso={iso} variant="compact" />}
                   </div>
                   <div className="order-1 md:order-2 flex items-center justify-start md:justify-end gap-3 md:gap-5 w-full md:w-auto">
-                    {!isLive ? <JoinButton matchId={next.id} label="Ich nehme teil" calendar={nextCalendar} /> : null}
+                    {!isLive ? <JoinButton matchId={next.id} label="Ich bin dabei – auf oder neben dem Platz!" calendar={nextCalendar} /> : null}
                   </div>
                 </div>
               </div>

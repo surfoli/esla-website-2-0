@@ -21,15 +21,19 @@ interface Match {
 }
 
 function genId(prefix = 'm'): string {
-  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2,8)}`;
+  return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+}
+
+const NBSP_REGEX = /\u00a0/g;
+
+function normalizeWhitespace(value?: string | null): string | undefined {
+  if (typeof value !== 'string') return undefined;
+  const cleaned = value.replace(NBSP_REGEX, ' ').replace(/\s+/g, ' ').trim();
+  return cleaned || undefined;
 }
 
 function canonTeam(s?: string): string {
-  const base = (s || '')
-    .toLowerCase()
-    .replace(/\u00a0/g, ' ')
-    .replace(/\s+/g, ' ')
-    .trim();
+  const base = (normalizeWhitespace(s) || '').toLowerCase();
   let t = base.replace(/^(?:team\s*)?elitesoccer\s*/, '');
   // remove light qualifiers in parentheses for ESLA variants
   if (/esla/.test(t) || /elitesoccer/.test(base)) {
@@ -95,7 +99,7 @@ export async function POST(request: Request) {
 
     // Normalize incoming
     const normalizeTeamLabel = (s?: string): string => {
-      const base = (s || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+      const base = normalizeWhitespace(s) || '';
       let t = base.replace(/^(?:team\s*)?elitesoccer\s*/i, '');
       if (/esla/i.test(t) || /elitesoccer/i.test(base)) {
         t = t.replace(/\s*\(.*?\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
@@ -106,20 +110,30 @@ export async function POST(request: Request) {
       if (/\besla\s*e\s*a\b|\beslaea\b/.test(l)) return 'ESLA EA';
       return base;
     };
-    const normalized: Match[] = matches.map((m, i) => ({
-      id: m.id || genId(String(i)),
-      date: m.date,
-      time: m.time || undefined,
-      homeTeam: normalizeTeamLabel(m.homeTeam),
-      awayTeam: normalizeTeamLabel(m.awayTeam),
-      homeScore: m.homeScore ?? null,
-      awayScore: m.awayScore ?? null,
-      location: m.location || '',
-      competition: m.competition || '',
-      status: m.status || (typeof m.homeScore === 'number' && typeof m.awayScore === 'number' ? 'finished' : 'upcoming'),
-      matchNumber: m.matchNumber || undefined,
-      teamLogo: m.teamLogo || undefined,
-    }));
+    const normalizeMatchNumber = (value?: string | null) => {
+      const cleaned = normalizeWhitespace(value);
+      if (!cleaned) return undefined;
+      return cleaned.split(/\s*\/\s*/)[0];
+    };
+    const normalized: Match[] = matches.map((m, i) => {
+      const normalizedTime = normalizeWhitespace(m.time);
+      const time = normalizedTime && /^\d{1,2}:\d{2}$/.test(normalizedTime) ? normalizedTime : undefined;
+
+      return {
+        id: m.id || genId(String(i)),
+        date: m.date,
+        time,
+        homeTeam: normalizeTeamLabel(m.homeTeam),
+        awayTeam: normalizeTeamLabel(m.awayTeam),
+        homeScore: m.homeScore ?? null,
+        awayScore: m.awayScore ?? null,
+        location: normalizeWhitespace(m.location),
+        competition: normalizeWhitespace(m.competition),
+        status: m.status || (typeof m.homeScore === 'number' && typeof m.awayScore === 'number' ? 'finished' : 'upcoming'),
+        matchNumber: normalizeMatchNumber(m.matchNumber),
+        teamLogo: normalizeWhitespace(m.teamLogo),
+      };
+    });
 
     let added = 0;
     let updated = 0;
@@ -153,7 +167,12 @@ export async function POST(request: Request) {
         const merged: Match = { ...ex };
         let changed = false;
         if ((!merged.competition || merged.competition.trim() === '') && (m.competition || '').trim()) { merged.competition = m.competition!; changed = true; }
-        if ((!merged.location || merged.location.trim() === '') && (m.location || '').trim()) { merged.location = m.location!; changed = true; }
+        const nextLocation = normalizeWhitespace(m.location);
+        const mergedLocation = normalizeWhitespace(merged.location);
+        if (nextLocation && nextLocation !== mergedLocation) {
+          merged.location = nextLocation;
+          changed = true;
+        }
         if (!merged.matchNumber && m.matchNumber) { merged.matchNumber = m.matchNumber; changed = true; }
         if ((merged.homeScore === null || typeof merged.homeScore !== 'number') && typeof m.homeScore === 'number') { merged.homeScore = m.homeScore; changed = true; }
         if ((merged.awayScore === null || typeof merged.awayScore !== 'number') && typeof m.awayScore === 'number') { merged.awayScore = m.awayScore; changed = true; }
