@@ -16,7 +16,7 @@ export default function CoachQuote() {
           </div>
           <div className="text-white flex-1">
             <p className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black mb-6">
-              &quot;Gemeinsam entwickeln wir Champions – auf und neben dem Platz.&quot;
+              &quot;Gemeinsam entwickeln wir Champions, auf und neben dem Platz.&quot;
             </p>
             <p className="text-white/90 text-lg md:text-xl lg:text-2xl mb-6 leading-relaxed">
               &quot;Wir arbeiten hart, professionell und mit einem klaren Ziel: Spieler zu entwickeln, die nicht nur technisch stark sind, sondern auch charakterlich.&quot;

@@ -4,8 +4,8 @@ export interface Match {
   time?: string;
   homeTeam: string;
   awayTeam: string;
-  homeScore?: number;
-  awayScore?: number;
+  homeScore?: number | null;
+  awayScore?: number | null;
   location?: string;
   competition?: string;
   status: 'upcoming' | 'finished' | 'live';

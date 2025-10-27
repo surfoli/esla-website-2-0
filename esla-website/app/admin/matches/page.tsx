@@ -504,15 +504,11 @@ export default function MatchesAdmin() {
       const fallbackMatches = lines.map((l) => parseLine(l, defaultYear)).filter((item): item is MatchPayload => item !== null);
       parsed = fallbackMatches;
     }
-    if (parsed.length === 0) {
-      setBulkInfo('Keine gültigen Zeilen gefunden.');
-      return;
-    }
     try {
       const res = await fetch('/api/matches/bulk', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ matches: parsed }),
+        body: JSON.stringify({ matches: parsed, text: bulkText }),
       });
       const json = await res.json();
       if (!res.ok) {
@@ -791,9 +787,9 @@ export default function MatchesAdmin() {
             <div className="flex justify-between items-center">
               <div>
                 <h3 className="text-xl font-bold">{match.homeTeam} vs {match.awayTeam}</h3>
-                <p className="text-white/70">{match.date} | {match.time} | {match.location}</p>
+                <p className="text-white/60 text-sm lowercase">{[match.date, match.time, match.location].filter(Boolean).join(' | ')}</p>
                 {typeof match.homeScore === 'number' && typeof match.awayScore === 'number' ? (
-                  <p className="text-white/80">Resultat: {match.homeScore}:{match.awayScore}</p>
+                  <p className="text-white/60 text-sm lowercase">resultat: {match.homeScore}:{match.awayScore}</p>
                 ) : null}
                 <p className="text-esla-primary font-semibold">{match.competition}</p>
               </div>

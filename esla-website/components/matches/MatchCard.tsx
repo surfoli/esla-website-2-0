@@ -9,12 +9,12 @@ export default function MatchCard({ match, fullWidth = false }: { match: Match; 
   const cal = calendarInfo(match);
   const homeAwayLabel = (() => {
     if (match.location) {
-      return isHomeLocation(match.location) ? 'Heimspiel' : 'Auswärts';
+      return isHomeLocation(match.location) ? 'Heimspiel' : 'Auswärtsspiel';
     }
     const eslaHome = isEslaTeamName(match.homeTeam);
     const eslaAway = isEslaTeamName(match.awayTeam);
     if (eslaHome && !eslaAway) return 'Heimspiel';
-    if (eslaAway && !eslaHome) return 'Auswärts';
+    if (eslaAway && !eslaHome) return 'Auswärtsspiel';
     return undefined;
   })();
 

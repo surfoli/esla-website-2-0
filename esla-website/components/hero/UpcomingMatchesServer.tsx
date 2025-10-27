@@ -164,7 +164,8 @@ export default async function UpcomingMatchesServer() {
                     awayTeam={displayTeamName(next.awayTeam)} 
                     minPx={14} 
                     maxPx={60} 
-                    awayClassName="block font-black text-white leading-tight whitespace-nowrap pr-3 sm:pr-5" 
+                    homeClassName="block font-black text-white leading-tight whitespace-nowrap ml-3 sm:ml-5" 
+                    awayClassName="block font-black text-white leading-tight whitespace-nowrap mr-3 sm:mr-5" 
                   />
                   <div className="justify-self-center col-start-2">
                     <div className="inline-flex items-center justify-center rounded-2xl bg-white/15 border border-white/10 px-2.5 py-1.5 sm:px-3.5 sm:py-2 md:px-5 md:py-3 text-white font-black leading-none text-[clamp(12px,3.2vw,18px)] sm:text-[clamp(14px,2.6vw,20px)] md:text-[clamp(16px,1.8vw,22px)]">vs.</div>
