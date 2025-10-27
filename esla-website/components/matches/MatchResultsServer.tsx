@@ -4,7 +4,7 @@ import Container from '@/components/ui/Container';
 import matchesFallback from '@/data/matches-fallback';
 import { getRecentMatches } from '@/lib/kv';
 import MatchTeamNames from '@/components/matches/MatchTeamNames';
-import { displayTeamName, matchesTeamName } from '@/lib/match';
+import { displayTeamName, matchesTeamName, isHomeLocation } from '@/lib/match';
 
 function isEslaTeam(name?: string) {
   if (!name) return false;
@@ -52,29 +52,56 @@ export default async function MatchResultsServer() {
                   <div className="max-w-[1024px] mx-auto">
                     <div className="flex flex-col gap-3 sm:gap-2">
                       {/* Row: teams + score (top) */}
-                      <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 sm:gap-4 md:gap-8">
-                        <MatchTeamNames 
-                          homeTeam={displayTeamName(match.homeTeam)} 
-                          awayTeam={displayTeamName(match.awayTeam)} 
-                          minPx={14} 
-                          maxPx={60} 
-                        />
-                        <div className="justify-self-center col-start-2">
-                          <div className="bg-esla-dark/50 rounded-xl px-2.5 py-1.5 sm:px-3.5 sm:py-2 md:px-5 md:py-3 text-center">
-                            <div className="font-black text-white leading-none text-[clamp(12px,3.2vw,18px)] sm:text-[clamp(14px,2.6vw,20px)] md:text-[clamp(16px,1.8vw,22px)]">
-                              {typeof match.homeScore === 'number' && typeof match.awayScore === 'number' ? (
-                                <>
-                                  <span className="text-white">{match.homeScore}</span>
-                                  <span className="text-white/50 mx-2">:</span>
-                                  <span className="text-white">{match.awayScore}</span>
-                                </>
-                              ) : (
-                                <span className="text-white">vs.</span>
-                              )}
+                      {(() => {
+                        const home = displayTeamName(match.homeTeam);
+                        const away = displayTeamName(match.awayTeam);
+                        const lengthWithoutSpaces = (s: string) => s.replace(/\u00A0/g, ' ').replace(/\s+/g, '').length;
+                        const hasLongName = lengthWithoutSpaces(home) >= 20 || lengthWithoutSpaces(away) >= 20;
+                        const hasScore = typeof match.homeScore === 'number' && typeof match.awayScore === 'number';
+
+                        if (hasLongName) {
+                          return (
+                            <div className="flex flex-col gap-1">
+                              <div className="text-left">
+                                <span className="block font-black text-white leading-tight whitespace-normal text-[clamp(18px,4.5vw,36px)]">
+                                  {home} <span className="text-white">{hasScore ? `${match.homeScore}:${match.awayScore}` : 'VS.'}</span>
+                                </span>
+                              </div>
+                              <div className="text-left">
+                                <span className="block font-black text-white leading-tight whitespace-normal text-[clamp(18px,4.5vw,36px)]">
+                                  {away}
+                                </span>
+                              </div>
+                            </div>
+                          );
+                        }
+
+                        return (
+                          <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 sm:gap-4 md:gap-8">
+                            <MatchTeamNames 
+                              homeTeam={home} 
+                              awayTeam={away} 
+                              minPx={14} 
+                              maxPx={60} 
+                            />
+                            <div className="justify-self-center col-start-2">
+                              <div className="bg-esla-dark/60 border border-white/10 rounded-2xl px-2.5 py-1.5 sm:px-3.5 sm:py-2 md:px-5 md:py-3 text-center">
+                                <div className="font-black text-white leading-none text-[clamp(12px,3.2vw,18px)] sm:text-[clamp(14px,2.6vw,20px)] md:text-[clamp(16px,1.8vw,22px)]">
+                                  {hasScore ? (
+                                    <>
+                                      <span className="text-white">{match.homeScore}</span>
+                                      <span className="text-white/50 mx-2">:</span>
+                                      <span className="text-white">{match.awayScore}</span>
+                                    </>
+                                  ) : (
+                                    <span className="text-white">VS.</span>
+                                  )}
+                                </div>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </div>
+                        );
+                      })()}
 
                       {/* Meta + status (below) */}
                       <div className="flex flex-wrap items-center justify-between gap-2">
@@ -83,7 +110,12 @@ export default async function MatchResultsServer() {
                             {new Date(match.date).toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                             {match.time ? ` · ${match.time}` : ''}
                           </span>
-                          {match.location && <span>{match.location}</span>}
+                          {(() => {
+                            const isAway = match.location
+                              ? !isHomeLocation(match.location)
+                              : (isEslaTeam(match.awayTeam) && !isEslaTeam(match.homeTeam));
+                            return isAway && match.location ? <span>{match.location}</span> : null;
+                          })()}
                           {(() => {
                             if (!match.competition || /zugeordnet/i.test(match.competition)) return null;
                             const parts = splitCompetition(match.competition);

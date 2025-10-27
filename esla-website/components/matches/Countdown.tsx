@@ -42,7 +42,7 @@ export default function Countdown({ iso, variant = 'small' }: { iso: string; var
   return (
     <div className="flex gap-3 md:gap-4">
       {[['Tage', left.d], ['Std', left.h], ['Min', left.m], ['Sek', left.s]].map(([k, v]) => (
-        <div key={k as string} className={`bg-black/70 backdrop-blur-sm rounded-xl border border-white/10 text-center ${box}`}>
+        <div key={k as string} className={`bg-white/10 backdrop-blur-xl rounded-2xl border border-white/10 text-center shadow-md shadow-black/20 ${box}`}>
           <div className={`text-esla-primary font-black mb-1 ${num}`}>{String(v as number).padStart(2, '0')}</div>
           <div className={`text-white/80 uppercase tracking-wider font-semibold ${label}`}>{k}</div>
         </div>

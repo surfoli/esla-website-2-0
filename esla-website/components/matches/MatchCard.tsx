@@ -23,29 +23,56 @@ export default function MatchCard({ match, fullWidth = false }: { match: Match; 
       <div className={`${fullWidth ? 'w-full' : 'max-w-[1024px] mx-auto'}`}>
         <div className="grid gap-4 md:gap-5">
           {/* Teams row (top) */}
-          <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 sm:gap-4 md:gap-8">
-            <MatchTeamNames 
-              homeTeam={displayTeamName(match.homeTeam)} 
-              awayTeam={displayTeamName(match.awayTeam)} 
-              minPx={14} 
-              maxPx={60} 
-            />
-            <div className="justify-self-center col-start-2">
-              <div className="bg-white/10 border border-white/20 rounded-2xl px-3 py-1.5 sm:px-4 sm:py-2 md:px-5 md:py-2.5 text-center shadow-md">
-                <div className="font-black text-white leading-none text-[clamp(20px,4.2vw,36px)] sm:text-[clamp(24px,3.6vw,40px)] md:text-[clamp(28px,3vw,44px)]">
-                  {typeof match.homeScore === 'number' && typeof match.awayScore === 'number' ? (
-                    <>
-                      <span className="text-white">{match.homeScore}</span>
-                      <span className="text-white/50 mx-2">:</span>
-                      <span className="text-white">{match.awayScore}</span>
-                    </>
-                  ) : (
-                    <span className="text-white">vs.</span>
-                  )}
+          {(() => {
+            const home = displayTeamName(match.homeTeam);
+            const away = displayTeamName(match.awayTeam);
+            const lengthWithoutSpaces = (s: string) => s.replace(/\u00A0/g, ' ').replace(/\s+/g, '').length;
+            const hasLongName = lengthWithoutSpaces(home) >= 20 || lengthWithoutSpaces(away) >= 20;
+            const hasScore = typeof match.homeScore === 'number' && typeof match.awayScore === 'number';
+
+            if (hasLongName) {
+              return (
+                <div className="flex flex-col gap-1">
+                  <div className="text-left">
+                    <span className="block font-black text-white leading-tight whitespace-normal text-[clamp(18px,4.5vw,36px)]">
+                      {home} <span className="text-white">{hasScore ? `${match.homeScore}:${match.awayScore}` : 'VS.'}</span>
+                    </span>
+                  </div>
+                  <div className="text-left">
+                    <span className="block font-black text-white leading-tight whitespace-normal text-[clamp(18px,4.5vw,36px)]">
+                      {away}
+                    </span>
+                  </div>
+                </div>
+              );
+            }
+
+            return (
+              <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center gap-3 sm:gap-4 md:gap-8">
+                <MatchTeamNames 
+                  homeTeam={home} 
+                  awayTeam={away} 
+                  minPx={14} 
+                  maxPx={60} 
+                />
+                <div className="justify-self-center col-start-2">
+                  <div className="bg-white/10 border border-white/20 rounded-2xl px-3 py-1.5 sm:px-4 sm:py-2 md:px-5 md:py-2.5 text-center shadow-md">
+                    <div className="font-black text-white leading-none text-[clamp(20px,4.2vw,36px)] sm:text-[clamp(24px,3.6vw,40px)] md:text-[clamp(28px,3vw,44px)]">
+                      {hasScore ? (
+                        <>
+                          <span className="text-white">{match.homeScore}</span>
+                          <span className="text-white/50 mx-2">:</span>
+                          <span className="text-white">{match.awayScore}</span>
+                        </>
+                      ) : (
+                        <span className="text-white">VS.</span>
+                      )}
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-          </div>
+            );
+          })()}
 
           {/* Meta */}
           {/* Status + Join */}
@@ -55,17 +82,15 @@ export default function MatchCard({ match, fullWidth = false }: { match: Match; 
                 {new Date(`${match.date}T${match.time || '00:00'}:00`).toLocaleDateString('de-CH', { day: '2-digit', month: '2-digit', year: 'numeric' })}
                 {match.time ? ` | ${match.time}` : ''}
               </div>
-              {match.location && (
+              {homeAwayLabel === 'Auswärtsspiel' && match.location && (
                 <div className="flex items-center gap-2 text-white/60">
                   <span>{match.location}</span>
-                  {homeAwayLabel && (
-                    <span className="bg-white/10 border border-white/15 text-white/85 px-3 py-1 rounded-full text-xs sm:text-sm font-semibold uppercase tracking-wide">
-                      {homeAwayLabel}
-                    </span>
-                  )}
+                  <span className="bg-white/10 border border-white/15 text-white/85 px-3 py-1 rounded-full text-xs sm:text-sm font-semibold uppercase tracking-wide">
+                    {homeAwayLabel}
+                  </span>
                 </div>
               )}
-              {!match.location && homeAwayLabel && (
+              {(!match.location || homeAwayLabel === 'Heimspiel') && homeAwayLabel && (
                 <span className="self-start bg-white/10 border border-white/15 text-white/85 px-3 py-1 rounded-full text-xs sm:text-sm font-semibold uppercase tracking-wide">
                   {homeAwayLabel}
                 </span>

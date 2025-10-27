@@ -237,30 +237,140 @@ export async function POST(request: Request) {
   }
 }
 
-// ---- Simple server-side parser as fallback (supports date-blocks like provided sample) ----
+// ---- Server-seitiger Fallback-Parser (unterstützt Header-Zeilen, Datum+Zeit inline, Platzhalter, Spielnummer, Ort) ----
 function parseFromText(text: string): Match[] {
-  const lines = text.split(/\r?\n/).map((l) => l.trim());
+  const rawLines = text.split(/\r?\n/).map((l) => l.trim());
+  const lines = rawLines.filter((l) => l.length > 0);
   const res: Match[] = [];
-  const dateRe = /^(?:Mo|Di|Mi|Do|Fr|Sa|So|Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)\s+(\d{1,2})[.\/-](\d{1,2})(?:[.\/-](\d{2,4}))?$/i;
+
   const timeRe = /^\d{1,2}:\d{2}$/;
+  const dateRe = /^(?:(?:Mo|Di|Mi|Do|Fr|Sa|So|Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)\s+)?(\d{1,2})[.\/-](\d{1,2})(?:[.\/-](\d{2,4}))?$/i;
+  const dateTimeInlineRe = /^(?:(?:Mo|Di|Mi|Do|Fr|Sa|So|Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)\s+)?(\d{1,2})[.\/-](\d{1,2})(?:[.\/-](\d{2,4}))?\s*(\d{1,2}:\d{2})$/i;
   const dashRe = /^[-–—]+$/;
   const scoreSingleRe = /^(\d{1,2})\s*[:x-]\s*(\d{1,2})$/;
-  const placeholderRe = /^\*$/;
-  const matchNumberRe = /^Spielnummer\s*(.+)$/i;
+  const matchNumberRe = /^Spielnummer\s*(.+?)\.?$/i;
+  const placeholderTokenRe = /^(?:\*|f|forfait)$/i;
+  const competitionRe = /(Meisterschaft|Cup|Freundschaftsspiel|Testspiel|Turnier|Zwischenrunde|Liga|Gruppe|Runde|Pokal|Saison|Qualifikation|Stärkeklasse)/i;
+
+  const normalizeTeam = (s: string) => {
+    const base = s.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+    let t = base.replace(/^(?:team\s*)?elitesoccer\s*/i, '');
+    if (/esla/i.test(t) || /elitesoccer/i.test(base)) t = t.replace(/\s*\(.*?\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+    const l = t.toLowerCase();
+    if (/\besla\s*7\b|\besla7\b/.test(l)) return 'ESLA 7';
+    if (/\besla\s*9\b|\besla9\b/.test(l)) return 'ESLA 9';
+    if (/\besla\s*e\s*a\b|\beslaea\b/.test(l)) return 'ESLA EA';
+    if (/elitesoccer/i.test(base)) return t || base;
+    return base;
+  };
+
   let currentDateISO: string | undefined;
+  let currentCompetition: string | undefined;
+
   for (let i = 0; i < lines.length; i++) {
     let line = lines[i];
-    if (!line) continue;
-    const dm = line.match(dateRe);
-    if (dm) {
-      const dd = String(parseInt(dm[1], 10)).padStart(2, '0');
-      const mm = String(parseInt(dm[2], 10)).padStart(2, '0');
-      const yyyy = dm[3];
+
+    // Wettbewerb-Header merken
+    if (competitionRe.test(line) && !timeRe.test(line) && !dateRe.test(line) && !dateTimeInlineRe.test(line)) {
+      currentCompetition = line;
+      continue;
+    }
+
+    // Datum + Zeit inline
+    let inlineTime: string | undefined;
+    const inline = line.match(dateTimeInlineRe);
+    const onlyDate = line.match(dateRe);
+    if (inline) {
+      const dd = String(parseInt(inline[1], 10)).padStart(2, '0');
+      const mm = String(parseInt(inline[2], 10)).padStart(2, '0');
+      const yyyy = inline[3];
+      inlineTime = inline[4];
       let y = new Date().getFullYear();
       if (yyyy) y = yyyy.length === 2 ? 2000 + parseInt(yyyy, 10) : parseInt(yyyy, 10);
       currentDateISO = `${y}-${mm}-${dd}`;
-      continue;
+      line = inlineTime;
+    } else if (onlyDate) {
+      const dd = String(parseInt(onlyDate[1], 10)).padStart(2, '0');
+      const mm = String(parseInt(onlyDate[2], 10)).padStart(2, '0');
+      const yyyy = onlyDate[3];
+      let y = new Date().getFullYear();
+      if (yyyy) y = yyyy.length === 2 ? 2000 + parseInt(yyyy, 10) : parseInt(yyyy, 10);
+      currentDateISO = `${y}-${mm}-${dd}`;
+      // Falls keine Zeit inline → wir versuchen Block ohne Zeit unten
+      // und lassen line so wie es ist (kein timeRe)
     }
+
+    // Falls jetzt keine Zeit → überprüfe, ob ein Block ohne Zeit folgt
+    if (currentDateISO && !timeRe.test(line)) {
+      const homeRaw = lines[i + 1] || '';
+      const dash = lines[i + 2] || '';
+      const awayRaw = lines[i + 3] || '';
+      if (homeRaw && dashRe.test(dash) && awayRaw) {
+        let k = i + 4;
+        let homeScore: number | null = null;
+        let awayScore: number | null = null;
+
+        // Ergebnis erkennen (* : * oder Ziffer : Ziffer über eine oder drei Zeilen)
+        const s1 = (lines[k] || '').trim();
+        if (scoreSingleRe.test(s1)) {
+          const m = s1.match(scoreSingleRe)!;
+          homeScore = Number(m[1]);
+          awayScore = Number(m[2]);
+          k += 1;
+        } else if ((lines[k] || '').trim().match(/^\d{1,2}$/) && (lines[k + 1] || '').trim().match(/^[:x-]$/) && (lines[k + 2] || '').trim().match(/^\d{1,2}$/)) {
+          homeScore = Number(lines[k].trim());
+          awayScore = Number(lines[k + 2].trim());
+          k += 3;
+        } else if (placeholderTokenRe.test((lines[k] || '').trim()) && /^[:x-]$/.test((lines[k + 1] || '').trim()) && placeholderTokenRe.test((lines[k + 2] || '').trim())) {
+          k += 3;
+        }
+
+        // Placeholder-Zeilen wie "F", "Forfait" überspringen
+        while (k < lines.length && placeholderTokenRe.test((lines[k] || '').trim())) k++;
+
+        let competition = '';
+        let matchNumber: string | undefined;
+        // Wettbewerb und Spielnummer einsammeln
+        while (k < lines.length) {
+          const look = (lines[k] || '').trim();
+          if (!look) { k++; continue; }
+          const mn = look.match(matchNumberRe);
+          if (mn) { matchNumber = mn[1].trim(); k++; continue; }
+          if (competitionRe.test(look) && !timeRe.test(look) && !dateRe.test(look) && !dateTimeInlineRe.test(look)) { competition = look; k++; continue; }
+          if (dashRe.test(look)) { k++; continue; }
+          break;
+        }
+        if (!competition && currentCompetition) competition = currentCompetition;
+
+        // Ort
+        let location: string | undefined;
+        const next = (lines[k] || '').trim();
+        if (next && !competitionRe.test(next) && !dateRe.test(next) && !dateTimeInlineRe.test(next) && !timeRe.test(next) && !placeholderTokenRe.test(next)) {
+          location = next;
+          k++;
+        }
+
+        const match: Match = {
+          id: `tmp-${res.length}`,
+          date: currentDateISO,
+          homeTeam: normalizeTeam(homeRaw),
+          awayTeam: normalizeTeam(awayRaw),
+          time: undefined,
+          homeScore: homeScore ?? undefined,
+          awayScore: awayScore ?? undefined,
+          competition: competition || undefined,
+          location,
+          status: typeof homeScore === 'number' && typeof awayScore === 'number' ? 'finished' : 'upcoming',
+          matchNumber,
+        } as Match;
+        const n = normalizeMatchPayload(match);
+        res.push({ ...(match as any), ...n } as Match);
+        i = k - 1;
+        continue;
+      }
+    }
+
+    // Spiel-Block mit separater Zeitzeile
     if (!timeRe.test(line)) continue;
     const t = line;
     const homeRaw = lines[i + 1] || '';
@@ -280,49 +390,39 @@ function parseFromText(text: string): Match[] {
       homeScore = Number(lines[k].trim());
       awayScore = Number(lines[k + 2].trim());
       k += 3;
-    } else if (placeholderRe.test((lines[k] || '').trim()) && /^[:x-]$/.test((lines[k + 1] || '').trim()) && placeholderRe.test((lines[k + 2] || '').trim())) {
+    } else if (placeholderTokenRe.test((lines[k] || '').trim()) && /^[:x-]$/.test((lines[k + 1] || '').trim()) && placeholderTokenRe.test((lines[k + 2] || '').trim())) {
       k += 3; // * : *
     }
-    let matchNumber: string | undefined;
+    // Placeholder-Zeilen skippen
+    while (k < lines.length && placeholderTokenRe.test((lines[k] || '').trim())) k++;
+
     let competition = '';
+    let matchNumber: string | undefined;
     while (k < lines.length) {
       const look = (lines[k] || '').trim();
       if (!look) { k++; continue; }
       const mn = look.match(matchNumberRe);
       if (mn) { matchNumber = mn[1].trim(); k++; continue; }
-      if (look && !timeRe.test(look) && !dateRe.test(look) && !dashRe.test(look) && !placeholderRe.test(look) && !scoreSingleRe.test(look)) {
-        // Wettbewerb oder Ort – wir nehmen den ersten Nicht-Schlüssel als Wettbewerb
-        competition = look;
-        k++;
-        break;
-      }
+      if (competitionRe.test(look) && !timeRe.test(look) && !dateRe.test(look) && !dateTimeInlineRe.test(look)) { competition = look; k++; continue; }
+      if (dashRe.test(look)) { k++; continue; }
       break;
     }
-    // Ort (optional) – nächste freie Zeile, die kein Datum/Zeit/Score/Trenner ist
+    if (!competition && currentCompetition) competition = currentCompetition;
+
     let location: string | undefined;
     const next = (lines[k] || '').trim();
-    if (next && !timeRe.test(next) && !dateRe.test(next) && !dashRe.test(next) && !placeholderRe.test(next) && !scoreSingleRe.test(next) && !matchNumberRe.test(next)) {
+    if (next && !competitionRe.test(next) && !dateRe.test(next) && !dateTimeInlineRe.test(next) && !timeRe.test(next) && !placeholderTokenRe.test(next)) {
       location = next;
       k++;
     }
-    const normalize = (s: string) => {
-      const base = s.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
-      let t = base.replace(/^(?:team\s*)?elitesoccer\s*/i, '');
-      if (/esla/i.test(t) || /elitesoccer/i.test(base)) t = t.replace(/\s*\(.*?\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
-      const l = t.toLowerCase();
-      if (/\besla\s*7\b|\besla7\b/.test(l)) return 'ESLA 7';
-      if (/\besla\s*9\b|\besla9\b/.test(l)) return 'ESLA 9';
-      if (/\besla\s*e\s*a\b|\beslaea\b/.test(l)) return 'ESLA EA';
-      if (/elitesoccer/i.test(base)) return t || base;
-      return base;
-    };
-    if (!currentDateISO) { i = k; continue; }
+
+    if (!currentDateISO) { i = k - 1; continue; }
     const match: Match = {
       id: `tmp-${res.length}`,
       date: currentDateISO,
       time: t,
-      homeTeam: normalize(homeRaw),
-      awayTeam: normalize(awayRaw),
+      homeTeam: normalizeTeam(homeRaw),
+      awayTeam: normalizeTeam(awayRaw),
       homeScore: homeScore ?? undefined,
       awayScore: awayScore ?? undefined,
       competition: competition || undefined,

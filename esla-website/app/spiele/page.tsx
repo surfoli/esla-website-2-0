@@ -128,9 +128,9 @@ export default async function SpielePage({ searchParams }: { searchParams?: Matc
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
       <Navbar />
-      <div className="pt-32 pb-20">
-        <Container>
-          {/* Header */}
+      <div className="pt-40 md:pt-32 pb-20">
+        {/* Header breit wie Über-uns */}
+        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
           <div className="relative text-center mb-12 bg-esla-secondary text-white p-10 pb-16 rounded-3xl">
             <div className="flex items-center justify-between mb-4 gap-4">
               <NowBadge />
@@ -146,7 +146,8 @@ export default async function SpielePage({ searchParams }: { searchParams?: Matc
               {total === 1 ? '1 Suchergebnis' : `${total} Suchergebnisse`}
             </div>
           </div>
-
+        </div>
+        <Container>
           {statusParam === 'all' ? (
             <>
               {(() => {

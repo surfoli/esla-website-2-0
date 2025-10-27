@@ -111,8 +111,8 @@ export default function TeamPage() {
               {playerGroups.map((group) => (
                 <section key={group} className="mb-12">
                   <Container>
-                    <h2 className="text-black font-extrabold text-4xl md:text-5xl mb-6">{positionNames[group]}</h2>
-                    <div className="grid grid-cols-[repeat(auto-fit,minmax(270px,345px))] justify-start gap-8">
+                    <h2 className="text-black font-extrabold text-4xl md:text-5xl mb-6 text-left">{positionNames[group]}</h2>
+                    <div className="grid grid-cols-[repeat(auto-fit,minmax(270px,345px))] justify-center md:justify-start gap-8">
                     {teams[group].map((player, index) => (
                       <div
                         key={`${group}-${player.name}`}
@@ -146,7 +146,7 @@ export default function TeamPage() {
             </>
           ) : (
             <Container>
-              <div className="grid grid-cols-[repeat(auto-fit,minmax(270px,345px))] justify-start gap-8">
+              <div className="grid grid-cols-[repeat(auto-fit,minmax(270px,345px))] justify-center md:justify-start gap-8">
                 {teams.staff.map((member, index) => (
                   <div
                     key={`staff-${member.name}`}

@@ -217,7 +217,7 @@ export default function Footer() {
                 </li>
                 <li>
                   <Link href="/datenschutz#cookies" className="text-white/70 hover:text-esla-primary transition-colors text-sm">
-                    Cookie-Einstellungen
+                    Cookie-Informationen
                   </Link>
                 </li>
                 <li>

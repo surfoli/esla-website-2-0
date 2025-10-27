@@ -7,7 +7,7 @@ import Image from 'next/image';
 import matchesFallback from '@/data/matches-fallback';
 import NowBadge from '@/components/ui/NowBadge';
 import MatchTeamNames from '@/components/matches/MatchTeamNames';
-import { displayTeamName } from '@/lib/match';
+import { displayTeamName, isHomeLocation } from '@/lib/match';
 import LiveMini from '@/components/matches/LiveMini';
 import type { Match } from '@/types';
 
@@ -147,35 +147,72 @@ export default async function UpcomingMatchesServer() {
             <div className="flex items-center justify-start mb-4">
               <NowBadge />
             </div>
-            <h1 className="text-4xl md:text-5xl font-black text-white mb-4">{isLive ? 'JETZT LIVE' : 'Countdown zum Anpfiff'}</h1>
+            <h1 className="hidden md:block text-4xl md:text-5xl font-black text-white mb-4">{isLive ? 'JETZT LIVE' : 'Countdown zum Anpfiff'}</h1>
           </div>
 
           {/* Großes nächstes Spiel */}
-          <div className="mx-auto bg-white/10 backdrop-blur-xl rounded-3xl p-7 md:p-10 border border-white/15 shadow-2xl shadow-black/30 mb-8 w-full"
+          <div className="mt-[30vh] md:mt-0">
+            <div className="md:hidden text-left mb-4">
+              <h1 className="text-4xl font-black text-white">{isLive ? 'JETZT LIVE' : 'Countdown zum Anpfiff'}</h1>
+            </div>
+            <div className="mx-auto bg-white/8 backdrop-blur-2xl rounded-3xl p-7 md:p-10 border border-white/10 shadow-2xl shadow-black/30 mb-8 w-full"
                style={{
                  // Verhindert initialen Breiten-Shift bei Schrift/Resize-Observer
                  contain: 'layout style paint',
                }}>
-            <div className="flex flex-col gap-6">
+              <div className="flex flex-col gap-6">
               <div className="w-full">
-                <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center justify-items-stretch gap-3 sm:gap-4 md:gap-8 mb-4">
-                  <MatchTeamNames 
-                    homeTeam={displayTeamName(next.homeTeam)} 
-                    awayTeam={displayTeamName(next.awayTeam)} 
-                    minPx={14} 
-                    maxPx={60} 
-                    homeClassName="block font-black text-white leading-tight whitespace-nowrap ml-3 sm:ml-5" 
-                    awayClassName="block font-black text-white leading-tight whitespace-nowrap mr-3 sm:mr-5" 
-                  />
-                  <div className="justify-self-center col-start-2">
-                    <div className="inline-flex items-center justify-center rounded-2xl bg-white/15 border border-white/10 px-2.5 py-1.5 sm:px-3.5 sm:py-2 md:px-5 md:py-3 text-white font-black leading-none text-[clamp(12px,3.2vw,18px)] sm:text-[clamp(14px,2.6vw,20px)] md:text-[clamp(16px,1.8vw,22px)]">vs.</div>
-                  </div>
-                </div>
-                <div className="text-white/90 text-left mb-2">
-                  {new Date(next.date).toLocaleDateString('de-CH', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })}
-                  {next.time ? ` | ${next.time}` : ''}
-                  {next.location ? ` | ${next.location}` : ''}
-                </div>
+                {(() => {
+                  const home = displayTeamName(next.homeTeam);
+                  const away = displayTeamName(next.awayTeam);
+                  const lengthWithoutSpaces = (s: string) => s.replace(/\u00A0/g, ' ').replace(/\s+/g, '').length;
+                  const hasLongName = lengthWithoutSpaces(home) >= 20 || lengthWithoutSpaces(away) >= 20;
+                  if (hasLongName) {
+                    return (
+                      <div className="mb-4">
+                        <div className="text-left">
+                          <span className="block font-black text-white leading-tight whitespace-normal text-[clamp(18px,4.5vw,36px)]">
+                            {home}
+                            {' '}
+                            <span className="inline-flex items-center justify-center rounded-2xl bg-white/10 border border-white/20 px-2.5 py-0.5 ml-2 align-middle text-white font-black text-[0.6em] md:text-[0.55em]">VS.</span>
+                          </span>
+                        </div>
+                        <div className="text-left mt-1">
+                          <span className="block font-black text-white leading-tight whitespace-normal text-[clamp(18px,4.5vw,36px)]">
+                            {away}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  }
+                  return (
+                    <div className="grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center justify-items-stretch gap-3 sm:gap-4 md:gap-8 mb-4">
+                      <MatchTeamNames 
+                        homeTeam={home} 
+                        awayTeam={away} 
+                        minPx={14} 
+                        maxPx={60} 
+                        homeClassName="block font-black text-white leading-tight whitespace-nowrap" 
+                        awayClassName="block font-black text-white leading-tight whitespace-nowrap mr-3 sm:mr-5" 
+                      />
+                      <div className="justify-self-center col-start-2">
+                        <div className="inline-flex items-center justify-center rounded-2xl bg-white/10 border border-white/20 px-2.5 py-1.5 sm:px-3.5 sm:py-2 md:px-5 md:py-3 text-white font-black leading-none text-[clamp(12px,3.2vw,18px)] sm:text-[clamp(14px,2.6vw,20px)] md:text-[clamp(16px,1.8vw,22px)]">VS.</div>
+                      </div>
+                    </div>
+                  );
+                })()}
+                {(() => {
+                  const isAway = next.location
+                    ? !isHomeLocation(next.location)
+                    : (isEslaTeam(next.awayTeam) && !isEslaTeam(next.homeTeam));
+                  return (
+                    <div className="text-white/90 text-left mb-2">
+                      {new Date(next.date).toLocaleDateString('de-CH', { weekday: 'long', day: '2-digit', month: '2-digit', year: 'numeric' })}
+                      {next.time ? ` | ${next.time}` : ''}
+                      {isAway && next.location ? ` | ${next.location}` : ''}
+                    </div>
+                  );
+                })()}
                 {next.competition && !/zugeordnet/i.test(next.competition) && (
                   <div className="text-esla-accent text-left mb-6">
                     <span className="text-sm md:text-base font-semibold">{next.competition}</span>
@@ -192,7 +229,7 @@ export default async function UpcomingMatchesServer() {
               </div>
             </div>
           </div>
-
+          </div>
         </div>
       </Container>
     

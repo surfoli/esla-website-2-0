@@ -11,7 +11,7 @@ export default async function MatchesPreviewServer() {
   const all: Match[] = liveMatches.length > 0 ? liveMatches : fallbackMatches;
 
   return (
-    <Section className="bg-white pt-0 pb-4 md:pb-6" noContainer>
+    <Section className="bg-white pt-6 md:pt-6 pb-4 md:pb-6" noContainer>
       <Container>
         <div className="w-full">
           <div className="text-center mb-8 md:mb-10">

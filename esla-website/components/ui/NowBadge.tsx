@@ -20,11 +20,15 @@ export default function NowBadge({ className = '' }: { className?: string }) {
     hour: '2-digit',
     minute: '2-digit',
   }).format(now);
-  const text = `Aktuell: ${datePart} · ${timePart} Uhr`;
 
   return (
-    <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-white text-sm ${className}`}>
-      <span className="font-semibold" suppressHydrationWarning>{text}</span>
+    <div className={`inline-flex items-center justify-center gap-2 px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full bg-white/10 border border-white/10 text-white text-xs sm:text-sm whitespace-nowrap ${className}`}>
+      <span className="font-semibold" suppressHydrationWarning>
+        Aktuell: {datePart}
+      </span>
+      <span className="font-semibold" suppressHydrationWarning>
+        {timePart} Uhr
+      </span>
     </div>
   );
 }

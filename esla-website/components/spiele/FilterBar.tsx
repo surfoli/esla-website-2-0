@@ -7,8 +7,6 @@ export default function FilterBar({ statusParam, teamParam, pageSize }: { status
       <div className="flex flex-wrap justify-center gap-2">
         {[
           { label: 'Alle', v: 'all' },
-          { label: 'Aktuelle', v: 'live' },
-          { label: 'Heute', v: 'today' },
           { label: 'Anstehende', v: 'upcoming' },
           { label: 'Beendete', v: 'finished' },
         ].map(({ label, v }) => {
