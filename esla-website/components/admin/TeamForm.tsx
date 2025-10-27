@@ -10,6 +10,17 @@ interface TeamFormData {
   primaryColor?: string;
 }
 
+type MutableTeamPayload = Omit<TeamFormData, "id"> & { id?: string };
+
+function buildPayload(data: TeamFormData): MutableTeamPayload {
+  return {
+    name: data.name,
+    short: data.short?.trim() || undefined,
+    logoUrl: data.logoUrl?.trim() || undefined,
+    primaryColor: data.primaryColor?.trim() || undefined,
+  };
+}
+
 export default function TeamForm({ initial }: { initial?: TeamFormData }) {
   const router = useRouter();
   const [name, setName] = useState(initial?.name || "");
@@ -24,12 +35,12 @@ export default function TeamForm({ initial }: { initial?: TeamFormData }) {
     setError(null);
     setSaving(true);
     try {
-      const body: any = {
+      const body = buildPayload({
         name,
-        short: short || undefined,
-        logoUrl: logoUrl || undefined,
-        primaryColor: primaryColor || undefined,
-      };
+        short,
+        logoUrl,
+        primaryColor,
+      });
       let res: Response;
       if (initial?.id) {
         res = await fetch(`/api/teams/${initial.id}`, {

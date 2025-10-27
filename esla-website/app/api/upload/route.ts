@@ -28,7 +28,7 @@ export async function POST(request: Request) {
       access: 'public',
       token,
       contentType: file.type || 'application/octet-stream',
-    } as any);
+    });
 
     return NextResponse.json({ url: blob.url, pathname: blob.pathname });
   } catch (e) {

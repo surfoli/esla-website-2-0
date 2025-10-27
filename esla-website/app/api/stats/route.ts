@@ -1,11 +1,9 @@
 import { NextResponse } from 'next/server';
 import { getAllMatches } from '@/lib/kv';
+import { computedStatus } from '@/lib/match';
+import type { Match } from '@/types';
 
 export const dynamic = 'force-dynamic';
-
-function isNumber(n: any): n is number {
-  return typeof n === 'number' && !Number.isNaN(n);
-}
 
 function isEslaTeam(name?: string) {
   if (!name) return false;
@@ -14,13 +12,7 @@ function isEslaTeam(name?: string) {
   return /esla/i.test(n);
 }
 
-function toMs(date?: string, time?: string): number {
-  if (!date) return 0;
-  const t = time && time.length >= 4 ? time : '00:00';
-  return new Date(`${date}T${t}:00`).getTime();
-}
-
-function toNum(v: any): number | null {
+function toNum(v: unknown): number | null {
   if (v === null || v === undefined) return null;
   const n = Number(v);
   return Number.isFinite(n) ? n : null;
@@ -38,33 +30,35 @@ export async function GET() {
     let upcoming = 0;
     let finished = 0;
 
-    const now = Date.now();
-    for (const m of matches) {
-      const eslaHome = isEslaTeam((m as any).homeTeam);
-      const eslaAway = isEslaTeam((m as any).awayTeam);
-      const hs = toNum((m as any).homeScore);
-      const as = toNum((m as any).awayScore);
-      const ms = toMs((m as any).date, (m as any).time);
+    for (const match of matches as Match[]) {
+      const eslaHome = isEslaTeam(match.homeTeam);
+      const eslaAway = isEslaTeam(match.awayTeam);
+      const hs = toNum(match.homeScore);
+      const as = toNum(match.awayScore);
+      const status = computedStatus(match);
       const hasScore = hs !== null && as !== null;
 
       if (!hasScore) {
-        if ((m as any).status === 'upcoming' || ms > now) upcoming++;
+        if (status === 'upcoming' || status === 'live') upcoming++;
         continue;
       }
 
       finished++;
 
-      if (eslaHome && eslaAway) {
-        // ESLA vs ESLA: nicht für W/D/L werten, aber als finished zählen
-        continue;
-      }
+      if (eslaHome && eslaAway) continue; // internes Duell nicht zählen
 
       if (eslaHome) {
-        gf += hs; ga += as;
-        if (hs > as) wins++; else if (hs === as) draws++; else losses++;
+        gf += hs;
+        ga += as;
+        if (hs > as) wins++;
+        else if (hs === as) draws++;
+        else losses++;
       } else if (eslaAway) {
-        gf += as; ga += hs;
-        if (as > hs) wins++; else if (hs === as) draws++; else losses++;
+        gf += as;
+        ga += hs;
+        if (as > hs) wins++;
+        else if (hs === as) draws++;
+        else losses++;
       }
     }
 

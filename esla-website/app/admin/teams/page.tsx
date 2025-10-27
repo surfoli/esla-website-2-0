@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
+import Image from 'next/image';
 import Navbar from '@/components/navigation/Navbar';
 
 interface Team {
@@ -13,9 +14,34 @@ interface Team {
   primaryColor?: string;
 }
 
+type TeamPayload = Omit<Team, 'id'>;
+type TeamRecord = Pick<Team, 'id' | 'name'>;
+
+function isTeamRecord(value: unknown): value is Team {
+  if (!value || typeof value !== 'object') return false;
+  const candidate = value as Partial<Team>;
+  return typeof candidate.id === 'string' && typeof candidate.name === 'string';
+}
+
+function sanitizeTeamPayload(value: Partial<Team>): TeamPayload | null {
+  if (typeof value.name !== 'string' || value.name.trim().length === 0) return null;
+  const payload: TeamPayload = { name: value.name.trim() };
+  if (typeof value.short === 'string' && value.short.trim().length > 0) {
+    payload.short = value.short.trim();
+  }
+  if (typeof value.logoUrl === 'string' && value.logoUrl.trim().length > 0) {
+    payload.logoUrl = value.logoUrl.trim();
+  }
+  if (typeof value.primaryColor === 'string' && value.primaryColor.trim().length > 0) {
+    payload.primaryColor = value.primaryColor.trim();
+  }
+  return payload;
+}
+
 export default function TeamsAdmin() {
   const router = useRouter();
   const [teams, setTeams] = useState<Team[]>([]);
+  const [teamRecords, setTeamRecords] = useState<TeamRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
@@ -31,10 +57,25 @@ export default function TeamsAdmin() {
   const fetchTeams = async () => {
     try {
       const res = await fetch('/api/teams');
-      const data = await res.json();
-      setTeams(Array.isArray(data) ? data : []);
-    } catch (e) {
-      console.error(e);
+      if (!res.ok) {
+        console.error('Failed to fetch teams: HTTP', res.status);
+        setTeams([]);
+        setTeamRecords([]);
+        return;
+      }
+      const data: unknown = await res.json();
+      if (Array.isArray(data)) {
+        const valid = data.filter(isTeamRecord);
+        setTeams(valid);
+        setTeamRecords(valid.map(({ id, name }) => ({ id, name })));
+      } else {
+        setTeams([]);
+        setTeamRecords([]);
+      }
+    } catch (error) {
+      console.error('Failed to load teams', error);
+      setTeams([]);
+      setTeamRecords([]);
     } finally {
       setLoading(false);
     }
@@ -42,52 +83,72 @@ export default function TeamsAdmin() {
 
   const handleCreate = async () => {
     try {
+      const payload = sanitizeTeamPayload(formData);
+      if (!payload) {
+        alert('Teamname erforderlich');
+        return;
+      }
       const res = await fetch('/api/teams', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) return alert('Speichern fehlgeschlagen');
       setShowAddForm(false);
       setFormData({});
       setLogoFile(null);
       await fetchTeams();
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error('Failed to create team', error);
     }
   };
 
   const startEdit = (team: Team) => {
     setEditingId(team.id);
-    setFormData(team);
+    setFormData({ ...team });
   };
 
   const cancelEdit = () => {
     setEditingId(null);
     setFormData({});
+    setLogoFile(null);
+    setUploadError(null);
   };
 
   const handleUpdate = async (id: string) => {
     try {
+      const payload = sanitizeTeamPayload(formData);
+      if (!payload) {
+        alert('Teamname erforderlich');
+        return;
+      }
       const res = await fetch(`/api/teams/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       });
       if (!res.ok) return alert('Aktualisierung fehlgeschlagen');
       setEditingId(null);
       setFormData({});
       setLogoFile(null);
       await fetchTeams();
-    } catch (e) {
-      console.error(e);
+    } catch (error) {
+      console.error('Failed to update team', error);
     }
   };
 
   const handleDelete = async (id: string) => {
     if (!confirm('Team löschen?')) return;
-    await fetch(`/api/teams/${id}`, { method: 'DELETE' });
-    await fetchTeams();
+    try {
+      const res = await fetch(`/api/teams/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        alert('Löschen fehlgeschlagen');
+        return;
+      }
+      await fetchTeams();
+    } catch (error) {
+      console.error('Failed to delete team', error);
+    }
   };
 
   const uploadLogo = async () => {
@@ -105,7 +166,7 @@ export default function TeamsAdmin() {
         return;
       }
       setFormData({ ...formData, logoUrl: json.url });
-    } catch (e) {
+    } catch (error) {
       setUploadError('Upload fehlgeschlagen');
     } finally {
       setUploadingLogo(false);
@@ -150,7 +211,9 @@ export default function TeamsAdmin() {
                 {uploadError && <div className="md:col-span-2 text-red-400 text-sm">{uploadError}</div>}
                 {formData.logoUrl && (
                   <div className="md:col-span-2">
-                    <img src={formData.logoUrl} alt="Logo Vorschau" className="h-20 object-contain" />
+                    <div className="relative h-20 w-40">
+                      <Image src={formData.logoUrl} alt="Logo Vorschau" fill unoptimized className="object-contain" />
+                    </div>
                   </div>
                 )}
                 <input className="bg-white/10 border border-white/30 rounded-lg px-4 py-2" placeholder="Primärfarbe (#RRGGBB)" value={formData.primaryColor || ''} onChange={(e)=>setFormData({ ...formData, primaryColor: e.target.value })} />
@@ -179,7 +242,9 @@ export default function TeamsAdmin() {
                       {uploadError && <div className="md:col-span-2 text-red-400 text-sm">{uploadError}</div>}
                       {formData.logoUrl && (
                         <div className="md:col-span-2">
-                          <img src={formData.logoUrl} alt="Logo Vorschau" className="h-20 object-contain" />
+                          <div className="relative h-20 w-40">
+                            <Image src={formData.logoUrl} alt="Logo Vorschau" fill unoptimized className="object-contain" />
+                          </div>
                         </div>
                       )}
                       <input className="bg-white/10 border border-white/30 rounded-lg px-4 py-2" value={formData.primaryColor || ''} onChange={(e)=>setFormData({ ...formData, primaryColor: e.target.value })} />

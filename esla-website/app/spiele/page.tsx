@@ -1,7 +1,7 @@
 import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/footer/Footer';
 import Link from 'next/link';
-import matchesLocal from '@/data/matches.json';
+import matchesFallback from '@/data/matches-fallback';
 import { getMatchesPage, getAllMatches } from '@/lib/kv';
 import type { Match } from '@/types';
 import FilterBar from '@/components/spiele/FilterBar';
@@ -13,12 +13,22 @@ import { computedStatus, compareByDateAsc, compareByDateDesc, comparatorForStatu
 
 export const dynamic = 'force-dynamic';
 
-export default async function SpielePage({ searchParams }: { searchParams?: { page?: string; pageSize?: string; filter?: string; status?: string; team?: string } }) {
-  let page = Math.max(1, parseInt(searchParams?.page || '1', 10) || 1);
-  const pageSize = Math.max(1, Math.min(50, parseInt(searchParams?.pageSize || '20', 10) || 20));
-  const legacyFilter = (searchParams?.filter || '').toLowerCase();
-  const statusParam = (searchParams?.status || (legacyFilter === 'upcoming' ? 'upcoming' : 'all')).toLowerCase();
-  const teamParam = (searchParams?.team || 'all').toLowerCase();
+type MatchesSearchParams = {
+  page?: string;
+  pageSize?: string;
+  filter?: string;
+  status?: string;
+  team?: string;
+};
+
+export default async function SpielePage({ searchParams }: { searchParams?: MatchesSearchParams | Promise<MatchesSearchParams | undefined> }) {
+  const resolvedSearchParams = (await searchParams) ?? {};
+
+  let page = Math.max(1, parseInt(resolvedSearchParams.page || '1', 10) || 1);
+  const pageSize = Math.max(1, Math.min(50, parseInt(resolvedSearchParams.pageSize || '20', 10) || 20));
+  const legacyFilter = (resolvedSearchParams.filter || '').toLowerCase();
+  const statusParam = (resolvedSearchParams.status || (legacyFilter === 'upcoming' ? 'upcoming' : 'all')).toLowerCase();
+  const teamParam = (resolvedSearchParams.team || 'all').toLowerCase();
   const useFilters = statusParam !== 'all' || teamParam !== 'all';
 
   const todayCH = new Intl.DateTimeFormat('en-CA', {
@@ -27,6 +37,17 @@ export default async function SpielePage({ searchParams }: { searchParams?: { pa
     month: '2-digit',
     day: '2-digit',
   }).format(new Date());
+
+  const fallbackMatches = matchesFallback.matches ?? [];
+  const kvMatches = await getAllMatches();
+
+  const mergeWithFallback = (primary: Match[]): Match[] => {
+    if (primary.length === 0) return fallbackMatches;
+    if (fallbackMatches.length === 0) return primary;
+    const seen = new Set(primary.map((m) => m.id));
+    const additional = fallbackMatches.filter((m) => !seen.has(m.id));
+    return [...primary, ...additional];
+  };
 
   const isEsla = (s?: string) => (s || '').toLowerCase().replace(/\u00a0/g, ' ').includes('esla');
   const isEslaTeamName = (s?: string) => {
@@ -57,72 +78,48 @@ export default async function SpielePage({ searchParams }: { searchParams?: { pa
     return s === 'finished';
   };
 
+  const combinedMatches = mergeWithFallback(kvMatches);
+
   let items: Match[] = [];
   let total = 0;
   let totalPages = 1;
 
   if (useFilters) {
-    const fromKv = (await getAllMatches()) || [];
-    const fromLocal = (((matchesLocal as any)?.matches || []) as Match[]) || [];
-    const seen = new Set((fromKv as any[]).map((m: any) => m.id));
-    const all = [...fromKv, ...fromLocal.filter((m: any) => !seen.has(m.id))];
-    const filtered = all
+    const filtered = combinedMatches
       .filter(matchTeam)
       .filter(matchStatus)
       .sort(comparatorForStatus(statusParam));
     total = filtered.length;
     totalPages = Math.max(1, Math.ceil(total / pageSize));
-    if (page > totalPages) page = totalPages;
+    page = Math.min(page, totalPages);
     const start = (page - 1) * pageSize;
-    const stop = start + pageSize;
-    items = filtered.slice(start, stop);
+    items = filtered.slice(start, start + pageSize);
   } else {
     let pageData = await getMatchesPage(page, pageSize);
-    items = pageData.items as any;
+    items = pageData.items;
     total = pageData.total;
     totalPages = pageData.totalPages;
-    if ((!items || items.length === 0) && total > 0 && page > totalPages) {
+
+    if (items.length === 0 && total > 0 && page > totalPages) {
       page = totalPages;
       pageData = await getMatchesPage(page, pageSize);
-      items = pageData.items as any;
+      items = pageData.items;
+      total = pageData.total;
+      totalPages = pageData.totalPages;
     }
-  }
 
-  if (!items || items.length === 0) {
-    const fromKv2 = (await getAllMatches()) || [];
-    const fromLocal2 = (((matchesLocal as any)?.matches || []) as Match[]) || [];
-    const seen2 = new Set((fromKv2 as any[]).map((m: any) => m.id));
-    const all = [...fromKv2, ...fromLocal2.filter((m: any) => !seen2.has(m.id))];
-    if (useFilters) {
-      const filtered = all
-        .filter(matchTeam)
-        .filter(matchStatus)
-        .sort(comparatorForStatus(statusParam));
-      total = filtered.length;
-      totalPages = Math.max(1, Math.ceil(total / pageSize));
-      if (page > totalPages) page = totalPages;
-      const start = (page - 1) * pageSize;
-      const stop = start + pageSize;
-      items = filtered.slice(start, stop);
-    } else {
-      const sorted = all.slice().sort(compareByDateDesc);
+    if (items.length === 0 && combinedMatches.length > 0) {
+      const sorted = combinedMatches.slice().sort(compareByDateDesc);
       total = sorted.length;
       totalPages = Math.max(1, Math.ceil(total / pageSize));
-      if (page > totalPages) page = totalPages;
+      page = Math.min(page, totalPages);
       const start = (page - 1) * pageSize;
-      const stop = start + pageSize;
-      items = sorted.slice(start, stop);
+      items = sorted.slice(start, start + pageSize);
     }
   }
 
   // Build grouped lists when showing all statuses
-  let allMatches: Match[] = [];
-  if (statusParam === 'all') {
-    const fromKv = (await getAllMatches()) || [];
-    const fromLocal = (((matchesLocal as any)?.matches || []) as Match[]) || [];
-    const seen = new Set((fromKv as any[]).map((m: any) => m.id));
-    allMatches = [...fromKv, ...fromLocal.filter((m: any) => !seen.has(m.id))];
-  }
+  const matchesForSections: Match[] = statusParam === 'all' ? combinedMatches : [];
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
@@ -144,16 +141,16 @@ export default async function SpielePage({ searchParams }: { searchParams?: { pa
           {statusParam === 'all' ? (
             <>
               {(() => {
-                const live = (allMatches || [])
+                const live = matchesForSections
                   .filter(matchTeam)
-                  .filter((m) => computedStatus(m) === 'live')
+                  .filter((m: Match) => computedStatus(m) === 'live')
                   .sort(compareByDateAsc);
                 if (live.length === 0) return null;
                 return (
                   <section className="mb-12">
                     <h2 className="text-2xl md:text-3xl font-black text-esla-secondary mb-4">Aktuelle Spiele</h2>
                     <div className="grid gap-8">
-                      {live.map((m) => (
+                      {live.map((m: Match) => (
                         <MatchCard key={m.id} match={m} fullWidth />
                       ))}
                     </div>
@@ -162,16 +159,16 @@ export default async function SpielePage({ searchParams }: { searchParams?: { pa
               })()}
 
               {(() => {
-                const upcoming = (allMatches || [])
+                const upcoming = matchesForSections
                   .filter(matchTeam)
-                  .filter((m) => computedStatus(m) === 'upcoming')
+                  .filter((m: Match) => computedStatus(m) === 'upcoming')
                   .sort(compareByDateAsc);
                 if (upcoming.length === 0) return null;
                 return (
                   <section className="mb-12">
                     <h2 className="text-2xl md:text-3xl font-black text-esla-secondary mb-4">Zukünftige Spiele</h2>
                     <div className="grid gap-8">
-                      {upcoming.map((m) => (
+                      {upcoming.map((m: Match) => (
                         <MatchCard key={m.id} match={m} fullWidth />
                       ))}
                     </div>
@@ -180,16 +177,16 @@ export default async function SpielePage({ searchParams }: { searchParams?: { pa
               })()}
 
               {(() => {
-                const finished = (allMatches || [])
+                const finished = matchesForSections
                   .filter(matchTeam)
-                  .filter((m) => computedStatus(m) === 'finished')
+                  .filter((m: Match) => computedStatus(m) === 'finished')
                   .sort(compareByDateDesc);
                 if (finished.length === 0) return null;
                 return (
                   <section className="mt-14">
                     <h2 className="text-2xl md:text-3xl font-black text-esla-secondary mb-4">Abgeschlossene Spiele</h2>
                     <div className="grid gap-8">
-                      {finished.map((m) => (
+                      {finished.map((m: Match) => (
                         <MatchCard key={m.id} match={m} fullWidth />
                       ))}
                     </div>

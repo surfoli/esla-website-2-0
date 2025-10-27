@@ -121,23 +121,65 @@ export async function POST(request: Request) {
       teamLogo: m.teamLogo || undefined,
     }));
 
-    let toWrite: Match[] = normalized;
-    if (!replace) {
-      const existing = await getAllMatches();
-      toWrite = dedupeNew(existing, normalized);
-    } else {
-      // Reset index when replacing; stale per-match keys are ignored afterwards
+    let added = 0;
+    let updated = 0;
+    let skipped = 0;
+
+    // Build index of existing by logical identity (date+teams, time-insensitive)
+    const existing = await getAllMatches();
+    const byKey = new Map<string, Match>();
+    for (const ex of existing) {
+      const kExact = keyOf(ex);
+      byKey.set(kExact, ex);
+      const t = canonTime(ex.time);
+      if (t && t !== '00:00') {
+        const kZero = `${ex.date}|00:00|${canonTeam(ex.homeTeam)}|${canonTeam(ex.awayTeam)}`;
+        if (!byKey.has(kZero)) byKey.set(kZero, ex);
+      }
+    }
+
+    if (replace) {
       await kv.del(MATCH_INDEX_KEY);
     }
 
-    for (const m of toWrite) {
-      const id = m.id!;
-      await kv.set(matchKey(id), m);
-      await kv.zadd(MATCH_INDEX_KEY, { score: toUnixScore(m.date, m.time), member: id });
+    for (const m of normalized) {
+      const key = keyOf(m);
+      const t = canonTime(m.time) || '00:00';
+      const zeroKey = `${m.date}|00:00|${canonTeam(m.homeTeam)}|${canonTeam(m.awayTeam)}`;
+      const ex = byKey.get(key) || byKey.get(zeroKey);
+
+      if (ex && !replace) {
+        // Upsert: fill only previously missing fields
+        const merged: Match = { ...ex };
+        let changed = false;
+        if ((!merged.competition || merged.competition.trim() === '') && (m.competition || '').trim()) { merged.competition = m.competition!; changed = true; }
+        if ((!merged.location || merged.location.trim() === '') && (m.location || '').trim()) { merged.location = m.location!; changed = true; }
+        if (!merged.matchNumber && m.matchNumber) { merged.matchNumber = m.matchNumber; changed = true; }
+        if ((merged.homeScore === null || typeof merged.homeScore !== 'number') && typeof m.homeScore === 'number') { merged.homeScore = m.homeScore; changed = true; }
+        if ((merged.awayScore === null || typeof merged.awayScore !== 'number') && typeof m.awayScore === 'number') { merged.awayScore = m.awayScore; changed = true; }
+        if ((!merged.time || merged.time === '') && (m.time && m.time !== '')) { merged.time = m.time; changed = true; }
+        if (changed) {
+          merged.status = (typeof merged.homeScore === 'number' && typeof merged.awayScore === 'number') ? 'finished' : (merged.status || m.status);
+          await kv.set(matchKey(ex.id!), merged);
+          await kv.zadd(MATCH_INDEX_KEY, { score: toUnixScore(merged.date, merged.time), member: ex.id! });
+          updated += 1;
+        } else {
+          skipped += 1;
+        }
+      } else {
+        // New record (or replace mode)
+        const id = m.id || genId('m');
+        const rec: Match = { ...m, id } as Match;
+        await kv.set(matchKey(id), rec);
+        await kv.zadd(MATCH_INDEX_KEY, { score: toUnixScore(rec.date, rec.time), member: id });
+        byKey.set(key, rec);
+        if (t !== '00:00') byKey.set(zeroKey, rec);
+        added += 1;
+      }
     }
 
     const total = await kv.zcard(MATCH_INDEX_KEY);
-    return NextResponse.json({ ok: true, added: toWrite.length, total });
+    return NextResponse.json({ ok: true, added, updated, skipped, total });
   } catch (err) {
     console.error('Bulk import error:', err);
     return NextResponse.json({ error: 'Failed to import' }, { status: 500 });

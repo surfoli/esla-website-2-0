@@ -21,7 +21,7 @@ function toUnixScore(date: string, time?: string): number {
 export async function POST(request: Request) {
   try {
     if (!isAuthorized(request)) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+      return NextResponse.json({ error: 'Nicht autorisiert' }, { status: 401 });
     }
 
     const filePath = path.join(process.cwd(), 'data', 'matches.json');
@@ -29,9 +29,13 @@ export async function POST(request: Request) {
     const json = JSON.parse(file);
 
     if (!json || !Array.isArray(json.matches)) {
-      return NextResponse.json({ error: 'Invalid matches.json format' }, { status: 400 });
+      return NextResponse.json({ error: 'Ungültiges Format der Datei matches.json' }, { status: 400 });
     }
-    // reset index
+    if (json.matches.length === 0) {
+      // Do not destructively wipe when seed file is empty
+      return NextResponse.json({ error: 'Seed-Datei enthält keine Spiele' }, { status: 400 });
+    }
+    // reset index only when we actually import something
     await kv.del(MATCH_INDEX_KEY);
     let count = 0;
     for (const m of json.matches) {
@@ -46,6 +50,6 @@ export async function POST(request: Request) {
     return NextResponse.json({ ok: true, count, total });
   } catch (err) {
     console.error('Seed error:', err);
-    return NextResponse.json({ error: 'Failed to seed' }, { status: 500 });
+    return NextResponse.json({ error: 'Seed fehlgeschlagen' }, { status: 500 });
   }
 }

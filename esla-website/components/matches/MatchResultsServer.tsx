@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import Section from '@/components/ui/Section';
 import Container from '@/components/ui/Container';
-import matchesLocal from '@/data/matches.json';
+import matchesFallback from '@/data/matches-fallback';
 import { getRecentMatches } from '@/lib/kv';
 import AutoShrinkText from '@/components/ui/AutoShrinkText';
 
@@ -22,7 +22,7 @@ function splitCompetition(text?: string) {
 export default async function MatchResultsServer() {
   let matches = await getRecentMatches(12);
   if (!Array.isArray(matches) || matches.length === 0) {
-    matches = (matchesLocal as any)?.matches ?? [];
+    matches = matchesFallback.matches ?? [];
   }
 
   return (
@@ -114,7 +114,7 @@ export default async function MatchResultsServer() {
                             }
                             const eslaHome = isEslaTeam(match.homeTeam);
                             const eslaAway = isEslaTeam(match.awayTeam);
-                            const eslaWon = (eslaHome && (hs as number) > (as as number)) || (eslaAway && (as as number) > (hs as number));
+                            const eslaWon = (eslaHome && hs > as) || (eslaAway && as > hs);
                             return eslaWon
                               ? <span className="text-xs sm:text-sm font-bold bg-green-600 text-white px-3 py-1 rounded-full">GEWONNEN</span>
                               : <span className="text-xs sm:text-sm font-bold bg-red-600 text-white px-3 py-1 rounded-full">VERLOREN</span>;

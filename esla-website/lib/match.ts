@@ -18,20 +18,20 @@ export function isEslaTeamName(name?: string): boolean {
 }
 
 export function hasScore(m: Match): boolean {
-  return typeof (m as any).homeScore === 'number' && typeof (m as any).awayScore === 'number';
+  return typeof m.homeScore === 'number' && typeof m.awayScore === 'number';
 }
 
 const LIVE_WINDOW_MS = 100 * 60 * 1000;
 
 export function isLive(m: Match): boolean {
-  if (hasScore(m) || (m as any).status === 'finished') return false;
+  if (hasScore(m) || m.status === 'finished') return false;
   const start = toMs(m);
   const now = Date.now();
   return now >= start && now < start + LIVE_WINDOW_MS;
 }
 
 export function computedStatus(m: Match): 'upcoming' | 'live' | 'finished' {
-  if (hasScore(m) || (m as any).status === 'finished') return 'finished';
+  if (hasScore(m) || m.status === 'finished') return 'finished';
   const start = toMs(m);
   const now = Date.now();
   if (now < start) return 'upcoming';
@@ -49,7 +49,7 @@ function normalizeTime(t?: string): string {
 }
 
 export function dateKey(m: Match): string {
-  return `${m.date} ${normalizeTime((m as any).time as string | undefined)}`;
+  return `${m.date} ${normalizeTime(m.time)}`;
 }
 
 export function compareByDateAsc(a: Match, b: Match): number {

@@ -6,7 +6,7 @@ import { Calendar, MapPin, Trophy, ChevronRight } from 'lucide-react';
 import { Match } from '@/types';
 import Section from '@/components/ui/Section';
 import Container from '@/components/ui/Container';
-import matchesLocal from '@/data/matches.json';
+import matchesFallback from '@/data/matches-fallback';
 
 // Live-Daten via API
 // Siehe: /app/api/matches
@@ -14,7 +14,7 @@ import matchesLocal from '@/data/matches.json';
 // (Startseite bleibt dadurch stabil)
  
 export default function MatchResults() {
-  const localMatches: Match[] = (matchesLocal as any)?.matches ?? [];
+  const localMatches: Match[] = matchesFallback.matches ?? [];
   const [matches, setMatches] = useState<Match[]>(localMatches);
   const [loading, setLoading] = useState(localMatches.length === 0);
   const [teamRecords, setTeamRecords] = useState<{ id: string; name: string; logoUrl?: string }[]>([]);
@@ -24,7 +24,7 @@ export default function MatchResults() {
     const load = async () => {
       try {
         const res = await fetch('/api/matches', { cache: 'no-store' });
-        const data = await res.json();
+        const data: unknown = await res.json();
         if (Array.isArray(data) && data.length > 0) {
           setMatches(data as Match[]);
         }
@@ -42,8 +42,15 @@ export default function MatchResults() {
     const loadTeams = async () => {
       try {
         const res = await fetch('/api/teams', { cache: 'no-store' });
-        const data = await res.json();
-        if (Array.isArray(data)) setTeamRecords(data);
+        const data: unknown = await res.json();
+        if (Array.isArray(data)) {
+          setTeamRecords(
+            data
+              .filter((item): item is { id: string; name: string; logoUrl?: string } =>
+                typeof (item as { id?: unknown }).id === 'string' && typeof (item as { name?: unknown }).name === 'string',
+              ),
+          );
+        }
       } catch (e) {
         console.error('Failed to load teams', e);
       }
@@ -90,7 +97,7 @@ export default function MatchResults() {
             <p className="text-white/70 text-lg">Verfolge alle Spiele und Resultate unserer Teams</p>
           </div>
           <div className="grid gap-8">
-            {[...Array(3)].map((_, i) => (
+            {Array.from({ length: 3 }).map((_, i) => (
               <div key={i} className="h-32 bg-white/5 backdrop-blur-md rounded-2xl border border-white/10 animate-pulse" />
             ))}
           </div>

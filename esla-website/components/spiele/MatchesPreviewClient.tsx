@@ -6,26 +6,31 @@ import { computedStatus, compareByDateAsc, compareByDateDesc } from '@/lib/match
 import MatchCard from '@/components/matches/MatchCard';
 
 export default function MatchesPreviewClient({ initialMatches }: { initialMatches: Match[] }) {
-  const [matches, setMatches] = useState<Match[]>(initialMatches || []);
+  const [matches, setMatches] = useState<Match[]>(initialMatches ?? []);
 
   // Poll every 60s for fresh data
   useEffect(() => {
     let active = true;
-    let timer: any;
+    let timer: ReturnType<typeof setInterval> | null = null;
+
     const load = async () => {
       try {
         const res = await fetch('/api/matches', { cache: 'no-store' });
         if (!res.ok) return;
-        const data = await res.json();
-        if (active && Array.isArray(data)) setMatches(data as Match[]);
+        const data: unknown = await res.json();
+        if (active && Array.isArray(data)) {
+          setMatches(data as Match[]);
+        }
       } catch {}
     };
     // immediate refresh once mounted, then every 60s
-    load();
-    timer = setInterval(load, 60_000);
+    void load();
+    timer = setInterval(() => {
+      void load();
+    }, 60_000);
     return () => {
       active = false;
-      clearInterval(timer);
+      if (timer) clearInterval(timer);
     };
   }, []);
 

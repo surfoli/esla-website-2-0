@@ -4,10 +4,11 @@ import Countdown from '@/components/matches/Countdown';
 import JoinButton from '@/components/matches/JoinButton';
 import { getAllMatches } from '@/lib/kv';
 import Image from 'next/image';
-import matchesLocal from '@/data/matches.json';
+import matchesFallback from '@/data/matches-fallback';
 import NowBadge from '@/components/ui/NowBadge';
 import AutoShrinkText from '@/components/ui/AutoShrinkText';
 import LiveMini from '@/components/matches/LiveMini';
+import type { Match } from '@/types';
 
 function toMs(date: string, time?: string) {
   const t = time && time.length >= 4 ? time : '00:00';
@@ -37,7 +38,7 @@ function toIsoString(date: string, time?: string) {
   return `${date}T${hhmm}:00`;
 }
 
-function calendarInfo(match: any) {
+function calendarInfo(match: Match) {
   const startIso = toIsoString(match.date, match.time);
   return {
     title: `${match.homeTeam} vs. ${match.awayTeam}`,
@@ -57,36 +58,34 @@ function getSeasonPhase(d: Date): { title: string; subtitle?: string } {
 }
 
 export default async function UpcomingMatchesServer() {
-  let all = await getAllMatches();
+  const liveMatches = await getAllMatches();
+  const fallbackMatches = matchesFallback.matches ?? [];
+  const allMatches: Match[] = liveMatches.length > 0 ? liveMatches : fallbackMatches;
   const now = Date.now();
-  if (!all || all.length === 0) {
-    all = ((matchesLocal as any)?.matches || []) as any[];
-  }
-
-  const hasScore = (m: any) => typeof m?.homeScore === 'number' && typeof m?.awayScore === 'number';
-  const live = (all || [])
-    .filter((m: any) => !hasScore(m))
-    .filter((m: any) => {
+  const hasScore = (m: Match) => typeof m.homeScore === 'number' && typeof m.awayScore === 'number';
+  const live = allMatches
+    .filter((m) => !hasScore(m))
+    .filter((m) => {
       const start = toMs(m.date, m.time);
       return now >= start && now < start + 100 * 60 * 1000;
     })
-    .sort((a: any, b: any) => toMs(a.date, a.time) - toMs(b.date, b.time));
+    .sort((a, b) => toMs(a.date, a.time) - toMs(b.date, b.time));
 
-  const upcoming = (all || [])
-    .filter((m: any) => toMs(m.date, m.time) > now)
-    .sort((a: any, b: any) => toMs(a.date, a.time) - toMs(b.date, b.time));
+  const upcoming = allMatches
+    .filter((m) => toMs(m.date, m.time) > now)
+    .sort((a, b) => toMs(a.date, a.time) - toMs(b.date, b.time));
 
   const next = live[0] || upcoming[0];
 
   if (!next) {
     const phase = getSeasonPhase(new Date());
-    const recentEnded = (all || [])
-      .filter((m: any) => !hasScore(m))
-      .filter((m: any) => {
+    const recentEnded = allMatches
+      .filter((m) => !hasScore(m))
+      .filter((m) => {
         const start = toMs(m.date, m.time);
-        return now >= start + 100 * 60 * 1000 && (now - start) < (100 * 60 * 1000 + 4 * 60 * 60 * 1000);
+        return now >= start + 100 * 60 * 1000 && now - start < (100 * 60 * 1000 + 4 * 60 * 60 * 1000);
       })
-      .sort((a: any, b: any) => toMs(b.date, b.time) - toMs(a.date, a.time));
+      .sort((a, b) => toMs(b.date, b.time) - toMs(a.date, a.time));
     const title = recentEnded.length > 0 ? 'Match vorbei – Resultate folgen' : (phase.title || 'Bald geht’s weiter');
     const subtitle = recentEnded.length > 0 ? undefined : phase.subtitle;
     return (
@@ -117,10 +116,7 @@ export default async function UpcomingMatchesServer() {
   }
 
   const isLive = live.length > 0 && live[0].id === next.id;
-
   const iso = toIsoString(next.date, next.time);
-  const nextHomeLogo = null;
-  const nextAwayLogo = null;
   const nextCalendar = calendarInfo(next);
 
   return (

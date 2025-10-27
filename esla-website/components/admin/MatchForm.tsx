@@ -7,6 +7,25 @@ type Props = {
   initial?: Partial<Match> & { id?: string };
 };
 
+type TeamOption = {
+  id: string;
+  name: string;
+  logoUrl?: string;
+};
+
+type MatchPayload = {
+  date: string;
+  time?: string;
+  homeTeam: string;
+  awayTeam: string;
+  homeScore?: number;
+  awayScore?: number;
+  location?: string;
+  competition?: string;
+  status: Match["status"];
+  matchNumber?: string;
+};
+
 export default function MatchForm({ initial }: Props) {
   const router = useRouter();
   const [date, setDate] = useState(initial?.date || "");
@@ -22,19 +41,26 @@ export default function MatchForm({ initial }: Props) {
   const [location, setLocation] = useState(initial?.location || "");
   const [competition, setCompetition] = useState(initial?.competition || "");
   const [status, setStatus] = useState<Match["status"]>(
-    (initial?.status as any) || "upcoming"
+    initial?.status ?? "upcoming"
   );
   const [matchNumber, setMatchNumber] = useState(initial?.matchNumber || "");
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [teams, setTeams] = useState<{ id: string; name: string }[]>([]);
+  const [teams, setTeams] = useState<TeamOption[]>([]);
 
   useEffect(() => {
     const loadTeams = async () => {
       try {
         const res = await fetch("/api/teams", { cache: "no-store" });
-        const data = await res.json();
-        if (Array.isArray(data)) setTeams(data.map((t: any) => ({ id: t.id, name: t.name })));
+        const data: unknown = await res.json();
+        if (Array.isArray(data)) {
+          const sanitized = data.filter((item): item is TeamOption => {
+            if (!item || typeof item !== "object") return false;
+            const candidate = item as Partial<TeamOption>;
+            return typeof candidate.id === "string" && typeof candidate.name === "string";
+          });
+          setTeams(sanitized);
+        }
       } catch {}
     };
     loadTeams();
@@ -47,7 +73,7 @@ export default function MatchForm({ initial }: Props) {
     setError(null);
     setSaving(true);
     try {
-      const body: any = {
+      const body: MatchPayload = {
         date,
         time: time || undefined,
         homeTeam,

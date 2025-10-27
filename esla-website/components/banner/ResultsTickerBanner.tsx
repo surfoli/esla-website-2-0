@@ -1,6 +1,6 @@
 import Section from '@/components/ui/Section';
 import { getAllMatches } from '@/lib/kv';
-import matchesLocal from '@/data/matches.json';
+import matchesFallback from '@/data/matches-fallback';
 import type { Match } from '@/types';
 import { computedStatus, hasScore, compareByDateAsc, compareByDateDesc } from '@/lib/match';
 
@@ -11,17 +11,16 @@ function formatDate(date: string, time?: string) {
 }
 
 export default async function ResultsTickerBanner() {
-  let all = await getAllMatches();
-  if (!all || all.length === 0) {
-    all = ((matchesLocal as any)?.matches || []) as Match[];
-  }
+  const liveMatches = await getAllMatches();
+  const fallbackMatches = matchesFallback.matches ?? [];
+  const all: Match[] = liveMatches.length > 0 ? liveMatches : fallbackMatches;
 
-  const results = (all || [])
+  const results = all
     .filter((m) => hasScore(m))
     .sort(compareByDateDesc)
     .slice(0, 3);
 
-  const upcoming = (all || [])
+  const upcoming = all
     .filter((m) => computedStatus(m) === 'upcoming')
     .sort(compareByDateAsc)
     .slice(0, 3);
@@ -41,29 +40,28 @@ export default async function ResultsTickerBanner() {
 
   const items: TickerItem[] = [];
 
-  for (const m of results) {
-    const hs = (m as any).homeScore as number;
-    const as = (m as any).awayScore as number;
+  for (const match of results) {
+    if (typeof match.homeScore !== 'number' || typeof match.awayScore !== 'number') continue;
     items.push({
-      key: `r-${m.id}`,
+      key: `r-${match.id}`,
       type: 'result',
       label: 'Resultat',
-      home: m.homeTeam as string,
-      away: m.awayTeam as string,
-      hs,
-      as,
-      dateText: formatDate(m.date, m.time),
+      home: match.homeTeam,
+      away: match.awayTeam,
+      hs: match.homeScore,
+      as: match.awayScore,
+      dateText: formatDate(match.date, match.time),
     });
   }
 
-  for (const m of upcoming) {
+  for (const match of upcoming) {
     items.push({
-      key: `u-${m.id}`,
+      key: `u-${match.id}`,
       type: 'upcoming',
       label: 'Anstehend',
-      home: m.homeTeam as string,
-      away: m.awayTeam as string,
-      dateText: formatDate(m.date, m.time),
+      home: match.homeTeam,
+      away: match.awayTeam,
+      dateText: formatDate(match.date, match.time),
     });
   }
 

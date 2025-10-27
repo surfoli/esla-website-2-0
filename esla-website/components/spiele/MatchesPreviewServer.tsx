@@ -1,15 +1,14 @@
 import Section from '@/components/ui/Section';
 import Container from '@/components/ui/Container';
 import { getAllMatches } from '@/lib/kv';
-import matchesLocal from '@/data/matches.json';
+import matchesFallback from '@/data/matches-fallback';
 import type { Match } from '@/types';
 import MatchesPreviewClient from '@/components/spiele/MatchesPreviewClient';
 
 export default async function MatchesPreviewServer() {
-  let all = await getAllMatches();
-  if (!all || all.length === 0) {
-    all = ((matchesLocal as any)?.matches || []) as Match[];
-  }
+  const liveMatches = await getAllMatches();
+  const fallbackMatches = matchesFallback.matches ?? [];
+  const all: Match[] = liveMatches.length > 0 ? liveMatches : fallbackMatches;
 
   return (
     <Section className="bg-white pt-0 pb-4 md:pb-6" noContainer>
@@ -20,7 +19,7 @@ export default async function MatchesPreviewServer() {
               ALLE <span className="text-esla-primary">SPIELE</span>
             </h2>
           </div>
-          <MatchesPreviewClient initialMatches={all as any} />
+          <MatchesPreviewClient initialMatches={all} />
         </div>
       </Container>
     </Section>

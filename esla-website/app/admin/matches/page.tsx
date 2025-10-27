@@ -1,20 +1,40 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Plus, Edit, Trash2, Database, Save, X } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X } from 'lucide-react';
 
 interface Match {
   id: string;
   date: string;
-  time: string;
+  time?: string;
   homeTeam: string;
   awayTeam: string;
   homeScore: number | null;
   awayScore: number | null;
-  location: string;
-  competition: string;
-  status: 'upcoming' | 'finished';
+  location?: string;
+  competition?: string;
+  status: 'upcoming' | 'finished' | 'live';
+  matchNumber?: string;
+}
+
+type MatchPayload = Omit<Match, 'id'>;
+
+interface TeamRecord {
+  id: string;
+  name: string;
+}
+
+function isMatchRecord(value: unknown): value is Match {
+  if (!value || typeof value !== 'object') return false;
+  const candidate = value as Partial<Match>;
+  return (
+    typeof candidate.id === 'string' &&
+    typeof candidate.date === 'string' &&
+    typeof candidate.homeTeam === 'string' &&
+    typeof candidate.awayTeam === 'string' &&
+    ['upcoming', 'finished', 'live'].includes(String(candidate.status))
+  );
 }
 
 export default function MatchesAdmin() {
@@ -28,9 +48,31 @@ export default function MatchesAdmin() {
   const [formData, setFormData] = useState<Partial<Match>>({ status: 'upcoming' });
   const [bulkText, setBulkText] = useState('');
   const [bulkInfo, setBulkInfo] = useState<string | null>(null);
-  const [teamRecords, setTeamRecords] = useState<{ id: string; name: string }[]>([]);
+  const [teamRecords, setTeamRecords] = useState<TeamRecord[]>([]);
   const [purging, setPurging] = useState(false);
   const [purgeInfo, setPurgeInfo] = useState<string | null>(null);
+  const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
+  const [statusMsg, setStatusMsg] = useState<string | null>(null);
+  const [statusType, setStatusType] = useState<'success' | 'error' | null>(null);
+  const teamCounts = useMemo(() => {
+    const counts: Record<string, number> = { 'ESLA 7': 0, 'ESLA 9': 0, 'ESLA EA': 0 };
+    const norm = (s?: string) => {
+      const base = (s || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
+      let t = base.replace(/^(?:team\s*)?elitesoccer\s*/i, '');
+      if (/esla/i.test(t) || /elitesoccer/i.test(base)) t = t.replace(/\s*\(.*?\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+      const l = t.toLowerCase();
+      if (/\besla\s*7\b|\besla7\b/.test(l)) return 'ESLA 7';
+      if (/\besla\s*9\b|\besla9\b/.test(l)) return 'ESLA 9';
+      if (/\besla\s*e\s*a\b|\beslaea\b/.test(l)) return 'ESLA EA';
+      return null;
+    };
+    for (const m of matches) {
+      const seen = new Set<string>();
+      const a = norm(m.homeTeam); if (a && !seen.has(a)) { counts[a] += 1; seen.add(a); }
+      const b = norm(m.awayTeam); if (b && !seen.has(b)) { counts[b] += 1; seen.add(b); }
+    }
+    return counts;
+  }, [matches]);
 
   useEffect(() => {
     fetchMatches();
@@ -40,10 +82,17 @@ export default function MatchesAdmin() {
     const loadTeams = async () => {
       try {
         const res = await fetch('/api/teams');
-        const data = await res.json();
-        if (Array.isArray(data)) setTeamRecords(data.map((t: any) => ({ id: t.id, name: t.name })));
-      } catch (e) {
-        console.error('Failed to load teams', e);
+        const data: unknown = await res.json();
+        if (Array.isArray(data)) {
+          const mapped = data.filter((t): t is TeamRecord => {
+            if (!t || typeof t !== 'object') return false;
+            const candidate = t as Partial<TeamRecord>;
+            return typeof candidate.id === 'string' && typeof candidate.name === 'string';
+          });
+          setTeamRecords(mapped);
+        }
+      } catch (fetchTeamsError: unknown) {
+        console.error('Failed to load teams', fetchTeamsError);
       }
     };
 
@@ -56,7 +105,7 @@ export default function MatchesAdmin() {
   };
 
   // -------- Bulk Import --------
-  const parseLine = (line: string, yearOverride?: number) => {
+  const parseLine = (line: string, yearOverride?: number): MatchPayload | null => {
     // normalize spaces
     const raw = line.trim().replace(/\s+/g, ' ');
     if (!raw) return null;
@@ -135,14 +184,15 @@ export default function MatchesAdmin() {
     if (!dm) return null;
     const dd = String(dm[1]).padStart(2, '0');
     const mm = String(dm[2]).padStart(2, '0');
-    let yyyy = dm[3];
+    const yyyy = dm[3];
     let year = yearOverride ?? new Date().getFullYear();
     if (yyyy) {
       year = yyyy.length === 2 ? 2000 + parseInt(yyyy, 10) : parseInt(yyyy, 10);
     }
     const iso = `${year}-${mm}-${dd}`;
 
-    return {
+    const status: Match['status'] = typeof homeScore === 'number' && typeof awayScore === 'number' ? 'finished' : 'upcoming';
+    const match: MatchPayload = {
       date: iso,
       time: timeStr,
       homeTeam,
@@ -150,8 +200,9 @@ export default function MatchesAdmin() {
       homeScore,
       awayScore,
       competition: '',
-      status: typeof homeScore === 'number' && typeof awayScore === 'number' ? 'finished' : 'upcoming',
+      status,
     };
+    return match;
   };
 
   // Block-Import: erkennt Datumzeilen (tt.mm[.jjjj]) und Spieleblöcke à 7 Zeilen
@@ -164,15 +215,17 @@ export default function MatchesAdmin() {
   // 7) Ort/Platz
   const parseBlocks = (text: string, defaultYear: number) => {
     const lines = text.split(/\r?\n/).map((l) => l.trim()).filter(Boolean);
-    const res: any[] = [];
+    const res: MatchPayload[] = [];
     const timeRe = /^\d{1,2}:\d{2}$/;
     const dateRe = /^(?:(?:Mo|Di|Mi|Do|Fr|Sa|So|Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)\s+)?(\d{1,2})[.\/-](\d{1,2})(?:[.\/-](\d{2,4}))?$/;
     const dashRe = /^[-–—]+$/;
-    const compLeadRe = /^(Meisterschaft|Cup|Freundschaftsspiel|Testspiel|Turnier)/i;
-    const compAnyRe = /(Meisterschaft|Cup|Freundschaftsspiel|Testspiel|Turnier)/i;
-    const dateTimeLineRe = /^(?:(?:Mo|Di|Mi|Do|Fr|Sa|So|Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)\s+)?\d{1,2}[.\/-]\d{1,2}(?:[.\/-]\d{2,4})?\s*\d{1,2}:\d{2}$/;
+    const competitionRe = /(Meisterschaft|Cup|Freundschaftsspiel|Testspiel|Turnier|Zwischenrunde|Liga|Gruppe|Runde|Pokal|Saison|Qualifikation|Stärkeklasse)/i;
+    const compAnyRe = competitionRe;
+    const matchNumberRe = /^Spielnummer\s*(.+)$/i;
+    const dateTimeLineRe = /^(?:(?:Mo|Di|Mi|Do|Fr|Sa|So|Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)\s+)?\d{1,2}[.\/\-]\d{1,2}(?:[.\/\-]\d{2,4})?\s*\d{1,2}:\d{2}$/;
     const scoreSingleRe = /^(\d{1,2})\s*[:x]\s*(\d{1,2})$/;
     const placeholderRe = /^(?:\*|f|forfait)$/i;
+    const combinedTeamsRe = /^(.+?)\s+(?:-|–|—|:|x|vs\.?|v\.?|VS|Vs)\s+(.+)$/i;
     let currentDateISO: string | undefined = undefined;
     let currentCompetition: string | undefined = undefined;
 
@@ -180,7 +233,7 @@ export default function MatchesAdmin() {
       let line = lines[i];
 
       // Wettbewerb-Header erkennen und merken (z. B. "Meisterschaft ...", "... Cup ...")
-      if (compAnyRe.test(line) && !timeRe.test(line) && !dateRe.test(line) && !dateTimeLineRe.test(line)) {
+      if (competitionRe.test(line) && !timeRe.test(line) && !dateRe.test(line) && !dateTimeLineRe.test(line)) {
         currentCompetition = line;
         continue;
       }
@@ -198,7 +251,7 @@ export default function MatchesAdmin() {
       if (dm) {
         const dd = String(parseInt(dm[1], 10)).padStart(2, '0');
         const mm = String(parseInt(dm[2], 10)).padStart(2, '0');
-        let yyyy = dm[3];
+        const yyyy = dm[3];
         let y = defaultYear;
         if (yyyy) y = yyyy.length === 2 ? 2000 + parseInt(yyyy, 10) : parseInt(yyyy, 10);
         currentDateISO = `${y}-${mm}-${dd}`;
@@ -207,30 +260,44 @@ export default function MatchesAdmin() {
           line = inlineTime;
         } else {
           // Kein Zeitwert auf der Datumzeile: versuche Block ohne Zeit
-          const homeRaw = lines[i + 1] || '';
+          const line1 = lines[i + 1] || '';
           const dash = lines[i + 2] || '';
-          const awayRaw = lines[i + 3] || '';
-          if (dashRe.test(dash) && homeRaw && awayRaw) {
+          const line3 = lines[i + 3] || '';
+          let homeRaw = '';
+          let awayRaw = '';
+          let kStart = i + 4;
+          const mCombined = line1.match(combinedTeamsRe);
+          if (mCombined) {
+            homeRaw = mCombined[1];
+            awayRaw = mCombined[2];
+            kStart = i + 2; // teams consumed on line i+1
+          } else if (dashRe.test(dash) && line1 && line3) {
+            homeRaw = line1;
+            awayRaw = line3;
+            kStart = i + 4;
+          }
+          if (homeRaw && awayRaw) {
             const normalizeTeamImport = (s: string) => {
               const base = (s || '').replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
-              let tName = base.replace(/^(?:team\s*)?elitesoccer\s*/i, '');
-              if (/esla/i.test(tName) || /elitesoccer/i.test(base)) {
-                tName = tName.replace(/\s*\(.*?\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
+              let t = base.replace(/^(?:team\s*)?elitesoccer\s*/i, '');
+              if (/esla/i.test(t) || /elitesoccer/i.test(base)) {
+                t = t.replace(/\s*\(.*?\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
               }
-              const l = tName.toLowerCase();
+              const l = t.toLowerCase();
               if (/\besla\s*7\b|\besla7\b/.test(l)) return 'ESLA 7';
               if (/\besla\s*9\b|\besla9\b/.test(l)) return 'ESLA 9';
               if (/\besla\s*e\s*a\b|\beslaea\b/.test(l)) return 'ESLA EA';
-              if (/elitesoccer/i.test(base)) return tName || base;
+              if (/elitesoccer/i.test(base)) return t || base;
               return base;
             };
 
             const home = normalizeTeamImport(homeRaw);
             const away = normalizeTeamImport(awayRaw);
 
-            let k = i + 4;
+            let k = kStart;
             let homeScore: number | null = null;
             let awayScore: number | null = null;
+            let matchNumber: string | undefined;
 
             const s1 = lines[k] || '';
             if (s1 && scoreSingleRe.test(s1)) {
@@ -264,10 +331,18 @@ export default function MatchesAdmin() {
 
             // Wettbewerb übernehmen, wenn vorhanden (oder Header)
             let competition = '';
-            const compLine = lines[k] || '';
-            if (compLine && compLeadRe.test(compLine)) {
-              competition = compLine;
-              k += 1;
+            while (k < lines.length) {
+              const look = (lines[k] || '').trim();
+              if (!look) { k += 1; continue; }
+              const matchMatchNumber = look.match(matchNumberRe);
+              if (matchMatchNumber) { matchNumber = matchMatchNumber[1].trim(); k += 1; continue; }
+              if (competitionRe.test(look) && !timeRe.test(look) && !dateRe.test(look) && !dateTimeLineRe.test(look)) {
+                competition = look;
+                k += 1;
+                continue;
+              }
+              if (dashRe.test(look)) { k += 1; continue; }
+              break;
             }
             if (!competition && currentCompetition) competition = currentCompetition;
 
@@ -275,7 +350,8 @@ export default function MatchesAdmin() {
             while (k < lines.length) {
               const look = (lines[k] || '').trim();
               if (!look) { k += 1; continue; }
-              if (/^Spielnummer\s*\d+/i.test(look)) { k += 1; continue; }
+              const matchMatchNumber = look.match(matchNumberRe);
+              if (matchMatchNumber) { matchNumber = matchMatchNumber[1].trim(); k += 1; continue; }
               if (dashRe.test(look)) { k += 1; continue; }
               break;
             }
@@ -290,17 +366,20 @@ export default function MatchesAdmin() {
 
             const dateISO = currentDateISO || undefined;
             if (dateISO) {
-              res.push({
+              const status: Match['status'] = typeof homeScore === 'number' && typeof awayScore === 'number' ? 'finished' : 'upcoming';
+              const entry: MatchPayload = {
                 date: dateISO,
                 time: undefined,
                 homeTeam: home,
                 awayTeam: away,
-                competition: competition || '',
-                location: loc,
+                competition: competition || undefined,
+                location: loc || undefined,
                 homeScore,
                 awayScore,
-                status: typeof homeScore === 'number' && typeof awayScore === 'number' ? 'finished' : 'upcoming',
-              });
+                status,
+                matchNumber: matchNumber?.split(/\s*\/\s*/)[0] || undefined,
+              };
+              res.push(entry);
               i = k - 1;
               continue;
             } else {
@@ -341,6 +420,7 @@ export default function MatchesAdmin() {
       let k = i + 4;
       let homeScore: number | null = null;
       let awayScore: number | null = null;
+      let matchNumber: string | undefined;
 
       // Ergebnis auf einer Zeile
       const s1 = lines[k] || '';
@@ -363,22 +443,21 @@ export default function MatchesAdmin() {
 
       // Wettbewerb übernehmen, wenn vorhanden (mit heuristischer Erkennung)
       let competition = '';
-      const compLine = lines[k] || '';
-      if (compLine && compLeadRe.test(compLine)) {
-        competition = compLine;
-        k += 1; // Wettbewerbzeile konsumieren
-      }
-      if (!competition && currentCompetition) {
-        competition = currentCompetition;
-      }
-
-      // "Spielnummer …" und reine Trennstriche überspringen (mit Bounds-Check)
       while (k < lines.length) {
         const look = (lines[k] || '').trim();
         if (!look) { k += 1; continue; }
-        if (/^Spielnummer\s*\d+/i.test(look)) { k += 1; continue; }
+        const matchMatchNumber = look.match(matchNumberRe);
+        if (matchMatchNumber) { matchNumber = matchMatchNumber[1].trim(); k += 1; continue; }
+        if (competitionRe.test(look) && !timeRe.test(look) && !dateRe.test(look) && !dateTimeLineRe.test(look)) {
+          competition = look;
+          k += 1;
+          continue;
+        }
         if (dashRe.test(look)) { k += 1; continue; }
         break;
+      }
+      if (!competition && currentCompetition) {
+        competition = currentCompetition;
       }
 
       // Ort/Platz nur übernehmen, wenn es keine neue Datum-/Zeit-/Header-Zeile ist
@@ -393,17 +472,20 @@ export default function MatchesAdmin() {
       const dateISO = currentDateISO || undefined;
       if (!dateISO) { i += 1; continue; }
 
-      res.push({
+      const status: Match['status'] = typeof homeScore === 'number' && typeof awayScore === 'number' ? 'finished' : 'upcoming';
+      const entry: MatchPayload = {
         date: dateISO,
         time: t,
         homeTeam: home,
         awayTeam: away,
-        competition: competition || '',
-        location: loc,
+        competition: competition || undefined,
+        location: loc || undefined,
         homeScore,
         awayScore,
-        status: typeof homeScore === 'number' && typeof awayScore === 'number' ? 'finished' : 'upcoming',
-      });
+        status,
+        matchNumber: matchNumber?.split(/\s*\/\s*/)[0] || undefined,
+      };
+      res.push(entry);
       i = k - 1; // an das Ende des Blocks springen (for-Schleife erhöht i anschließend)
     }
     return res;
@@ -416,9 +498,12 @@ export default function MatchesAdmin() {
     const mYear = bulkText.match(/\b\d{1,2}[.\/-]\d{1,2}[.\/-](\d{2,4})\b/);
     const defaultYear = mYear ? (mYear[1].length === 2 ? 2000 + parseInt(mYear[1], 10) : parseInt(mYear[1], 10)) : new Date().getFullYear();
     // Zuerst Block-Parser (unterstützt Datumzeilen)
-    let parsed: any[] = parseBlocks(bulkText, defaultYear);
+    let parsed: MatchPayload[] = parseBlocks(bulkText, defaultYear);
     // Fallback: Einzeilen-Parser (nutzt defaultYear)
-    if (parsed.length === 0) parsed = lines.map((l)=>parseLine(l, defaultYear)).filter((x): x is any => !!x);
+    if (parsed.length === 0) {
+      const fallbackMatches = lines.map((l) => parseLine(l, defaultYear)).filter((item): item is MatchPayload => item !== null);
+      parsed = fallbackMatches;
+    }
     if (parsed.length === 0) {
       setBulkInfo('Keine gültigen Zeilen gefunden.');
       return;
@@ -431,24 +516,46 @@ export default function MatchesAdmin() {
       });
       const json = await res.json();
       if (!res.ok) {
-        setBulkInfo(`Fehler: ${json?.error || 'Unbekannt'}`);
+        const msg = `Fehler: ${json?.error || 'Unbekannter Fehler beim Import'}`;
+        setBulkInfo(msg);
+        setStatusMsg(msg);
+        setStatusType('error');
         return;
       }
-      setBulkInfo(`Import ok: ${json.added} Spiele, total ${json.total}`);
+      const added = Number(json?.added || 0);
+      const updated = Number(json?.updated || 0);
+      const skipped = Number(json?.skipped || 0);
+      const total = Number(json?.total || 0);
+      const msg = `Import erfolgreich: ${added} neue Spiele, ${updated} aktualisiert, ${skipped} bereits vorhanden, Gesamtbestand ${total}`;
+      setBulkInfo(msg);
+      setStatusMsg(msg);
+      setStatusType('success');
       setBulkText('');
       await fetchMatches();
-    } catch (e) {
-      setBulkInfo('Fehler beim Import.');
+    } catch (importBulkError: unknown) {
+      console.error('Bulk import failed', importBulkError);
+      setBulkInfo('Fehler: Import fehlgeschlagen');
+      setStatusMsg('Fehler: Import fehlgeschlagen');
+      setStatusType('error');
     }
   };
 
   const fetchMatches = async () => {
     try {
       const res = await fetch('/api/matches?source=kv');
-      const data = await res.json();
-      setMatches(data);
-    } catch (error) {
-      console.error('Error:', error);
+      const json: unknown = await res.json();
+      if (Array.isArray(json)) {
+        const parsed = json.filter((item): item is Match => isMatchRecord(item));
+        setMatches(parsed);
+        setLastUpdatedAt(new Date());
+      } else {
+        setMatches([]);
+        setLastUpdatedAt(new Date());
+      }
+    } catch (fetchMatchesError: unknown) {
+      console.error('Fetch matches failed', fetchMatchesError);
+      setMatches([]);
+      setLastUpdatedAt(new Date());
     } finally {
       setLoading(false);
     }
@@ -463,13 +570,22 @@ export default function MatchesAdmin() {
       });
       const json = await res.json();
       if (!res.ok) {
-        setSeedInfo(`Fehler: ${json?.error || 'Unbekannt'}`);
+        const msg = `Fehler: ${json?.error || 'Unbekannter Fehler beim Datei-Import'}`;
+        setSeedInfo(msg);
+        setStatusMsg(msg);
+        setStatusType('error');
         return;
       }
-      setSeedInfo(`KV gefüllt: ${json.count} Spiele`);
+      const msg = `Import aus Datei abgeschlossen: ${json.count} Spiele übernommen`;
+      setSeedInfo(msg);
+      setStatusMsg(msg);
+      setStatusType('success');
       await fetchMatches();
-    } catch (e) {
-      setSeedInfo('Fehler beim Seeden.');
+    } catch (seedKvError: unknown) {
+      console.error('Seed KV request failed', seedKvError);
+      setSeedInfo('Fehler: Datei-Import fehlgeschlagen');
+      setStatusMsg('Fehler: Datei-Import fehlgeschlagen');
+      setStatusType('error');
     } finally {
       setSeeding(false);
     }
@@ -481,29 +597,28 @@ export default function MatchesAdmin() {
     setPurging(true);
     setPurgeInfo(null);
     try {
-      const res = await fetch('/api/matches/purge', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ password: pwd }),
-      });
+      const res = await fetch('/api/matches/purge', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pwd }) });
       const json = await res.json();
       if (!res.ok) {
-        alert(json?.error || 'Löschen fehlgeschlagen');
-        return;
+        const msg = `Fehler: ${json?.error || 'Unbekannter Fehler beim Löschen'}`;
+        setPurgeInfo(msg);
+        setStatusMsg(msg);
+        setStatusType('error');
+      } else {
+        const msg = `Alle Spiele gelöscht: ${json.deleted}`;
+        setPurgeInfo(msg);
+        setStatusMsg(msg);
+        setStatusType('success');
+        await fetchMatches();
       }
-      setPurgeInfo(`Alle Matches gelöscht: ${json.deleted}`);
-      await fetchMatches();
-    } catch (e) {
-      alert('Fehler beim Löschen');
+    } catch (purgeAllError: unknown) {
+      console.error('Failed to purge fallback', purgeAllError);
+      setPurgeInfo('Fehler: Löschen fehlgeschlagen');
+      setStatusMsg('Fehler: Löschen fehlgeschlagen');
+      setStatusType('error');
     } finally {
       setPurging(false);
     }
-  };
-
-  const handleDelete = async (id: string) => {
-    if (!confirm('Spiel löschen?')) return;
-    await fetch(`/api/matches/${id}`, { method: 'DELETE' });
-    fetchMatches();
   };
 
   const handleCreate = async () => {
@@ -520,8 +635,8 @@ export default function MatchesAdmin() {
       setShowAddForm(false);
       setFormData({ status: 'upcoming' });
       await fetchMatches();
-    } catch (e) {
-      console.error(e);
+    } catch (createMatchError: unknown) {
+      console.error('Failed to create match', createMatchError);
     }
   };
 
@@ -549,8 +664,22 @@ export default function MatchesAdmin() {
       setEditingId(null);
       setFormData({ status: 'upcoming' });
       await fetchMatches();
-    } catch (e) {
-      console.error(e);
+    } catch (updateMatchError: unknown) {
+      console.error('Failed to update match', updateMatchError);
+    }
+  };
+
+  const handleDelete = async (id: string) => {
+    if (!confirm('Spiel löschen?')) return;
+    try {
+      const res = await fetch(`/api/matches/${id}`, { method: 'DELETE' });
+      if (!res.ok) {
+        alert('Löschen fehlgeschlagen');
+        return;
+      }
+      await fetchMatches();
+    } catch (deleteMatchError: unknown) {
+      console.error('Failed to delete match', deleteMatchError);
     }
   };
 
@@ -563,40 +692,46 @@ export default function MatchesAdmin() {
     <div className="flex justify-between items-center mb-8">
       <h1 className="text-4xl font-black text-white">SPIELE VERWALTUNG</h1>
       <div className="flex items-center gap-3">
-        <button
-          onClick={seedKV}
-          disabled={seeding}
-          className="bg-white/10 hover:bg-white/20 border border-white/30 text-white px-6 py-3 rounded-full font-semibold flex items-center gap-2 backdrop-blur disabled:opacity-60"
-        >
-          <Database size={18} />
-          {seeding ? 'Seeden…' : 'KV füllen'}
-        </button>
         <button onClick={() => setShowAddForm(true)} className="bg-esla-primary text-white px-6 py-3 rounded-full font-semibold flex items-center gap-2">
           <Plus size={20} />
           Neues Spiel
         </button>
         <button onClick={purgeAll} disabled={purging} className="bg-red-600 hover:bg-red-700 text-white px-6 py-3 rounded-full font-semibold flex items-center gap-2 disabled:opacity-60">
           <Trash2 size={18} />
-          Alle löschen
+          Alle Spiele löschen
         </button>
         <button onClick={logout} className="bg-white/10 hover:bg-white/20 border border-white/30 text-white px-6 py-3 rounded-full font-semibold">Logout</button>
       </div>
     </div>
 
-    {/* Bulk Import */}
-    <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 text-white border border-white/20 mb-6">
-      <h2 className="text-2xl font-bold mb-4">Bulk Import</h2>
-      <p className="text-white/70 mb-3 text-sm">Einzeiliges Format oder Blöcke. Datumzeilen im Text (tt.mm[.jjjj]) werden erkannt und für die folgenden Spiele verwendet.</p>
-      <textarea className="w-full min-h-[200px] bg-white/10 border border-white/30 rounded-lg px-4 py-3 mb-3" placeholder="Zeilen hier einfügen... (Block: Datumzeile, Zeit, Heim, -, Auswärts, Wettbewerb, Spielnummer, Ort)" value={bulkText} onChange={(e)=>setBulkText(e.target.value)} />
-      <div className="flex gap-3">
-        <button onClick={importBulk} className="bg-esla-primary hover:bg-esla-accent text-white px-6 py-3 rounded-lg font-semibold">Import starten</button>
-        {bulkInfo && <div className="text-white/90 self-center">{bulkInfo}</div>}
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3 mb-6 text-white/90">
+      {statusMsg && (
+        <div className={`${statusType === 'error' ? 'bg-red-500/20 border-red-500/40' : 'bg-green-600/20 border-green-600/40'} border rounded-xl p-4`}>
+          <p className={`text-xs uppercase tracking-wide ${statusType === 'error' ? 'text-red-200/80' : 'text-green-200/80'}`}>Rückmeldung</p>
+          <p className={`mt-2 text-sm ${statusType === 'error' ? 'text-red-100' : 'text-green-100'}`}>{statusMsg}</p>
+        </div>
+      )}
+      <div className="bg-white/10 border border-white/20 rounded-xl p-4">
+        <p className="text-xs uppercase tracking-wide text-white/60">Spiele je Team</p>
+        <p className="mt-2 text-white font-bold">Gesamt: {matches.length}</p>
+        <div className="mt-2 flex flex-wrap gap-2">
+          <span className="px-2 py-1 rounded-full bg-white/10 border border-white/20 text-sm text-white font-bold">ESLA 7: {teamCounts['ESLA 7'] || 0}</span>
+          <span className="px-2 py-1 rounded-full bg-white/10 border border-white/20 text-sm text-white font-bold">ESLA 9: {teamCounts['ESLA 9'] || 0}</span>
+          <span className="px-2 py-1 rounded-full bg-white/10 border border-white/20 text-sm text-white font-bold">ESLA EA: {teamCounts['ESLA EA'] || 0}</span>
+        </div>
       </div>
     </div>
 
-    {(seedInfo || purgeInfo) && (
-      <div className="mb-6 text-white/90">{seedInfo || purgeInfo}</div>
-    )}
+    {/* Spiele Import */}
+    <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 text-white border border-white/20 mb-6">
+      <h2 className="text-2xl font-bold mb-4">Spiele Import</h2>
+      <textarea className="w-full min-h-[200px] bg-white/10 border border-white/30 rounded-lg px-4 py-3 mb-3" placeholder="" value={bulkText} onChange={(e)=>setBulkText(e.target.value)} />
+      <div className="flex gap-3">
+        <button onClick={importBulk} className="bg-esla-primary hover:bg-esla-accent text-white px-6 py-3 rounded-lg font-semibold">Import starten</button>
+      </div>
+    </div>
+
+    {/* removed duplicate plain message below; consolidated into status card */}
 
     {showAddForm && (
       <div className="bg-white/10 backdrop-blur-xl rounded-xl p-6 text-white border border-white/20 mb-6">
@@ -657,6 +792,9 @@ export default function MatchesAdmin() {
               <div>
                 <h3 className="text-xl font-bold">{match.homeTeam} vs {match.awayTeam}</h3>
                 <p className="text-white/70">{match.date} | {match.time} | {match.location}</p>
+                {typeof match.homeScore === 'number' && typeof match.awayScore === 'number' ? (
+                  <p className="text-white/80">Resultat: {match.homeScore}:{match.awayScore}</p>
+                ) : null}
                 <p className="text-esla-primary font-semibold">{match.competition}</p>
               </div>
               <div className="flex gap-2">

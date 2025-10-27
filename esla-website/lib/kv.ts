@@ -1,7 +1,6 @@
 import { kv } from '@vercel/kv';
 import type { Match } from '@/types';
 
-const MATCHES_KEY = 'esla:matches';
 const TEAMS_KEY = 'esla:teams';
 
 // New per-match key model + sorted index
@@ -50,9 +49,9 @@ export async function getMatchById(id: string): Promise<Match | null> {
 
 export async function createMatch(match: Omit<Match, 'id'>): Promise<Match> {
   const id = Date.now().toString();
-  const newMatch = { ...(match as any), id } as Match;
+  const newMatch: Match = { ...match, id } as Match;
   await kv.set(matchKey(id), newMatch);
-  const score = toUnixScore((newMatch as any).date, (newMatch as any).time);
+  const score = toUnixScore(newMatch.date, newMatch.time);
   await kv.zadd(MATCH_INDEX_KEY, { score, member: id });
   return newMatch;
 }
@@ -64,7 +63,7 @@ export async function updateMatch(id: string, updates: Partial<Match>): Promise<
   const updated = { ...current, ...updates } as Match;
   await kv.set(key, updated);
   // if date/time changed, update score
-  const score = toUnixScore((updated as any).date, (updated as any).time);
+  const score = toUnixScore(updated.date, updated.time);
   await kv.zadd(MATCH_INDEX_KEY, { score, member: id });
   return updated;
 }
