@@ -81,11 +81,11 @@ export default function EslaStorySection() {
 
           <div className="relative min-h-[360px] sm:min-h-[460px] lg:min-h-full">
             <Image
-              src="/images/ESLA_Fussball_Stock_6.jpg"
-              alt="ESLA Training auf dem Spielfeld"
+              src="/images/ESLA_Spieler_Stock_Action.jpg"
+              alt="ESLA Spieler in Aktion"
               fill
               sizes="(min-width: 1024px) 40vw, 100vw"
-              className="object-cover h-full w-full" style={{ objectPosition: '65% center' }}
+              className="object-cover h-full w-full" style={{ objectPosition: 'center center' }}
               priority
             />
           </div>

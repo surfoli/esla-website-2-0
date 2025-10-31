@@ -121,7 +121,7 @@ export default function TeamPage() {
                     {teams[group].map((player, index) => (
                       <div
                         key={`${group}-${player.name}`}
-                          className="max-w-[340px] w-full bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer animate-scale-in"
+                          className="max-w-[340px] w-full bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] animate-scale-in"
                         style={{ animationDelay: `${index * 0.05}s` }}
                       >
                         {/* Image */}
@@ -153,9 +153,10 @@ export default function TeamPage() {
             <Container>
               <div className="grid items-stretch justify-items-center md:justify-items-start gap-6 md:gap-8 xl:gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {teams.staff.map((member, index) => {
+                  const isLuqmon = member.name === 'Luqmon Adekunle';
                   const content = (
                     <div
-                      className="max-w-[340px] w-full bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer animate-scale-in"
+                      className="max-w-[340px] md:max-w-[360px] w-full bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] animate-scale-in"
                       style={{ animationDelay: `${index * 0.05}s` }}
                     >
                       <div className="relative aspect-[3/4] bg-gradient-to-b from-esla-secondary to-esla-dark overflow-hidden group">
@@ -164,9 +165,13 @@ export default function TeamPage() {
                           alt={member.name}
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                          className="object-cover object-[center_30%] rounded-t-2xl group-hover:scale-105 transition-transform duration-300"
+                          className={`object-cover rounded-t-2xl transition-transform duration-300 ${
+                            isLuqmon
+                              ? 'object-[center_30%] group-hover:scale-105'
+                              : 'object-[center_35%] scale-[1.08] group-hover:scale-[1.12]'
+                          }`}
                         />
-                        {member.name === 'Luqmon Adekunle' && (
+                        {isLuqmon && (
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
                             <span className="bg-esla-primary text-white px-6 py-3 rounded-lg font-semibold text-lg shadow-lg flex items-center gap-x-2">
                               Biografie ansehen
@@ -187,7 +192,7 @@ export default function TeamPage() {
                     <Link
                       key={`staff-${member.name}`}
                       href="/team/luqmon"
-                      className="block"
+                      className="block cursor-pointer"
                     >
                       {content}
                     </Link>
