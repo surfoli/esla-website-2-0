@@ -121,7 +121,7 @@ export default function TeamPage() {
                     {teams[group].map((player, index) => (
                       <div
                         key={`${group}-${player.name}`}
-                          className="max-w-[340px] w-full bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 transform hover:scale-105 animate-scale-in"
+                          className="max-w-[340px] w-full bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer animate-scale-in"
                         style={{ animationDelay: `${index * 0.05}s` }}
                       >
                         {/* Image */}
@@ -152,39 +152,49 @@ export default function TeamPage() {
           ) : (
             <Container>
               <div className="grid items-stretch justify-items-center md:justify-items-start gap-6 md:gap-8 xl:gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {teams.staff.map((member, index) => (
-                  <div
-                    key={`staff-${member.name}`}
-                    className="max-w-[340px] w-full bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 transform hover:scale-105 animate-scale-in"
-                    style={{ animationDelay: `${index * 0.05}s` }}
-                  >
-                    <div className="relative aspect-[3/4] bg-gradient-to-b from-esla-secondary to-esla-dark overflow-hidden group">
-                      <Image
-                        src={encodePublicPath(member.image)}
-                        alt={member.name}
-                        fill
-                        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                        className="object-cover object-[center_30%] rounded-t-2xl group-hover:scale-105 transition-transform duration-300"
-                      />
-                      {member.name === 'Luqmon Adekunle' && (
-                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                          <Link
-                            href="/team/luqmon"
-                            className="bg-esla-primary hover:bg-esla-accent text-white px-6 py-3 rounded-lg font-semibold text-lg transition-all duration-200 shadow-lg flex items-center gap-x-2"
-                          >
-                            <span>Biografie</span>
-                          </Link>
-                        </div>
-                      )}
-                    </div>
+                {teams.staff.map((member, index) => {
+                  const content = (
                     <div
-                      className="rounded-b-2xl p-5 bg-gradient-to-r from-black via-esla-dark to-esla-primary"
+                      className="max-w-[340px] w-full bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] cursor-pointer animate-scale-in"
+                      style={{ animationDelay: `${index * 0.05}s` }}
                     >
-                      <h3 className="text-white font-bold text-2xl mb-3 leading-tight">{member.name}</h3>
-                      <p className="text-white/90 font-semibold text-base leading-tight">{member.position}</p>
+                      <div className="relative aspect-[3/4] bg-gradient-to-b from-esla-secondary to-esla-dark overflow-hidden group">
+                        <Image
+                          src={encodePublicPath(member.image)}
+                          alt={member.name}
+                          fill
+                          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
+                          className="object-cover object-[center_30%] rounded-t-2xl group-hover:scale-105 transition-transform duration-300"
+                        />
+                        {member.name === 'Luqmon Adekunle' && (
+                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                            <span className="bg-esla-primary text-white px-6 py-3 rounded-lg font-semibold text-lg shadow-lg flex items-center gap-x-2">
+                              Biografie ansehen
+                            </span>
+                          </div>
+                        )}
+                      </div>
+                      <div
+                        className="rounded-b-2xl p-5 bg-gradient-to-r from-black via-esla-dark to-esla-primary"
+                      >
+                        <h3 className="text-white font-bold text-2xl mb-3 leading-tight">{member.name}</h3>
+                        <p className="text-white/90 font-semibold text-base leading-tight">{member.position}</p>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  );
+
+                  return member.name === 'Luqmon Adekunle' ? (
+                    <Link
+                      key={`staff-${member.name}`}
+                      href="/team/luqmon"
+                      className="block"
+                    >
+                      {content}
+                    </Link>
+                  ) : (
+                    <div key={`staff-${member.name}`}>{content}</div>
+                  );
+                })}
               </div>
             </Container>
           )}

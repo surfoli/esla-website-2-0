@@ -9,14 +9,18 @@ export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
   const navLinks = [
-    { href: '/', label: 'Home' },
-    { href: '/team', label: 'Team' },
     { href: '/spiele', label: 'Spiele' },
-    { 
-      label: 'Turniere', 
+    { href: '/team', label: 'Team' },
+    {
+      label: 'Wettbewerbe',
       children: [
-        { href: '/germany-cup', label: 'Germany Cup 2026' }
-      ]
+        { href: '/germany-cup', label: 'Germany Cup 2026' },
+        { href: '/turniere/d9-meisterschaft', label: 'Meisterschaft D-9' },
+        { href: '/turniere/d7-meisterschaft', label: 'Meisterschaft D-7' },
+        { href: '/turniere/d9-cup', label: 'D9er Cup' },
+        { href: '/turniere/d7-cup', label: 'D7er Cup' },
+        { href: '/turniere/e-cup', label: 'E Cup' },
+      ],
     },
     { href: '/ueber-uns', label: 'Über uns' },
     { href: '/trainingszeiten', label: 'Trainingszeiten' },

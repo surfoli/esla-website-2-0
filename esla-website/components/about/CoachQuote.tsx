@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import Container from '@/components/ui/Container';
 
 export default function CoachQuote() {
@@ -6,14 +7,18 @@ export default function CoachQuote() {
     <section className="bg-gradient-to-l from-esla-primary to-black py-20 md:py-24">
       <Container>
         <div className="flex flex-col md:flex-row items-center gap-10 md:gap-12">
-          <div className="relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-white/40 shadow-2xl flex-shrink-0">
+          <Link
+            href="/team/luqmon"
+            aria-label="Zur Biografie von Luqmon Adekunle"
+            className="relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-white/40 shadow-2xl flex-shrink-0 transition-transform duration-200 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
+          >
             <Image
               src="/images/ESLA_Profilbild_Staff_Cheftrainer_Luqmon_Adekunle.jpg"
               alt="Luqmon Adekunle"
               fill
               className="object-cover"
             />
-          </div>
+          </Link>
           <div className="text-white flex-1">
             <p className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-black mb-6">
               &quot;Gemeinsam entwickeln wir Champions, auf und neben dem Platz.&quot;

@@ -2,6 +2,7 @@ import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/footer/Footer';
 import { Heart, Users, TrendingUp, Award, Handshake, CheckCircle, Shield, MapPin, Target, Zap } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function AboutPage() {
   return (
@@ -49,6 +50,136 @@ export default function AboutPage() {
                 <Users size={18} className="text-esla-primary flex-shrink-0" />
                 <span className="font-semibold">Team ESLA</span>
               </Link>
+            </div>
+          </div>
+
+          {/* Combined Image + Feature Cards */}
+          <div className="mb-16">
+            <div className="text-center mb-12">
+              <h3 className="text-3xl md:text-4xl font-black text-esla-secondary mb-6">
+                Was uns auszeichnet
+              </h3>
+            </div>
+            
+            {/* 4 Combined Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+              <div className="group rounded-2xl overflow-hidden shadow-lg shadow-black/30 hover:shadow-2xl hover:shadow-black/40 transition-all duration-300 transform hover:scale-105 bg-esla-primary flex flex-col">
+                <div className="relative aspect-[3/4]">
+                  <Image
+                    src="/images/ESLA_Fussball_Stock_1.jpg"
+                    alt="Professionelle Leitung"
+                    fill
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                </div>
+                <div className="p-6 bg-gradient-to-r from-black via-esla-dark to-esla-primary text-white flex-1 mt-[-1px]">
+                  <div className="flex items-center gap-x-3 mb-3">
+                    <div className="bg-white/20 w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Award className="w-5 h-5 text-white" />
+                    </div>
+                    <h4 className="text-lg font-black text-white">Professionelle Leitung</h4>
+                  </div>
+                  <p className="text-white/90 leading-relaxed text-sm">
+                    Strukturierter Trainingsbetrieb unter Cheftrainer <Link href="/team/luqmon" className="text-white hover:text-esla-accent underline font-bold transition-colors">Luqmon Adekunle</Link> (ehem. Profispieler) – Fussball Academy in Luzern mit höchsten Standards.
+                  </p>
+                </div>
+              </div>
+
+              <div className="group rounded-2xl overflow-hidden shadow-lg shadow-black/30 hover:shadow-2xl hover:shadow-black/40 transition-all duration-300 transform hover:scale-105 bg-esla-primary flex flex-col">
+                <div className="relative aspect-[3/4]">
+                  <Image
+                    src="/images/ESLA_Fussball_Stock_2.jpg"
+                    alt="Ganzheitliche Förderung"
+                    fill
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                </div>
+                <div className="p-6 bg-gradient-to-b from-black to-esla-primary text-white flex-1 mt-[-1px]">
+                  <div className="flex items-center gap-x-3 mb-3">
+                    <div className="bg-white/20 w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <TrendingUp className="w-5 h-5 text-white" />
+                    </div>
+                    <h4 className="text-lg font-black text-white">Ganzheitliche Förderung</h4>
+                  </div>
+                  <p className="text-white/90 leading-relaxed text-sm">
+                    Persönlichkeitsentwicklung als fester Bestandteil unseres Konzepts – wir formen nicht nur Fussballer, sondern starke Persönlichkeiten.
+                  </p>
+                </div>
+              </div>
+
+              <div className="group rounded-2xl overflow-hidden shadow-lg shadow-black/30 hover:shadow-2xl hover:shadow-black/40 transition-all duration-300 transform hover:scale-105 bg-esla-primary flex flex-col">
+                <div className="relative aspect-[3/4]">
+                  <Image
+                    src="/images/ESLA_Fussball_Stock_3.jpg"
+                    alt="Nachhaltige Perspektive"
+                    fill
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                </div>
+                <div className="p-6 bg-gradient-to-b from-black to-esla-primary text-white flex-1 mt-[-1px]">
+                  <div className="flex items-center gap-x-3 mb-3">
+                    <div className="bg-white/20 w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Target className="w-5 h-5 text-white" />
+                    </div>
+                    <h4 className="text-lg font-black text-white">Nachhaltige Perspektive</h4>
+                  </div>
+                  <p className="text-white/90 leading-relaxed text-sm">
+                    Fokus auf langfristige Entwicklung statt kurzfristiger Erfolge – nachhaltige Nachwuchsförderung in der Zentralschweiz.
+                  </p>
+                </div>
+              </div>
+
+              <div className="group rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 bg-gradient-to-b from-black to-esla-primary flex flex-col">
+                <div className="relative aspect-[3/4]">
+                  <Image
+                    src="/images/ESLA_Fussball_Stock_5.jpg"
+                    alt="Starke Gemeinschaft"
+                    fill
+                    sizes="(max-width: 768px) 50vw, 25vw"
+                    className="object-cover"
+                  />
+                  <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/40 to-transparent" />
+                </div>
+                <div className="p-6 bg-gradient-to-r from-black via-esla-dark to-esla-primary text-white flex-1 mt-[-1px]">
+                  <div className="flex items-center gap-x-3 mb-3">
+                    <div className="bg-white/20 w-10 h-10 rounded-full flex items-center justify-center flex-shrink-0">
+                      <Users className="w-5 h-5 text-white" />
+                    </div>
+                    <h4 className="text-lg font-black text-white">Starke Gemeinschaft</h4>
+                  </div>
+                  <p className="text-white/90 leading-relaxed text-sm">
+                    Werteorientiertes, familiäres Umfeld – bei ESLA ist jeder Spieler Teil einer echten Fussballfamilie.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Extended Story Section */}
+          <div className="bg-white rounded-3xl p-10 md:p-12 mb-16 shadow-lg border border-slate-200">
+            <h3 className="text-3xl md:text-4xl font-black text-esla-secondary mb-8">
+              Unsere Geschichte – Unsere Vision
+            </h3>
+            <div className="space-y-6 text-lg md:text-xl text-esla-secondary/90 leading-relaxed">
+              <p>
+                <strong>TEAM ELITESOCCER – ESLA</strong> entstand aus der Leidenschaft für den Fussball und der Überzeugung, 
+                dass sportlicher Erfolg und persönliche Entwicklung Hand in Hand gehen. Unter der Leitung von 
+                <Link href="/team/luqmon" className="text-esla-primary hover:text-esla-accent underline font-bold"> Luqmon Adekunle</Link>, 
+                einem ehemaligen Profispieler mit internationaler Erfahrung, haben wir eine Akademie geschaffen, 
+                die junge Talente im Raum Luzern und der gesamten Zentralschweiz fördert.
+              </p>
+              <p>
+                Unser Ansatz ist ganzheitlich: Wir kombinieren modernes Fussballtraining mit gezielter 
+                Persönlichkeitsentwicklung. Technik, Taktik und Athletik werden ebenso geschult wie 
+                Disziplin, Teamgeist und mentale Stärke. Bei uns lernen Spieler nicht nur, wie man 
+                Tore schiest, sondern auch, wie man Ziele erreicht – auf und neben dem Platz.
+              </p>
             </div>
           </div>
 
@@ -248,4 +379,3 @@ export default function AboutPage() {
     </main>
   );
 }
-
