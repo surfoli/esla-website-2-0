@@ -6,7 +6,7 @@ import CoachQuote from '@/components/about/CoachQuote';
 
 export default function Footer() {
   const sponsors = [
-    { name: 'MAGAS', logo: '/images/ESLA_Sponsor_Logo_Magas.png', url: 'https://magas.ch' },
+    { name: 'MAGAS', logo: '/images/ESLA_Sponsor_Logo_Magas_black_logo.png', url: 'https://magas.ch' },
     { name: 'Go Gemba', logo: '/images/ESLA_Sponsor_Logo_Go_Gemba.png', url: 'https://gogemba.ch' },
     { name: 'TEKO', logo: '/images/ESLA_Sponsor_Logo_TEKO_Schweizer_Fachschule.png', url: 'https://www.teko.ch/' },
     { name: 'ZK Automobile AG', logo: '/images/ESLA_Sponsor_Logo_ZK_Automobile_AG.png', url: 'https://zk-automobile-ag.ch/' },
@@ -61,7 +61,9 @@ export default function Footer() {
                     alt={sponsor.name}
                     fill
                     className="object-contain"
-                    unoptimized
+                    quality={95}
+                    priority
+                    {...(sponsor.name === 'MAGAS' && { unoptimized: true })}
                   />
                 </a>
               ))}
@@ -90,7 +92,8 @@ export default function Footer() {
                     alt={partner.name}
                     fill
                     className="object-contain"
-                    unoptimized
+                    quality={95}
+                    priority
                   />
                 </a>
               ))}
@@ -216,11 +219,6 @@ export default function Footer() {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/datenschutz#cookies" className="text-white/70 hover:text-esla-primary transition-colors text-sm">
-                    Cookie-Informationen
-                  </Link>
-                </li>
-                <li>
                   <Link href="/impressum" className="text-white/70 hover:text-esla-primary transition-colors text-sm">
                     Impressum
                   </Link>
@@ -270,11 +268,11 @@ export default function Footer() {
       {/* Bottom Bar */}
       <div className="border-t border-white/10 py-7">
         <Container>
-          <div className="flex flex-col md:flex-row justify-between items-center gap-y-4 md:gap-y-0">
-            <p className="text-white/50 text-sm" suppressHydrationWarning>
+          <div className="flex flex-col items-center md:flex-row md:justify-between md:items-center gap-y-1 md:gap-y-0">
+            <p className="text-white/50 text-sm text-center md:text-left" suppressHydrationWarning>
               © {new Date().getFullYear()} Team Elitesoccer. Alle Rechte vorbehalten.
             </p>
-            <p className="text-white/50 text-sm">
+            <p className="text-white/50 text-sm text-center md:text-right">
               Offiziell anerkannt vom <span className="text-esla-primary">Schweizerischen Fussballverband (SFV)</span>
             </p>
           </div>

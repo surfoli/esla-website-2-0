@@ -21,8 +21,8 @@ type MatchesSearchParams = {
   team?: string;
 };
 
-export default async function SpielePage({ searchParams }: { searchParams?: MatchesSearchParams | Promise<MatchesSearchParams | undefined> }) {
-  const resolvedSearchParams = (await searchParams) ?? {};
+export default async function SpielePage({ searchParams }: { searchParams?: Promise<any> }) {
+  const resolvedSearchParams: MatchesSearchParams = (await searchParams) ?? {};
 
   let page = Math.max(1, parseInt(resolvedSearchParams.page || '1', 10) || 1);
   const pageSize = Math.max(1, Math.min(50, parseInt(resolvedSearchParams.pageSize || '20', 10) || 20));

@@ -17,7 +17,6 @@ export const teams: Record<PlayerGroup, Player[]> & { staff: Staff[] } = {
     { name: 'Walid Kahlouni', position: 'Assistenztrainer', image: '/images/ESLA_Profilbild_Staff_Assistenz_Trainer_Walid_Kahlouni_Nah.jpg' },
     { name: 'Badr Kahlouni', position: 'Assistenztrainer', image: '/images/ESLA_Profilbild_Staff_Assistenz_Trainer_Badr_Kahlouni_Nah.jpg' },
     { name: 'Issafar Kamal', position: 'Assistenztrainer', image: '/images/ESLA_Profilbild_Staff_Assistenz_Trainer_Issafar_Kamal_Nah.jpg' },
-    { name: 'Zak Berdi', position: 'Sport Operations Manager', image: '/images/ESLA_Profilbild_Staff_Sport_Operations_Manager_Zak_Berdi_Nah.jpg' },
     { name: 'Flavio Räber', position: 'Head of Brand', image: '/images/ESLA_Profilbild_Staff_Head_of_Brand_Flavio_Raeber_Nah.jpg' },
     { name: 'Olivier Durand', position: 'Digital Architect', image: '/images/ESLA_Profilbild_Staff_Head_of_Digital_&_Media_Olivier_Durand_Nah.jpg' },
   ],
@@ -36,7 +35,6 @@ export const teams: Record<PlayerGroup, Player[]> & { staff: Staff[] } = {
   midfielders: [
     { name: 'Andrej Gajic', number: 6, image: '/images/ESLA_Profilbild_Mittelfeldspieler_Andrej_Gajic.jpg' },
     { name: 'Damian Radosavljevic', number: 14, image: '/images/ESLA_Profilbild_Mittelfeldspieler_Damian_Radosavljevic.jpg' },
-    { name: 'Phil Räber', number: 10, image: '/images/ESLA_Profilbild_Mittelfeldspieler_Phil_Räber.jpg' },
     { name: 'Sami Belal', number: 16, image: '/images/ESLA_Profilbild_Mittelfeldspieler_Sami_Belal.jpg' },
     { name: 'Tim Sonntag', number: 8, image: '/images/ESLA_Profilbild_Mittelfeldspieler_Tim_Sonntag.jpg' },
     { name: 'Nikic Damjan', number: 22, image: '/images/ESLA_Profilbild_Mittelfeldspieler_Nikic Damjan.jpg' },
@@ -53,7 +51,6 @@ export const teams: Record<PlayerGroup, Player[]> & { staff: Staff[] } = {
   strikers: [
     { name: 'Edon Lulaj', number: 9, image: '/images/ESLA_Profilbild_Stuermer_Edon_Lulaj.jpg' },
     { name: 'Anuar Destani', number: 20, image: '/images/ESLA_Profilbild_Stuermer_Anuar_Destani.jpg' },
-    { name: 'Alain Uzeirovic', number: 18, image: '/images/ESLA_Profilbild_Stuermer_Alain_Uzeirovic.jpg' },
   ],
 };
 

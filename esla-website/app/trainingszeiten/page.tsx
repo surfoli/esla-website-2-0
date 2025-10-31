@@ -39,11 +39,11 @@ export default function TrainingsPage() {
         <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* Header */}
-          <div className="text-center mb-16 bg-esla-secondary text-white p-10 rounded-3xl">
-            <h1 className="text-5xl md:text-7xl font-black text-white mb-4">
-              TRAININGS<span className="text-esla-primary">ZEITEN</span>
+          <div className="text-center mb-16 bg-esla-secondary text-white p-6 md:p-10 rounded-3xl overflow-hidden">
+            <h1 className="text-4xl sm:text-5xl md:text-7xl leading-tight break-words font-black text-white mb-4">
+              TRAININGS{' '}<span className="text-esla-primary">ZEITEN</span>
             </h1>
-            <p className="text-white/90 text-xl">
+            <p className="text-white/90 text-lg sm:text-xl">
               Wann und wo wir trainieren
             </p>
           </div>
@@ -53,10 +53,10 @@ export default function TrainingsPage() {
             {trainingSessions.map((team, index) => (
               <div
                 key={team.team}
-                className="rounded-3xl p-[1px] bg-gradient-to-br from-esla-primary/30 to-esla-accent/30 hover:from-esla-primary/50 hover:to-esla-accent/50 transition-all duration-300 transform hover:scale-105 animate-scale-in"
+                className="rounded-3xl transition-all duration-300 transform hover:scale-105 animate-scale-in"
                 style={{ animationDelay: `${index * 0.1}s` }}
               >
-                <div className="bg-white rounded-3xl p-8 border border-white/60 shadow-sm">
+                <div className="rounded-3xl p-8 shadow-lg bg-gradient-to-br from-esla-primary to-esla-accent text-white">
                   {/* Team Logo & Name */}
                   <div className="flex items-center gap-x-4 mb-6">
                     <Image
@@ -66,7 +66,7 @@ export default function TrainingsPage() {
                       height={60}
                       className="rounded-lg"
                     />
-                    <h2 className="text-2xl font-black bg-gradient-to-r from-esla-secondary to-esla-primary bg-clip-text text-transparent">
+                    <h2 className="text-2xl font-black text-white">
                       {team.team}
                     </h2>
                   </div>
@@ -109,7 +109,7 @@ export default function TrainingsPage() {
             <div className="grid md:grid-cols-2 gap-8 items-center">
               <div>
                 <h3 className="text-3xl font-black text-white mb-4">
-                  📍 Trainingsort
+                  Trainingsort
                 </h3>
                 <p className="text-white text-lg mb-4">
                   <strong>Sportplatz RUAG</strong><br />
@@ -120,19 +120,19 @@ export default function TrainingsPage() {
                   Bestens ausgestattet für optimales Training!
                 </p>
               </div>
-              <div className="bg-white/10 backdrop-blur rounded-2xl p-6">
-                <h4 className="text-white font-bold text-xl mb-4">💡 Wichtige Infos</h4>
+              <div className="bg-esla-secondary text-white rounded-2xl p-6 border border-white/15">
+                <h4 className="text-white font-bold text-xl mb-4">Wichtige Infos</h4>
                 <ul className="gap-y-2 text-white/90">
                   <li className="flex items-start">
-                    <span className="text-esla-primary mr-2">✓</span>
+                    <span className="text-white mr-2">✓</span>
                     Bitte 15 Minuten vor Trainingsbeginn da sein
                   </li>
                   <li className="flex items-start">
-                    <span className="text-esla-primary mr-2">✓</span>
+                    <span className="text-white mr-2">✓</span>
                     Ausreichend Wasser mitbringen
                   </li>
                   <li className="flex items-start">
-                    <span className="text-esla-primary mr-2">✓</span>
+                    <span className="text-white mr-2">✓</span>
                     Absagen bitte frühzeitig mitteilen
                   </li>
                 </ul>

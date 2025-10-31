@@ -17,7 +17,7 @@ export default function SpielePage() {
           </div>
 
           {/* All Matches */}
-          <MatchResults showAll />
+          <MatchResults />
         </div>
       </div>
 

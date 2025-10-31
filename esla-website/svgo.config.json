@@ -1,0 +1,16 @@
+{
+  "multipass": true,
+  "plugins": [
+    {
+      "name": "preset-default",
+      "params": {
+        "overrides": {
+          "convertPathData": { "floatPrecision": 1 },
+          "cleanupNumericValues": { "floatPrecision": 1 }
+        }
+      }
+    },
+    { "name": "removeViewBox", "active": false },
+    { "name": "removeDimensions", "active": false }
+  ]
+}

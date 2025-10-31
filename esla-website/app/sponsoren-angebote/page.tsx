@@ -143,7 +143,8 @@ export default function SponsorenAngebotePage() {
               </h1>
               <p className="text-2xl font-light mb-4">Wir entwickeln Spieler und stärken Persönlichkeiten</p>
               <p className="text-white/90 max-w-3xl mx-auto mb-8">
-                Als ambitioniertes Team aus Emmen bieten wir Ihnen die Chance, echte Nachwuchstalente zu fördern. Seit 2025 SFV-anerkannt und bereit für gemeinsame Erfolge mit Ihnen als Partner.
+                Als ambitioniertes Team aus Emmen bieten wir Ihnen die Chance, echte Nachwuchstalente zu fördern. Seit 2025 SFV-anerkannt und bereit für gemeinsame Erfolge mit Ihnen als Partner. 
+                Erfahren Sie mehr über unsere <Link href="/ueber-uns" className="text-esla-primary hover:text-esla-accent underline font-bold">Philosophie</Link> und unser <Link href="/team" className="text-esla-primary hover:text-esla-accent underline font-bold">Team</Link>.
               </p>
               <Link
                 href="/kontakt"

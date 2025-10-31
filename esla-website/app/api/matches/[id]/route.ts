@@ -9,10 +9,10 @@ export const dynamic = 'force-dynamic';
 // GET single match
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
-    const match = await getMatchById(params.id);
+    const match = await getMatchById(context.params.id);
     if (!match) {
       return NextResponse.json({ error: 'Match not found' }, { status: 404 });
     }
@@ -26,7 +26,7 @@ export async function GET(
 // PUT update match
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
     if (!isAuthorized(request)) {
@@ -35,7 +35,7 @@ export async function PUT(
 
     const body = (await request.json()) as Partial<Match>;
     const normalized = normalizeMatchPayload(body);
-    const updated = await updateMatch(params.id, normalized);
+    const updated = await updateMatch(context.params.id, normalized);
     
     if (!updated) {
       return NextResponse.json({ error: 'Match not found' }, { status: 404 });
@@ -51,14 +51,14 @@ export async function PUT(
 // DELETE match
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
     if (!isAuthorized(request)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const success = await deleteMatch(params.id);
+    const success = await deleteMatch(context.params.id);
     
     if (!success) {
       return NextResponse.json({ error: 'Match not found' }, { status: 404 });

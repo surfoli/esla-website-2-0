@@ -128,7 +128,6 @@ export default function JoinButton({ matchId, label, leaveText, calendar }: { ma
   const [hasJoined, setHasJoined] = useState(false);
   const [count, setCount] = useState(0);
   const [emoji, setEmoji] = useState<string | null>(null);
-  const [statusText, setStatusText] = useState<string | null>(null);
   const [pending, setPending] = useState(false);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const hasFetchedRef = useRef(false);
@@ -221,15 +220,11 @@ export default function JoinButton({ matchId, label, leaveText, calendar }: { ma
     window.dispatchEvent(new CustomEvent('esla-join-change', { detail: { matchId, joined: optimisticJoined, count: optimisticCount } }));
     if (optimisticJoined) {
       setEmoji('🥳');
-      setStatusText('Danke, dass du teilnimmst!');
       confetti();
       setTimeout(() => setEmoji(null), 1200);
-      setTimeout(() => setStatusText(null), 3500);
     } else {
       setEmoji('😢');
-      setStatusText(leaveText || 'Schade, dass du nicht teilnimmst!');
       setTimeout(() => setEmoji(null), 1200);
-      setTimeout(() => setStatusText(null), 3500);
     }
     try {
       const res = await fetch(`/api/matches/${matchId}/rsvp`, {
@@ -256,11 +251,11 @@ export default function JoinButton({ matchId, label, leaveText, calendar }: { ma
   };
 
   return (
-    <div ref={containerRef} className="relative inline-flex flex-row md:flex-col items-center md:items-start gap-2">
+    <div ref={containerRef} className="relative inline-flex flex-col sm:flex-row md:flex-col items-stretch sm:items-center md:items-start gap-2">
       <button
         onClick={onToggle}
         disabled={pending}
-        className={`${hasJoined ? 'bg-green-700 text-white' : 'bg-green-600 hover:bg-green-700 text-white'} ${pending ? 'opacity-80 cursor-not-allowed' : ''} relative px-3 sm:px-4 md:px-6 lg:px-7 py-2 rounded-full font-semibold text-xs sm:text-sm md:text-base whitespace-nowrap md:min-w-[230px] lg:min-w-[260px]`}
+        className={`${hasJoined ? 'bg-green-700 text-white' : 'bg-green-600 hover:bg-green-700 text-white'} ${pending ? 'opacity-80 cursor-not-allowed' : ''} relative w-full sm:w-auto px-3 sm:px-4 md:px-6 lg:px-7 py-2 rounded-full font-semibold text-xs sm:text-sm md:text-base whitespace-nowrap md:min-w-[230px] lg:min-w-[260px]`}
       >
         {hasJoined ? 'Teilnahme registriert' : (label || 'Ich nehme teil')}
         {count > 0 && (
@@ -279,13 +274,10 @@ export default function JoinButton({ matchId, label, leaveText, calendar }: { ma
           href={calendarUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center justify-center gap-2 px-3 sm:px-4 md:px-6 lg:px-7 py-2 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs sm:text-sm font-semibold border border-white/20 whitespace-nowrap md:min-w-[220px] lg:min-w-[260px]"
+          className="inline-flex w-full sm:w-auto items-center justify-center gap-2 px-3 sm:px-4 md:px-6 lg:px-7 py-2 rounded-full bg-white/15 hover:bg-white/25 text-white text-xs sm:text-sm font-semibold border border-white/20 whitespace-nowrap md:min-w-[220px] lg:min-w-[260px]"
         >
-         In Googlekalender öffnen
+         In Googlekalender speichern
         </a>
-      )}
-      {statusText && (
-        <span className="basis-full text-sm text-white/80 mt-1">{statusText}</span>
       )}
     </div>
   );

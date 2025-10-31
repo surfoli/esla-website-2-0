@@ -6,10 +6,10 @@ export const dynamic = 'force-dynamic';
 
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
-    const team = await getTeamById(params.id);
+    const team = await getTeamById(context.params.id);
     if (!team) return NextResponse.json({ error: 'Team not found' }, { status: 404 });
     return NextResponse.json(team);
   } catch (e) {
@@ -20,14 +20,14 @@ export async function GET(
 
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
     if (!isAuthorized(request)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
     const body = await request.json();
-    const updated = await updateTeam(params.id, body);
+    const updated = await updateTeam(context.params.id, body);
     if (!updated) return NextResponse.json({ error: 'Team not found' }, { status: 404 });
     return NextResponse.json(updated);
   } catch (e) {
@@ -38,13 +38,13 @@ export async function PUT(
 
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
     if (!isAuthorized(request)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
-    const ok = await deleteTeam(params.id);
+    const ok = await deleteTeam(context.params.id);
     if (!ok) return NextResponse.json({ error: 'Team not found' }, { status: 404 });
     return NextResponse.json({ success: true });
   } catch (e) {

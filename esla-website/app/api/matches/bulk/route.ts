@@ -229,7 +229,34 @@ export async function POST(request: Request) {
       }
     }
 
-    const total = await kv.zcard(MATCH_INDEX_KEY);
+    const all = await getAllMatches();
+    const scoreOf = (m: any) =>
+      (m.location ? 1 : 0) +
+      (m.competition ? 1 : 0) +
+      (typeof m.homeScore === 'number' ? 1 : 0) +
+      (typeof m.awayScore === 'number' ? 1 : 0) +
+      (m.time ? 1 : 0) +
+      (m.status === 'finished' ? 1 : 0) +
+      (m.matchNumber ? 1 : 0);
+    const keep = new Map<string, MatchRecord>();
+    const toDelete: string[] = [];
+    for (const m of all) {
+      const key = canonicalMatchKey({ date: m.date, time: m.time, homeTeam: m.homeTeam, awayTeam: m.awayTeam });
+      const prev = keep.get(key);
+      if (!prev) {
+        keep.set(key, m as any);
+      } else {
+        const winner = scoreOf(m) >= scoreOf(prev) ? (m as any) : prev;
+        const loser = winner === (m as any) ? prev : (m as any);
+        if ((loser as any).id) toDelete.push((loser as any).id);
+        keep.set(key, winner);
+      }
+    }
+    for (const id of toDelete) {
+      await kv.del(matchKey(id));
+      await kv.zrem(MATCH_INDEX_KEY, id);
+    }
+    const total = keep.size;
     return NextResponse.json({ ok: true, added, updated, skipped, total });
   } catch (err) {
     console.error('Bulk import error:', err);

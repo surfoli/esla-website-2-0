@@ -42,9 +42,10 @@ async function checkRateLimit(uid: string) {
 
 export async function GET(
   _request: Request,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
+    const params = await context.params;
     const { uid, created } = await ensureUserId();
     const key = membersKey(params.id);
     const [joinedRaw, countRaw] = await Promise.all([
@@ -73,9 +74,10 @@ export async function GET(
 
 export async function POST(
   request: Request,
-  { params }: { params: { id: string } }
+  context: any
 ) {
   try {
+    const params = await context.params;
     const { uid, created } = await ensureUserId();
     const allowed = await checkRateLimit(uid);
     if (!allowed) {

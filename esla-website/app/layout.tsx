@@ -26,8 +26,13 @@ export const metadata: Metadata = {
     locale: "de_CH",
     type: "website",
   },
+  manifest: "/site.webmanifest",
   icons: {
-    icon: "/images/Favicon_squarspace_ESLA.png",
+    icon: "/icon.svg",
+    apple: "/apple-touch-icon.png",
+    other: [
+      { rel: 'mask-icon', url: '/icon.svg', color: '#0a0a0a' },
+    ],
   },
 };
 
@@ -53,6 +58,44 @@ export default function RootLayout({
             </Script>
           </>
         )}
+        {/* Schema.org Markup für Sportorganisation */}
+        <Script id="schema-org" strategy="beforeInteractive" type="application/ld+json">
+          {`
+            {
+              "@context": "https://schema.org",
+              "@type": "SportsOrganization",
+              "name": "Team Elitesoccer | ESLA",
+              "alternateName": "Elite Soccer Luqmon Adekunle",
+              "url": "https://www.teamelitesoccer.ch",
+              "logo": "https://www.teamelitesoccer.ch/images/ESLA_Website_logo.png",
+              "description": "ESLA steht für mehr als Fussball. Wir fördern Talent und formen Charakter. Unser Fokus liegt auf gezielter Nachwuchsförderung sowie auf der ganzheitlichen Persönlichkeitsentwicklung junger Spieler.",
+              "foundingDate": "2024",
+              "areaServed": {
+                "@type": "Place",
+                "name": "Luzern, Zentralschweiz"
+              },
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "Luzern",
+                "addressCountry": "CH"
+              },
+              "contactPoint": {
+                "@type": "ContactPoint",
+                "email": "info@teamelitesoccer.ch",
+                "contactType": "customer service",
+                "availableLanguage": ["German", "English"]
+              },
+              "sameAs": [
+                "https://www.tiktok.com/@esla_team_eliteso"
+              ],
+              "sport": "Soccer",
+              "memberOf": {
+                "@type": "SportsOrganization",
+                "name": "Swiss Football Association"
+              }
+            }
+          `}
+        </Script>
         {children}
       </body>
     </html>

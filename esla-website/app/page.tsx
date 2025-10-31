@@ -2,7 +2,7 @@ import Navbar from '@/components/navigation/Navbar';
 import UpcomingMatchesServer from '@/components/hero/UpcomingMatchesServer';
 import MatchesPreviewServer from '@/components/spiele/MatchesPreviewServer';
 import ResultsTickerBanner from '@/components/banner/ResultsTickerBanner';
-import GermanyCupBanner from '@/components/banner/GermanyCupBanner';
+import GermanyCupBox from '@/components/sections/GermanyCupBox';
 import SocialMediaSection from '@/components/social/SocialMediaSection';
 import Footer from '@/components/footer/Footer';
 
@@ -15,8 +15,8 @@ export default function Home() {
       <UpcomingMatchesServer />
       <ResultsTickerBanner />
       <MatchesPreviewServer />
+      <GermanyCupBox />
       <SocialMediaSection />
-      <GermanyCupBanner />
       <Footer />
     </main>
   );

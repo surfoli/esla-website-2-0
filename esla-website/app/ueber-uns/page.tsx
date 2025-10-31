@@ -171,7 +171,7 @@ export default function AboutPage() {
                     Professionelle Leitung
                   </h4>
                   <p className="text-white/90 leading-relaxed">
-                    Strukturierter Trainingsbetrieb unter Cheftrainer Luqmon Adekunle (ehem. Profispieler) – 
+                    Strukturierter Trainingsbetrieb unter Cheftrainer <Link href="/team/luqmon" className="text-esla-primary hover:text-esla-accent underline font-bold">Luqmon Adekunle</Link> (ehem. Profispieler) – 
                     Fussball Academy in Luzern mit höchsten Standards.
                   </p>
                 </div>

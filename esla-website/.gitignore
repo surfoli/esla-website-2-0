@@ -144,3 +144,4 @@ vite.config.ts.timestamp-*
 # screenshots & test artifacts
 test-screenshots/
 test-screenshots.js
+.vercel

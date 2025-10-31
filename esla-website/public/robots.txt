@@ -1,0 +1,25 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://www.teamelitesoccer.ch/sitemap.xml
+
+# Block admin areas from search engines
+Disallow: /admin/
+Disallow: /api/
+Disallow: /login
+
+# Allow important pages
+Allow: /team
+Allow: /spiele
+Allow: /ueber-uns
+Allow: /sponsoren
+Allow: /kontakt
+Allow: /trainingszeiten
+Allow: /standort
+Allow: /sponsoren-angebote
+Allow: /datenschutz
+Allow: /impressum
+
+# Crawl delay for respectful crawling
+Crawl-delay: 1

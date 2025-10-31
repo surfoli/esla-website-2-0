@@ -41,17 +41,11 @@ export default function MatchesAdmin() {
   const router = useRouter();
   const [matches, setMatches] = useState<Match[]>([]);
   const [loading, setLoading] = useState(true);
-  const [seeding, setSeeding] = useState(false);
-  const [seedInfo, setSeedInfo] = useState<string | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [formData, setFormData] = useState<Partial<Match>>({ status: 'upcoming' });
   const [bulkText, setBulkText] = useState('');
-  const [bulkInfo, setBulkInfo] = useState<string | null>(null);
-  const [teamRecords, setTeamRecords] = useState<TeamRecord[]>([]);
   const [purging, setPurging] = useState(false);
-  const [purgeInfo, setPurgeInfo] = useState<string | null>(null);
-  const [lastUpdatedAt, setLastUpdatedAt] = useState<Date | null>(null);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [statusType, setStatusType] = useState<'success' | 'error' | null>(null);
   const teamCounts = useMemo(() => {
@@ -89,7 +83,7 @@ export default function MatchesAdmin() {
             const candidate = t as Partial<TeamRecord>;
             return typeof candidate.id === 'string' && typeof candidate.name === 'string';
           });
-          setTeamRecords(mapped);
+          // Teams loaded but not used in current UI
         }
       } catch (fetchTeamsError: unknown) {
         console.error('Failed to load teams', fetchTeamsError);
@@ -492,7 +486,6 @@ export default function MatchesAdmin() {
   };
 
   const importBulk = async () => {
-    setBulkInfo(null);
     const lines = bulkText.split(/\n+/).map((l) => l.trim()).filter(Boolean);
     // defaultYear aus Text extrahieren (erste Datumzeile mit Jahr), sonst aktuelles Jahr
     const mYear = bulkText.match(/\b\d{1,2}[.\/-]\d{1,2}[.\/-](\d{2,4})\b/);
@@ -513,7 +506,6 @@ export default function MatchesAdmin() {
       const json = await res.json();
       if (!res.ok) {
         const msg = `Fehler: ${json?.error || 'Unbekannter Fehler beim Import'}`;
-        setBulkInfo(msg);
         setStatusMsg(msg);
         setStatusType('error');
         return;
@@ -523,15 +515,14 @@ export default function MatchesAdmin() {
       const skipped = Number(json?.skipped || 0);
       const total = Number(json?.total || 0);
       const msg = `Import erfolgreich: ${added} neue Spiele, ${updated} aktualisiert, ${skipped} bereits vorhanden, Gesamtbestand ${total}`;
-      setBulkInfo(msg);
       setStatusMsg(msg);
       setStatusType('success');
       setBulkText('');
+      setShowAddForm(false);
       await fetchMatches();
-    } catch (importBulkError: unknown) {
-      console.error('Bulk import failed', importBulkError);
-      setBulkInfo('Fehler: Import fehlgeschlagen');
-      setStatusMsg('Fehler: Import fehlgeschlagen');
+    } catch (error) {
+      const msg = `Fehler: Import fehlgeschlagen`;
+      setStatusMsg(msg);
       setStatusType('error');
     }
   };
@@ -543,15 +534,12 @@ export default function MatchesAdmin() {
       if (Array.isArray(json)) {
         const parsed = json.filter((item): item is Match => isMatchRecord(item));
         setMatches(parsed);
-        setLastUpdatedAt(new Date());
       } else {
         setMatches([]);
-        setLastUpdatedAt(new Date());
       }
     } catch (fetchMatchesError: unknown) {
       console.error('Fetch matches failed', fetchMatchesError);
       setMatches([]);
-      setLastUpdatedAt(new Date());
     } finally {
       setLoading(false);
     }
@@ -559,31 +547,24 @@ export default function MatchesAdmin() {
 
   const seedKV = async () => {
     try {
-      setSeeding(true);
-      setSeedInfo(null);
       const res = await fetch('/api/matches/seed', {
         method: 'POST',
       });
       const json = await res.json();
       if (!res.ok) {
         const msg = `Fehler: ${json?.error || 'Unbekannter Fehler beim Datei-Import'}`;
-        setSeedInfo(msg);
         setStatusMsg(msg);
         setStatusType('error');
         return;
       }
       const msg = `Import aus Datei abgeschlossen: ${json.count} Spiele übernommen`;
-      setSeedInfo(msg);
       setStatusMsg(msg);
       setStatusType('success');
       await fetchMatches();
     } catch (seedKvError: unknown) {
       console.error('Seed KV request failed', seedKvError);
-      setSeedInfo('Fehler: Datei-Import fehlgeschlagen');
       setStatusMsg('Fehler: Datei-Import fehlgeschlagen');
       setStatusType('error');
-    } finally {
-      setSeeding(false);
     }
   };
 
@@ -591,25 +572,21 @@ export default function MatchesAdmin() {
     const pwd = prompt('Admin-Passwort eingeben, um ALLE Spiele zu löschen:');
     if (!pwd) return;
     setPurging(true);
-    setPurgeInfo(null);
     try {
       const res = await fetch('/api/matches/purge', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ password: pwd }) });
       const json = await res.json();
       if (!res.ok) {
         const msg = `Fehler: ${json?.error || 'Unbekannter Fehler beim Löschen'}`;
-        setPurgeInfo(msg);
         setStatusMsg(msg);
         setStatusType('error');
       } else {
         const msg = `Alle Spiele gelöscht: ${json.deleted}`;
-        setPurgeInfo(msg);
         setStatusMsg(msg);
         setStatusType('success');
         await fetchMatches();
       }
-    } catch (purgeAllError: unknown) {
-      console.error('Failed to purge fallback', purgeAllError);
-      setPurgeInfo('Fehler: Löschen fehlgeschlagen');
+    } catch (purgeError: unknown) {
+      console.error('Purge request failed', purgeError);
       setStatusMsg('Fehler: Löschen fehlgeschlagen');
       setStatusType('error');
     } finally {
@@ -745,9 +722,9 @@ export default function MatchesAdmin() {
           </select>
         </div>
         <datalist id="teams-list">
-          {teamRecords.map((t) => (
-            <option key={t.id} value={t.name} />
-          ))}
+          <option value="ESLA 7" />
+          <option value="ESLA 9" />
+          <option value="ESLA EA" />
         </datalist>
         <div className="flex gap-3 mt-4">
           <button onClick={handleCreate} className="bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg font-semibold flex items-center gap-2"><Save size={18}/>Speichern</button>

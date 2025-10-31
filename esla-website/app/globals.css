@@ -51,6 +51,15 @@ body {
   overflow-x: hidden;
 }
 
+/* Zusätzliche Sicherheitsnetze gegen horizontales Überlaufen */
+main, section, header, nav, footer {
+  max-width: 100%;
+  overflow-x: clip;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+img, video { max-width: 100%; height: auto; }
+
 h1, h2, h3, h4, h5, h6 {
   font-weight: 800;
 }
@@ -59,6 +68,8 @@ html {
   scroll-behavior: smooth;
   /* Stabilisiert Layout bei Scrollbar-Einblendung */
   scrollbar-gutter: stable both-edges;
+  /* Verhindert horizontales Scrollen auf mobilen Geräten */
+  overflow-x: hidden;
 }
 
 .animate-fade-in {
@@ -77,6 +88,7 @@ html {
 .esla-ticker {
   position: relative;
   overflow: hidden;
+  width: 100%;
 }
 
 .esla-ticker__content {
@@ -86,6 +98,10 @@ html {
   min-width: 200%;
   animation: esla-marquee 45s linear infinite;
   will-change: transform;
+}
+
+.esla-ticker:hover .esla-ticker__content {
+  animation-play-state: paused;
 }
 
 @keyframes esla-marquee {

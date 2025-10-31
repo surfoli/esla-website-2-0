@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/footer/Footer';
 import Image from 'next/image';
+import Link from 'next/link';
 import { Users, Shield, Zap, Target } from 'lucide-react';
 import { teams, playerGroups } from '@/data/team';
 import Container from '@/components/ui/Container';
@@ -46,10 +47,14 @@ const filterOptions: Record<'players' | 'staff', string> = {
  
 
 function encodePublicPath(path: string): string {
-  // Encode only path segments after '/images' to preserve leading slash
+  // Encode only path segments after '/images' and normalize to NFD to match FS on deploy
   const parts = path.split('/');
   return parts
-    .map((seg, idx) => (idx > 1 ? encodeURIComponent(seg) : seg))
+    .map((seg, idx) => {
+      if (idx <= 1) return seg;
+      const nfd = seg.normalize('NFD');
+      return encodeURIComponent(nfd);
+    })
     .join('/');
 }
 
@@ -112,11 +117,11 @@ export default function TeamPage() {
                 <section key={group} className="mb-12">
                   <Container>
                     <h2 className="text-black font-extrabold text-4xl md:text-5xl mb-6 text-left">{positionNames[group]}</h2>
-                    <div className="grid grid-cols-[repeat(auto-fit,minmax(270px,345px))] justify-center md:justify-start gap-8">
+                    <div className="grid items-stretch justify-items-center md:justify-items-start gap-6 md:gap-8 xl:gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     {teams[group].map((player, index) => (
                       <div
                         key={`${group}-${player.name}`}
-                          className="max-w-[345px] w-full bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 transform hover:scale-105 animate-scale-in"
+                          className="max-w-[340px] w-full bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 transform hover:scale-105 animate-scale-in"
                         style={{ animationDelay: `${index * 0.05}s` }}
                       >
                         {/* Image */}
@@ -146,21 +151,31 @@ export default function TeamPage() {
             </>
           ) : (
             <Container>
-              <div className="grid grid-cols-[repeat(auto-fit,minmax(270px,345px))] justify-center md:justify-start gap-8">
+              <div className="grid items-stretch justify-items-center md:justify-items-start gap-6 md:gap-8 xl:gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {teams.staff.map((member, index) => (
                   <div
                     key={`staff-${member.name}`}
-                    className="max-w-[345px] w-full bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 transform hover:scale-105 animate-scale-in"
+                    className="max-w-[340px] w-full bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 transform hover:scale-105 animate-scale-in"
                     style={{ animationDelay: `${index * 0.05}s` }}
                   >
-                    <div className="relative aspect-[3.2/4] bg-gradient-to-b from-esla-secondary to-esla-dark overflow-hidden">
+                    <div className="relative aspect-[3/4] bg-gradient-to-b from-esla-secondary to-esla-dark overflow-hidden group">
                       <Image
                         src={encodePublicPath(member.image)}
                         alt={member.name}
                         fill
                         sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                        className="object-cover object-[center_30%]"
+                        className="object-cover object-[center_30%] rounded-t-2xl group-hover:scale-105 transition-transform duration-300"
                       />
+                      {member.name === 'Luqmon Adekunle' && (
+                        <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                          <Link
+                            href="/team/luqmon"
+                            className="bg-esla-primary hover:bg-esla-accent text-white px-6 py-3 rounded-lg font-semibold text-lg transition-all duration-200 shadow-lg flex items-center gap-x-2"
+                          >
+                            <span>Biografie</span>
+                          </Link>
+                        </div>
+                      )}
                     </div>
                     <div
                       className="rounded-b-2xl p-5 bg-gradient-to-r from-black via-esla-dark to-esla-primary"

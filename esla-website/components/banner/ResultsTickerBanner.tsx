@@ -67,7 +67,9 @@ export default async function ResultsTickerBanner() {
     .sort(compareByDateAsc)
     .slice(0, 3);
 
-  if (results.length === 0 && upcoming.length === 0) return null;
+  if (results.length === 0 && upcoming.length === 0) {
+  // Still show ticker with placeholder content
+}
 
   type TickerItem = {
     key: string;
@@ -136,6 +138,25 @@ export default async function ResultsTickerBanner() {
     </div>
   );
 
+  // Ensure we have content for ticker animation
+  const tickerContent = items.length > 0 ? (
+    <>
+      {row}
+      {row}
+    </>
+  ) : (
+    <div className="inline-flex items-center gap-8 md:gap-12 min-w-max pr-8">
+      <div className="flex items-center gap-4 text-white/90">
+        <span className="text-xs md:text-sm font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-white/10 text-white">
+          ESLA
+        </span>
+        <span className="text-lg md:text-2xl font-semibold leading-tight whitespace-nowrap text-esla-accent/90">
+          Weitere Spiele folgen bald...
+        </span>
+      </div>
+    </div>
+  );
+
   return (
     <Section noContainer className="bg-gradient-to-r from-black via-esla-dark to-esla-primary !py-0 md:!py-0 border-y border-white/10">
       <div className="relative">
@@ -144,8 +165,7 @@ export default async function ResultsTickerBanner() {
           <div className="pointer-events-none absolute inset-y-0 right-0 w-8 bg-gradient-to-l from-esla-primary to-transparent" />
           <div className="esla-ticker">
             <div className="esla-ticker__content">
-              {row}
-              {row}
+              {tickerContent}
             </div>
           </div>
         </div>

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAllMatches, getRecentMatches, getMatchesPage, createMatch } from '@/lib/kv';
 import { isAuthorized } from '@/lib/auth';
-import { compareByDateAsc, compareByDateDesc, toMs } from '@/lib/match';
+import { compareByDateAsc, compareByDateDesc, toMs, canonicalMatchKey } from '@/lib/match';
 import matchesFallback from '@/data/matches-fallback';
 import type { Match } from '@/types';
 
@@ -23,6 +23,28 @@ function isMatchRecord(value: unknown): value is Match {
 
 function selectFallbackMatches(): Match[] {
   return matchesFallback.matches ?? [];
+}
+
+function dedupeByCanonical(items: Match[]): Match[] {
+  const by = new Map<string, Match>();
+  const scoreOf = (m: Match) =>
+    (m.location ? 1 : 0) +
+    (m.competition ? 1 : 0) +
+    (typeof m.homeScore === 'number' ? 1 : 0) +
+    (typeof m.awayScore === 'number' ? 1 : 0) +
+    (m.time ? 1 : 0) +
+    (m.status === 'finished' ? 1 : 0) +
+    (m.matchNumber ? 1 : 0);
+  for (const m of items) {
+    const key = canonicalMatchKey({ date: m.date, time: m.time, homeTeam: m.homeTeam, awayTeam: m.awayTeam });
+    const prev = by.get(key);
+    if (!prev) {
+      by.set(key, m);
+    } else {
+      if (scoreOf(m) > scoreOf(prev)) by.set(key, m);
+    }
+  }
+  return Array.from(by.values());
 }
 
 function sanitizeCreatePayload(value: unknown): Omit<Match, 'id'> | null {
@@ -63,7 +85,7 @@ export async function GET(request: Request) {
     if (upcomingOnly) {
       const limit = Math.max(1, Math.min(100, parseInt(limitParam || '10', 10) || 10));
       const kvMatches = await getAllMatches();
-      const base = kvMatches.length > 0 || kvOnly ? kvMatches : selectFallbackMatches();
+      const base = kvMatches.length > 0 || kvOnly ? dedupeByCanonical(kvMatches) : selectFallbackMatches();
       const now = Date.now();
       const filtered = base
         .filter((match) => toMs(match) > now)
@@ -75,6 +97,7 @@ export async function GET(request: Request) {
     if (limitParam) {
       const limit = Math.max(1, Math.min(100, parseInt(limitParam || '0', 10) || 0));
       let items = await getRecentMatches(limit);
+      items = dedupeByCanonical(items || []);
       if ((!items || items.length === 0) && !kvOnly) {
         const fallback = selectFallbackMatches().slice().sort(compareByDateDesc).slice(0, limit);
         items = fallback;
@@ -105,7 +128,8 @@ export async function GET(request: Request) {
 
     const matches = await getAllMatches();
     if (Array.isArray(matches) && matches.length > 0) {
-      return NextResponse.json(matches);
+      const unique = dedupeByCanonical(matches);
+      return NextResponse.json(unique);
     }
     if (!kvOnly) {
       const fallback = selectFallbackMatches();

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { Dumbbell, Star, Sprout, Heart, Users, Sparkles } from 'lucide-react';
 
 const sponsors = [
-  { name: 'MAGAS', logo: '/images/ESLA_Sponsor_Logo_Magas.png', url: 'https://magas.ch' },
+  { name: 'MAGAS', logo: '/images/ESLA_Sponsor_Logo_Magas_black_logo.png', url: 'https://magas.ch' },
   { name: 'Go Gemba', logo: '/images/ESLA_Sponsor_Logo_Go_Gemba.png', url: 'https://gogemba.ch' },
   { name: 'TEKO Schweizer Fachschule', logo: '/images/ESLA_Sponsor_Logo_TEKO_Schweizer_Fachschule.png', url: 'https://www.teko.ch/' },
   { name: 'ZK Automobile AG', logo: '/images/ESLA_Sponsor_Logo_ZK_Automobile_AG.png', url: 'https://zk-automobile-ag.ch/' },
@@ -96,7 +96,7 @@ export default function SponsorenPage() {
               </Link>
               <Link
                 href="/kontakt"
-                className="bg-white text-esla-secondary hover:bg-slate-50 px-6 py-3 rounded-full font-semibold transition-all duration-200 border border-slate-300"
+                className="bg-black text-white hover:bg-slate-900 px-6 py-3 rounded-full font-semibold transition-all duration-200"
               >
                 Kontakt
               </Link>
@@ -117,6 +117,9 @@ export default function SponsorenPage() {
                       alt={sponsor.name}
                       fill
                       className="object-contain"
+                      quality={95}
+                      priority
+                      {...(sponsor.name === 'MAGAS' && { unoptimized: true })}
                     />
                   </div>
                 </a>
@@ -138,7 +141,7 @@ export default function SponsorenPage() {
                   className="bg-white rounded-2xl p-6 flex items-center justify-center shadow-xl hover:scale-105 transition-transform duration-300 cursor-pointer"
                 >
                   <div className="relative w-full h-24 md:h-28 lg:h-32">
-                    <Image src={partner.logo} alt={partner.name} fill className="object-contain" />
+                    <Image src={partner.logo} alt={partner.name} fill className="object-contain" quality={95} priority />
                   </div>
                 </a>
               ))}
