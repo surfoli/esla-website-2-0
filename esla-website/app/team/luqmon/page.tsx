@@ -4,21 +4,19 @@ import { ArrowLeft, Calendar, ChevronRight, Gamepad2, Globe2, Heart, MapPin, Shi
 import Link from 'next/link';
 import Image from 'next/image';
 import Section from '@/components/ui/Section';
-import Container from '@/components/ui/Container';
 
 export default function LuqmonPage() {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
+    <main className="min-h-screen">
       <Navbar />
 
-      <Section className="pt-32 pb-20 bg-transparent" noContainer>
-        <Container>
+      <Section className="pt-32 pb-20">
           
           {/* Back Button */}
           <div className="mb-8">
             <Link 
               href="/team"
-              className="inline-flex items-center gap-x-2 text-esla-secondary hover:text-esla-primary transition-colors font-semibold"
+              className="inline-flex items-center gap-x-2 text-white/80 hover:text-white transition-colors font-semibold"
             >
               <ArrowLeft size={20} />
               Zurück zum Team
@@ -26,7 +24,7 @@ export default function LuqmonPage() {
           </div>
 
           {/* Hero Section */}
-          <div className="bg-gradient-to-br from-esla-secondary to-esla-dark text-white rounded-3xl p-8 md:p-12 mb-16 shadow-xl">
+          <div className="bg-gradient-to-br from-esla-secondary via-[#111] to-esla-primary text-white rounded-3xl p-8 md:p-12 mb-16 shadow-xl">
             <div className="grid lg:grid-cols-[420px_1fr] gap-12">
               <div className="rounded-3xl overflow-hidden shadow-2xl border border-white/20">
                 <div className="relative h-[320px]">
@@ -39,13 +37,13 @@ export default function LuqmonPage() {
                     priority
                   />
                 </div>
-                <div className="bg-esla-primary text-white p-8 space-y-8">
+                <div className="bg-white/10 text-white p-8 space-y-8">
                   <div className="space-y-3">
                     <span className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs uppercase tracking-[0.35em] text-white/70">
                       <Shield className="h-4 w-4" /> Cheftrainer & Gründer
                     </span>
                     <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/60">4 Länder · 3 Ligen</p>
-                    <h1 className="text-3xl font-black">Luqmon Adekunle</h1>
+                    <h2 className="sr-only">Profil von Luqmon Adekunle</h2>
                     <p className="text-white/85 leading-relaxed">
                       Babatunde Luqmon Adekunle führte als Innenverteidiger Mannschaften in Serbien, Mazedonien und der Schweiz an –
                       darunter eine prägende Ära beim <Link href="https://www.fcl.ch" target="_blank" rel="noreferrer" className="font-bold underline text-white hover:text-esla-accent transition-colors">FC Luzern</Link>.
@@ -95,8 +93,8 @@ export default function LuqmonPage() {
                           <p className="uppercase tracking-[0.25em] text-white/60">Schweiz</p>
                           <p className="font-semibold">FC Luzern</p>
                           <p>SC Kriens · Zug 94 · FC Sursee</p>
-                          <Link href="/team/luqmon" className="inline-flex items-center gap-1 text-white hover:text-esla-accent transition-colors">
-                            Mehr über Luqmon <ChevronRight className="h-3 w-3" />
+                          <Link href="#karriere" className="inline-flex items-center gap-1 text-white hover:text-esla-accent transition-colors">
+                            Zur Karriere <ChevronRight className="h-3 w-3" />
                           </Link>
                         </div>
                       </div>
@@ -159,14 +157,14 @@ export default function LuqmonPage() {
           </div>
 
           {/* Career Bubbles */}
-          <div className="mb-16">
-            <h2 className="text-3xl md:text-4xl font-black text-esla-secondary mb-12 text-center">
+          <div id="karriere" className="mb-16">
+            <h2 className="text-3xl md:text-4xl font-black text-white mb-12 text-center">
               Professionelle <span className="text-esla-primary">Karriere</span>
             </h2>
             
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
               {/* Career Bubble 1 */}
-              <div className="group bg-gradient-to-br from-blue-500 to-blue-600 text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer">
+              <div className="group bg-gradient-to-br from-esla-secondary to-esla-primary text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer border border-white/10">
                 <div className="text-center">
                   <div className="text-3xl font-black mb-2">2008-2013</div>
                   <div className="text-xl font-bold mb-1">FC Luzern</div>
@@ -176,7 +174,7 @@ export default function LuqmonPage() {
               </div>
 
               {/* Career Bubble 2 */}
-              <div className="group bg-gradient-to-br from-green-500 to-green-600 text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer">
+              <div className="group bg-gradient-to-br from-esla-secondary to-esla-primary text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer border border-white/10">
                 <div className="text-center">
                   <div className="text-3xl font-black mb-2">2006-2008</div>
                   <div className="text-xl font-bold mb-1">Rabotnički</div>
@@ -186,7 +184,7 @@ export default function LuqmonPage() {
               </div>
 
               {/* Career Bubble 3 */}
-              <div className="group bg-gradient-to-br from-purple-500 to-purple-600 text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer">
+              <div className="group bg-gradient-to-br from-esla-secondary to-esla-primary text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer border border-white/10">
                 <div className="text-center">
                   <div className="text-3xl font-black mb-2">2011-2012</div>
                   <div className="text-xl font-bold mb-1">SC Kriens</div>
@@ -196,7 +194,7 @@ export default function LuqmonPage() {
               </div>
 
               {/* Career Bubble 4 */}
-              <div className="group bg-gradient-to-br from-orange-500 to-orange-600 text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer">
+              <div className="group bg-gradient-to-br from-esla-secondary to-esla-primary text-white rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-105 cursor-pointer border border-white/10">
                 <div className="text-center">
                   <div className="text-3xl font-black mb-2">2014-2016</div>
                   <div className="text-xl font-bold mb-1">Zug 94</div>
@@ -207,7 +205,7 @@ export default function LuqmonPage() {
             </div>
 
             {/* Career Stats Summary */}
-            <div className="bg-esla-primary rounded-2xl p-8 text-white shadow-lg">
+            <div className="bg-gradient-to-r from-esla-secondary to-esla-primary rounded-2xl p-8 text-white shadow-lg">
               <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
                 <div>
                   <div className="text-3xl font-black text-esla-accent mb-2">13+</div>
@@ -231,35 +229,35 @@ export default function LuqmonPage() {
 
           {/* Philosophy Section */}
           <div className="grid md:grid-cols-2 gap-8 mb-16">
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200">
+            <div className="bg-white/5 rounded-2xl p-8 shadow-lg border border-white/10 text-white">
               <div className="flex items-center gap-x-3 mb-6">
                 <div className="bg-esla-primary rounded-full p-3">
                   <Target className="text-white" size={24} />
                 </div>
-                <h3 className="text-2xl font-black text-esla-secondary">Meine Philosophie</h3>
+                <h3 className="text-2xl font-black text-white">Meine Philosophie</h3>
               </div>
-              <p className="text-esla-secondary/90 leading-relaxed mb-4">
+              <p className="text-white/80 leading-relaxed mb-4">
                 Als ehemaliger Profispieler weiss ich, was es heisst auf höchstem Niveau zu bestehen. 
                 Diese Erfahrung gebe ich an die nächste Generation weiter.
               </p>
-              <p className="text-esla-secondary/90 leading-relaxed">
+              <p className="text-white/80 leading-relaxed">
                 Bei ESLA geht es nicht nur um Fussball – wir formen Charakter, bauen Selbstvertrauen auf 
                 und bereiten junge Spieler auf das Leben vor.
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl p-8 shadow-lg border border-slate-200">
+            <div className="bg-white/5 rounded-2xl p-8 shadow-lg border border-white/10 text-white">
               <div className="flex items-center gap-x-3 mb-6">
                 <div className="bg-esla-primary rounded-full p-3">
                   <Heart className="text-white" size={24} />
                 </div>
-                <h3 className="text-2xl font-black text-esla-secondary">Warum ESLA?</h3>
+                <h3 className="text-2xl font-black text-white">Warum ESLA?</h3>
               </div>
-              <p className="text-esla-secondary/90 leading-relaxed mb-4">
+              <p className="text-white/80 leading-relaxed mb-4">
                 Ich habe Team ESLA gegründet, weil ich sehe, wie viel Potenzial in unseren jungen Spielern steckt. 
                 Mit der richtigen Anleitung und mentalen Stärke können sie Grosses erreichen.
               </p>
-              <p className="text-esla-secondary/90 leading-relaxed">
+              <p className="text-white/80 leading-relaxed">
                 Mein Ziel: Jeden Spieler individuell fördern und ihm die Werkzeuge geben, die er braucht – 
                 auf und neben dem Platz.
               </p>
@@ -305,7 +303,6 @@ export default function LuqmonPage() {
               Team unterstützen
             </Link>
           </div>
-        </Container>
       </Section>
       
       <Footer />

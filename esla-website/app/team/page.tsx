@@ -165,11 +165,7 @@ export default function TeamPage() {
                           alt={member.name}
                           fill
                           sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                          className={`object-cover rounded-t-2xl transition-transform duration-300 ${
-                            isLuqmon
-                              ? 'object-[center_30%] group-hover:scale-105'
-                              : 'object-[center_35%] scale-[1.08] group-hover:scale-[1.12]'
-                          }`}
+                          className={`object-cover object-[center_30%] rounded-t-2xl transition-transform duration-300 group-hover:scale-105`}
                         />
                         {isLuqmon && (
                           <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
@@ -180,10 +176,10 @@ export default function TeamPage() {
                         )}
                       </div>
                       <div
-                        className="rounded-b-2xl p-5 bg-gradient-to-r from-black via-esla-dark to-esla-primary"
+                        className="rounded-b-2xl p-5 bg-gradient-to-r from-black via-esla-dark to-esla-primary h-28 flex flex-col justify-center"
                       >
-                        <h3 className="text-white font-bold text-2xl mb-3 leading-tight">{member.name}</h3>
-                        <p className="text-white/90 font-semibold text-base leading-tight">{member.position}</p>
+                        <h3 className="text-white font-bold text-2xl mb-2 leading-tight truncate">{member.name}</h3>
+                        <p className="text-white/90 font-semibold text-base leading-tight truncate">{member.position}</p>
                       </div>
                     </div>
                   );
