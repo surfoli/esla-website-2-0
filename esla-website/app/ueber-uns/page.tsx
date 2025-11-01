@@ -98,7 +98,7 @@ export default function AboutPage() {
   const totalPlayers = getTotalPlayers();
   const totalStaff = getTotalStaff();
   const trainingSessionsPerWeek = 2;
-  const trainingWeeksPerYear = 52;
+  const trainingWeeksPerYear = 42;
   const trainingSessionsPerYear = trainingSessionsPerWeek * trainingWeeksPerYear;
 
   const stats = [
@@ -115,7 +115,7 @@ export default function AboutPage() {
     {
       label: 'Trainingseinheiten pro Jahr',
       value: String(trainingSessionsPerYear),
-      description: 'Durchschnittlich zwei geregelte Einheiten pro Woche über die Saison hinweg.',
+      description: 'Durchschnittlich zwei geregelte Einheiten über rund 42 Saisonwochen – Ferienpausen eingerechnet.',
     },
     {
       label: 'Offizielle Anerkennung',
@@ -131,29 +131,45 @@ export default function AboutPage() {
       <div className="pt-32 pb-24">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 space-y-20">
           <section className="relative overflow-hidden rounded-[36px] bg-gradient-to-br from-esla-secondary via-esla-secondary to-esla-primary text-white shadow-[0_30px_80px_-25px_rgba(0,0,0,0.45)]">
-            <div className="absolute inset-0 opacity-30">
+            <div className="absolute -left-10 top-[-10%] h-60 w-60 rounded-full bg-esla-accent/50 blur-[120px]" aria-hidden="true" />
+            <div className="absolute -right-16 bottom-[-20%] h-72 w-72 rounded-full bg-white/30 blur-[140px]" aria-hidden="true" />
+            <div className="absolute inset-0 opacity-25">
               <Image
                 src="/images/ESLA_Fussball_Stock_3.jpg"
-                alt="ESLA Spieler in Aktion"
+                alt=""
                 fill
                 className="object-cover"
                 priority
+                aria-hidden="true"
               />
             </div>
-            <div
-              className="absolute inset-0 bg-gradient-to-br from-esla-primary/60 via-transparent to-esla-secondary/80"
-              aria-hidden="true"
-            />
             <div className="relative grid gap-12 px-8 pb-12 pt-12 md:grid-cols-[1.2fr_0.8fr] md:px-14 md:pb-16 md:pt-16">
               <div className="flex flex-col justify-between space-y-10">
                 <div className="space-y-6">
-                  <span className="inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-2 text-sm font-semibold uppercase tracking-[0.2em] text-white/80">
-                    Team ESLA
-                    <span className="inline-flex h-2 w-2 rounded-full bg-esla-primary" aria-hidden="true" />
-                    Luzern
-                  </span>
+                  <div className="flex flex-wrap items-center gap-3">
+                    <Link
+                      href="https://matchcenter.ifv.ch/default.aspx?v=1761431&oid=7&lng=1"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-5 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-white/80 transition-colors duration-200 hover:border-white/40 hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                    >
+                      SFV Matchcenter
+                    </Link>
+                    <Link
+                      href="/standort"
+                      className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-5 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-white/80 transition-colors duration-200 hover:border-white/40 hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                    >
+                      Standort RUAG
+                    </Link>
+                    <Link
+                      href="/team"
+                      className="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-5 py-2 text-xs font-semibold uppercase tracking-[0.25em] text-white/80 transition-colors duration-200 hover:border-white/40 hover:bg-white/20 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                    >
+                      Team ESLA
+                    </Link>
+                  </div>
                   <h1 className="text-4xl font-black leading-tight tracking-tight md:text-5xl lg:text-6xl">
-                    Wir formen Talent.
+                    Wir formen Talent und Charakter.
                   </h1>
                   <p className="text-lg text-white/80 md:text-xl">
                     TEAM ELITESOCCER – ESLA verbindet professionelle Fussballausbildung mit konsequenter Persönlichkeitsentwicklung. Wir schaffen einen Raum, in dem Leidenschaft auf Haltung trifft und junge Athlet:innen ihr Potenzial entfalten.
@@ -178,7 +194,8 @@ export default function AboutPage() {
               </div>
 
               <div className="relative flex flex-col justify-end">
-                <div className="rounded-[28px] border border-white/10 bg-gradient-to-br from-white/20 via-white/10 to-esla-primary/25 p-8 backdrop-blur-lg">
+                <div className="relative rounded-[28px] bg-white/10 p-8 backdrop-blur-lg">
+                  <div className="absolute -right-6 -top-6 h-20 w-20 rounded-full bg-esla-primary/30 blur-3xl" aria-hidden="true" />
                   <div className="flex items-center gap-3 text-sm font-medium uppercase tracking-[0.25em] text-white/70">
                     <span className="inline-flex h-2 w-2 rounded-full bg-esla-primary" aria-hidden="true" />
                     Fakten
@@ -196,8 +213,9 @@ export default function AboutPage() {
               </div>
             </div>
           </section>
-
-          <section className="grid gap-10 lg:grid-cols-[1.1fr_0.9fr] lg:items-center">
+          <section className="relative overflow-hidden rounded-[34px] bg-gradient-to-br from-white via-esla-light/40 to-white p-10 shadow-[0_24px_60px_-35px_rgba(0,0,0,0.65)] lg:grid lg:grid-cols-[1.1fr_0.9fr] lg:items-center lg:gap-10">
+            <div className="absolute -left-12 top-10 hidden h-48 w-48 rounded-full bg-esla-primary/15 blur-[100px] lg:block" aria-hidden="true" />
+            <div className="absolute -right-16 bottom-0 hidden h-60 w-60 rounded-full bg-esla-secondary/15 blur-[120px] lg:block" aria-hidden="true" />
             <div className="space-y-6">
               <p className="inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.3em] text-esla-primary">
                 Unsere Identität
@@ -211,8 +229,8 @@ export default function AboutPage() {
               <p className="text-lg leading-relaxed text-slate-700">
                 Wir kombinieren moderne Trainingsmethoden mit gezieltem Mental- und Persönlichkeitstraining. Technik, Taktik und Athletik sind wichtige Bausteine – entscheidend ist aber, dass junge Menschen lernen, Verantwortung zu übernehmen, resilient zu sein und mit Freude jeden Fortschritt zu feiern.
               </p>
-              <div className="flex flex-wrap items-center gap-6 rounded-2xl border border-esla-primary/10 bg-gradient-to-r from-white via-white to-esla-primary/10 p-6 shadow-lg shadow-esla-primary/15">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-esla-primary/15">
+              <div className="flex flex-wrap items-center gap-6 rounded-2xl bg-white/90 p-6 shadow-lg shadow-esla-secondary/10 backdrop-blur">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-esla-primary/10">
                   <Shield className="h-7 w-7 text-esla-primary" aria-hidden="true" />
                 </div>
                 <div>
@@ -230,9 +248,9 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-[30px] border border-esla-primary/10 bg-gradient-to-br from-white via-white to-esla-primary/10 shadow-[0_25px_60px_-20px_rgba(0,0,0,0.25)]">
+            <div className="relative overflow-hidden rounded-[30px] bg-white shadow-[0_25px_60px_-20px_rgba(0,0,0,0.25)]">
               <Image
-                src="/images/ESLA_Fussball_Stock_5.jpg"
+                src="/images/esla-fussball-stock-1.jpg"
                 alt="Trainingseinheit bei ESLA"
                 width={900}
                 height={900}
@@ -248,7 +266,7 @@ export default function AboutPage() {
             </div>
           </section>
 
-          <section className="rounded-[34px] border border-slate-200 bg-white p-10 shadow-sm">
+          <section className="rounded-[34px] border border-slate-200 bg-white/95 p-10 shadow-[0_24px_55px_-30px_rgba(197,41,88,0.55)]">
             <div className="grid gap-12 md:grid-cols-[0.9fr_1.1fr] md:items-center">
               <div className="space-y-5">
                 <p className="text-xs font-semibold uppercase tracking-[0.3em] text-esla-primary">Unsere Grundsätze</p>
@@ -262,9 +280,9 @@ export default function AboutPage() {
                 {values.map((value) => (
                   <div
                     key={value.title}
-                    className="group rounded-2xl border border-slate-200 bg-gradient-to-br from-white via-slate-50/70 to-esla-primary/5 p-6 transition duration-200 hover:-translate-y-1 hover:border-esla-primary/50 hover:bg-white hover:shadow-[0_14px_35px_-20px_rgba(197,41,88,0.6)]"
+                    className="group rounded-2xl border border-white/20 bg-gradient-to-br from-esla-light/70 via-white to-white p-6 shadow-[0_18px_40px_-28px_rgba(16,24,40,0.45)] transition duration-200 hover:-translate-y-1 hover:border-esla-accent/50 hover:shadow-[0_18px_45px_-20px_rgba(197,41,88,0.55)]"
                   >
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-esla-primary/10 shadow-inner">
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-inner">
                       {value.icon}
                     </div>
                     <h4 className="text-lg font-semibold text-esla-secondary">{value.title}</h4>
@@ -274,8 +292,9 @@ export default function AboutPage() {
               </div>
             </div>
           </section>
-
-          <section className="grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          <section className="relative grid gap-10 rounded-[34px] border border-slate-200 bg-white/95 p-10 shadow-[0_20px_55px_-35px_rgba(0,0,0,0.5)] lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+            <div className="absolute -top-12 right-10 h-24 w-24 rounded-full bg-esla-primary/15 blur-[90px]" aria-hidden="true" />
+            <div className="absolute -bottom-14 left-8 h-28 w-28 rounded-full bg-esla-accent/15 blur-[110px]" aria-hidden="true" />
             <div className="space-y-5">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-esla-primary">Unsere DNA</p>
               <h3 className="text-3xl font-black text-esla-secondary md:text-4xl">Struktur, die Vertrauen schafft.</h3>
@@ -284,7 +303,7 @@ export default function AboutPage() {
               </p>
               <div className="space-y-4">
                 {pillars.map((pillar) => (
-                  <div key={pillar.title} className="flex items-start gap-4 rounded-2xl border border-esla-primary/10 bg-gradient-to-r from-white via-white to-esla-primary/10 p-6 shadow-lg shadow-esla-primary/10">
+                  <div key={pillar.title} className="flex items-start gap-4 rounded-2xl bg-gradient-to-br from-white via-esla-light/50 to-white p-6 shadow-[0_20px_40px_-32px_rgba(16,24,40,0.6)]">
                     <div className="flex h-14 w-14 items-center justify-center rounded-full bg-esla-primary/10">
                       {pillar.icon}
                     </div>
@@ -297,20 +316,20 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <div className="grid gap-6 rounded-[30px] border border-esla-primary/10 bg-white/95 p-8 shadow-sm shadow-esla-primary/10">
-              <div className="rounded-2xl border border-esla-primary/10 bg-gradient-to-r from-white via-esla-light to-esla-primary/10 p-6">
+            <div className="grid gap-6 rounded-[30px] border border-white/30 bg-white/90 p-8 shadow-[0_20px_50px_-35px_rgba(197,41,88,0.45)] backdrop-blur">
+              <div className="rounded-2xl bg-gradient-to-br from-esla-light/90 via-white to-white p-6">
                 <h4 className="text-base font-semibold text-esla-secondary">Ganzheitliches Coaching</h4>
                 <p className="mt-2 text-sm text-slate-600">
                   Wir arbeiten mit individuellen Entwicklungsplänen, Feedbackgesprächen und mentalem Coaching. Jede Spielerin und jeder Spieler erhält eine klare Roadmap.
                 </p>
               </div>
-              <div className="rounded-2xl border border-esla-primary/10 bg-gradient-to-r from-esla-primary/15 via-esla-primary/10 to-esla-accent/15 p-6">
+              <div className="rounded-2xl bg-gradient-to-br from-esla-primary/20 via-esla-primary/10 to-white p-6">
                 <h4 className="text-base font-semibold text-esla-secondary">Community & Elternarbeit</h4>
                 <p className="mt-2 text-sm text-slate-600">
                   Eltern werden aktiv eingebunden – Transparenz, Dialog und gemeinsame Werte prägen die Zusammenarbeit.
                 </p>
               </div>
-              <div className="rounded-2xl border border-esla-primary/10 bg-gradient-to-r from-esla-accent/15 via-esla-accent/10 to-esla-primary/15 p-6">
+              <div className="rounded-2xl bg-gradient-to-br from-esla-accent/20 via-esla-accent/10 to-white p-6">
                 <h4 className="text-base font-semibold text-esla-secondary">Netzwerk & Perspektiven</h4>
                 <p className="mt-2 text-sm text-slate-600">
                   Wir vernetzen unsere Talente mit Partnervereinen, Schulen und Förderprogrammen – für den nächsten Schritt im Fussball und im Leben.
@@ -319,12 +338,12 @@ export default function AboutPage() {
             </div>
           </section>
 
-          <section className="rounded-[32px] border border-slate-200 bg-white p-10 shadow-sm">
+          <section className="rounded-[32px] border border-white/25 bg-white/95 p-10 shadow-[0_24px_60px_-35px_rgba(0,0,0,0.58)]">
             <div className="grid gap-10 md:grid-cols-2">
               {highlights.map((highlight) => (
                 <div
                   key={highlight.title}
-                  className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-slate-50/40 p-8 transition duration-200 hover:border-esla-primary/40 hover:shadow-[0_16px_40px_-20px_rgba(197,41,88,0.5)]"
+                  className="flex flex-col gap-4 rounded-2xl border border-white/25 bg-gradient-to-br from-esla-light/40 via-white to-white p-8 transition duration-200 hover:border-esla-primary/40 hover:shadow-[0_18px_44px_-20px_rgba(197,41,88,0.55)]"
                 >
                   <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-inner">
                     {highlight.icon}
@@ -336,7 +355,7 @@ export default function AboutPage() {
                 </div>
               ))}
 
-              <div className="flex h-full flex-col justify-between rounded-2xl bg-gradient-to-br from-esla-primary to-esla-accent p-8 text-white shadow-[0_22px_45px_-20px_rgba(197,41,88,0.65)]">
+              <div className="flex h-full flex-col justify-between rounded-2xl bg-gradient-to-br from-esla-secondary via-esla-primary to-esla-accent p-8 text-white shadow-[0_24px_55px_-22px_rgba(197,41,88,0.7)]">
                 <div className="space-y-3">
                   <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/70">Versprechen</p>
                   <h4 className="text-2xl font-black">Wir investieren in Menschen.</h4>
@@ -357,24 +376,26 @@ export default function AboutPage() {
             </div>
           </section>
 
-          <section className="rounded-[36px] bg-gradient-to-br from-white via-esla-light to-white p-12 text-center shadow-[0_30px_80px_-40px_rgba(0,0,0,0.45)]">
+          <section className="relative overflow-hidden rounded-[36px] bg-gradient-to-br from-esla-secondary/90 via-esla-primary/90 to-esla-accent/85 p-12 text-center text-white shadow-[0_30px_80px_-40px_rgba(0,0,0,0.55)]">
+            <div className="absolute -left-16 top-6 h-40 w-40 rounded-full bg-white/15 blur-[120px]" aria-hidden="true" />
+            <div className="absolute -right-10 bottom-6 h-44 w-44 rounded-full bg-white/10 blur-[120px]" aria-hidden="true" />
             <div className="mx-auto max-w-3xl space-y-6">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-esla-primary">Next Step</p>
-              <h3 className="text-3xl font-black text-esla-secondary md:text-4xl">Bereit, unsere Werte zu erleben?</h3>
-              <p className="text-lg text-slate-700">
+              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/70">Next Step</p>
+              <h3 className="text-3xl font-black md:text-4xl">Bereit, unsere Werte zu erleben?</h3>
+              <p className="text-lg text-white/85">
                 Komm zum Probetraining oder nimm Kontakt mit uns auf. Wir freuen uns auf engagierte Spieler:innen, starke Persönlichkeiten und Menschen, die unsere Leidenschaft teilen.
               </p>
               <div className="flex flex-wrap items-center justify-center gap-4">
                 <Link
                   href="/kontakt"
-                  className="inline-flex items-center gap-3 rounded-full bg-esla-primary px-8 py-4 text-base font-semibold text-white shadow-lg shadow-esla-primary/30 transition-transform duration-200 hover:-translate-y-1 hover:bg-esla-accent"
+                  className="inline-flex items-center gap-3 rounded-full bg-white px-8 py-4 text-base font-semibold text-esla-secondary shadow-lg shadow-black/20 transition-transform duration-200 hover:-translate-y-1 hover:bg-esla-light/80"
                 >
                   Kontakt aufnehmen
                   <ArrowRight className="h-5 w-5" aria-hidden="true" />
                 </Link>
                 <Link
                   href="/standort"
-                  className="inline-flex items-center gap-3 rounded-full border border-esla-primary/30 px-8 py-4 text-base font-semibold text-esla-secondary transition-all duration-200 hover:border-esla-primary hover:bg-esla-primary/5"
+                  className="inline-flex items-center gap-3 rounded-full border border-white/40 px-8 py-4 text-base font-semibold text-white transition-all duration-200 hover:border-white hover:bg-white/10"
                 >
                   Standort entdecken
                 </Link>
