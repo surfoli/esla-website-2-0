@@ -161,8 +161,9 @@ export function canonicalTeamName(value?: string | null): string {
   if (/esla/.test(name) || /elitesoccer/.test(base)) {
     name = name.replace(/\s*\(.*?\)\s*/g, ' ').replace(/\s+/g, ' ').trim();
   }
-  if (/\besla\s*7\b|\besla7\b/.test(name)) return 'esla 7';
-  if (/\besla\s*9\b|\besla9\b/.test(name)) return 'esla 9';
+  // Handle variants like "ESLA 7", "ESLA7", and "ESLA D-7"/"ESLA D7"
+  if (/\besla\s*(?:d[-\s]*)?7\b|\besla7\b/.test(name)) return 'esla 7';
+  if (/\besla\s*(?:d[-\s]*)?9\b|\besla9\b/.test(name)) return 'esla 9';
   if (/\besla\s*e\s*a\b|\beslaea\b/.test(name)) return 'esla ea';
   return name;
 }
@@ -249,6 +250,13 @@ export function normalizeMatchPayload(payload: Partial<Match>): Partial<Match> {
     normalized.teamLogo = teamLogo;
   } else if (payload.teamLogo === '') {
     normalized.teamLogo = undefined;
+  }
+
+  const notes = normalizeWhitespace((payload as any).notes);
+  if (notes) {
+    (normalized as any).notes = notes;
+  } else if ((payload as any).notes === '') {
+    (normalized as any).notes = undefined;
   }
 
   return normalized;

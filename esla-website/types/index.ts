@@ -11,6 +11,7 @@ export interface Match {
   status: 'upcoming' | 'finished' | 'live';
   teamLogo?: string;
   matchNumber?: string; // Spielnummer (optional)
+  notes?: string;
 }
 
 export interface TeamStats {
