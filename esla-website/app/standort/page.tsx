@@ -2,6 +2,7 @@ import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/footer/Footer';
 import Image from 'next/image';
 import { MapPin, Car, Navigation } from 'lucide-react';
+import HeroGradientCard from '@/components/ui/HeroGradientCard';
 
 export default function StandortPage() {
   // Google Maps Plus Code: 38Q6+8C Emmen
@@ -16,14 +17,14 @@ export default function StandortPage() {
         <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* Header */}
-          <div className="text-center mb-16 bg-esla-secondary text-white p-10 rounded-3xl">
+          <HeroGradientCard className="mb-16 p-10 text-center">
             <h1 className="text-5xl md:text-7xl font-black text-white mb-4">
               UNSER <span className="text-esla-primary">STANDORT</span>
             </h1>
-            <p className="text-white/90 text-xl">
+            <p className="mx-auto max-w-2xl text-white/90 text-xl">
               Sportplatz RUAG in Luzern
             </p>
-          </div>
+          </HeroGradientCard>
 
           {/* Map Container */}
           <div className="mb-12">

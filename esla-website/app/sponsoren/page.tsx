@@ -3,6 +3,7 @@ import Footer from '@/components/footer/Footer';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Dumbbell, Star, Sprout, Heart, Users, Sparkles } from 'lucide-react';
+import HeroGradientCard from '@/components/ui/HeroGradientCard';
 
 const sponsors = [
   { name: 'MAGAS', logo: '/images/esla-sponsor-logo-magas-black-logo.png', url: 'https://magas.ch' },
@@ -33,16 +34,16 @@ export default function SponsorenPage() {
         <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* Header */}
-          <div className="text-center mb-16">
-            <h1 className="text-5xl md:text-7xl font-black text-esla-secondary mb-6">
+          <HeroGradientCard className="mb-16 p-10 text-center">
+            <h1 className="text-5xl md:text-7xl font-black text-white mb-6">
               <span className="text-esla-primary">Herzlichen Dank</span> an alle Sponsoren, Partner und Gönner
             </h1>
-            <p className="text-esla-secondary/80 text-xl max-w-4xl mx-auto leading-relaxed">
+            <p className="mx-auto max-w-4xl text-white/85 text-xl leading-relaxed">
               Ohne Ihre grosszügige Unterstützung wäre der Start von Team Elitesoccer (ESLA) nicht möglich gewesen.
-              Dank Ihnen können wir unseren Traum verwirklichen – ein professionelles Fussballteam aufzubauen, 
+              Dank Ihnen können wir unseren Traum verwirklichen – ein professionelles Fussballteam aufzubauen,
               das Leidenschaft, Teamgeist und Entwicklung verbindet.
             </p>
-          </div>
+          </HeroGradientCard>
 
           {/* Was Ihre Partnerschaft ermöglicht */}
           <div className="rounded-3xl p-10 md:p-12 shadow-lg mb-16 bg-esla-secondary text-white">
