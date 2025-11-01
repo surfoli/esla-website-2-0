@@ -28,9 +28,9 @@ function eslaLogoFor(name?: string): string | null {
   const m = n.match(/(?:elitesoccer\s+)?esla\s*(7|9|ea)\b/);
   if (!m) return null;
   const g = m[1];
-  if (g === '7') return '/images/ESLA_7.jpg';
-  if (g === '9') return '/images/ESLA_9.jpg';
-  if (g === 'ea') return '/images/ESLA_EA.jpg';
+  if (g === '7') return '/images/esla-7.jpg';
+  if (g === '9') return '/images/esla-9.jpg';
+  if (g === 'ea') return '/images/esla-ea.jpg';
   return null;
 }
 
@@ -95,7 +95,7 @@ export default async function UpcomingMatchesServer() {
         <div className="absolute inset-0 z-0">
           <div className="relative w-full h-full">
             <Image
-              src="/images/Fussballfeld_Headerbild.jpg"
+              src="/images/fussballfeld-headerbild.jpg"
               alt="Fussballfeld Hintergrund"
               fill
               sizes="100vw"
@@ -127,7 +127,7 @@ export default async function UpcomingMatchesServer() {
       <div className="absolute inset-0 z-0">
         <div className="relative w-full h-full">
           <Image
-            src="/images/Fussballfeld_Headerbild.jpg"
+            src="/images/fussballfeld-headerbild.jpg"
             alt="Fussballfeld Hintergrund"
             fill
             sizes="100vw"

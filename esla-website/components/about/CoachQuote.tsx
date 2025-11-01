@@ -13,7 +13,7 @@ export default function CoachQuote() {
             className="relative w-52 h-52 md:w-64 md:h-64 rounded-full overflow-hidden border-4 border-white/40 shadow-2xl flex-shrink-0 transition-transform duration-200 hover:scale-[1.02] focus:outline-none focus-visible:ring-2 focus-visible:ring-white/80"
           >
             <Image
-              src="/images/ESLA_Profilbild_Staff_Cheftrainer_Luqmon_Adekunle.jpg"
+              src="/images/esla-profilbild-staff-cheftrainer-luqmon-adekunle.jpg"
               alt="Luqmon Adekunle"
               fill
               className="object-cover"

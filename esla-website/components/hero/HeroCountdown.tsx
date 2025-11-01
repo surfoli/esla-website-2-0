@@ -125,7 +125,7 @@ export default function HeroCountdown() {
       <div className="absolute inset-0 z-0">
         <div className="relative w-full h-full">
           <Image
-            src="/images/Fussballfeld_Headerbild.jpg"
+            src="/images/fussballfeld-headerbild.jpg"
             alt="Fussballfeld Hintergrund"
             fill
             priority

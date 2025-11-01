@@ -6,7 +6,7 @@ import { Clock, MapPin, Calendar } from 'lucide-react';
 const trainingSessions = [
   {
     team: 'ESLA 9',
-    logo: '/images/ESLA_9.jpg',
+    logo: '/images/esla-9.jpg',
     sessions: [
       { day: 'Mittwoch', time: '18:00 - 19:30', location: 'Sportplatz RUAG, Emmen' },
       { day: 'Freitag', time: '18:00 - 19:30', location: 'Sportplatz RUAG, Emmen' },
@@ -14,7 +14,7 @@ const trainingSessions = [
   },
   {
     team: 'ESLA 7',
-    logo: '/images/ESLA_7.jpg',
+    logo: '/images/esla-7.jpg',
     sessions: [
       { day: 'Mittwoch', time: '18:00 - 19:30', location: 'Sportplatz RUAG, Emmen' },
       { day: 'Freitag', time: '18:00 - 19:30', location: 'Sportplatz RUAG, Emmen' },
@@ -22,7 +22,7 @@ const trainingSessions = [
   },
   {
     team: 'ESLA EA',
-    logo: '/images/ESLA_EA.jpg',
+    logo: '/images/esla-ea.jpg',
     sessions: [
       { day: 'Mittwoch', time: '18:00 - 19:30', location: 'Sportplatz RUAG, Emmen' },
       { day: 'Freitag', time: '18:00 - 19:30', location: 'Sportplatz RUAG, Emmen' },

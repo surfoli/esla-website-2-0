@@ -6,15 +6,15 @@ import CoachQuote from '@/components/about/CoachQuote';
 
 export default function Footer() {
   const sponsors = [
-    { name: 'MAGAS', logo: '/images/ESLA_Sponsor_Logo_Magas_black_logo.png', url: 'https://magas.ch' },
-    { name: 'Go Gemba', logo: '/images/ESLA_Sponsor_Logo_Go_Gemba.png', url: 'https://gogemba.ch' },
-    { name: 'TEKO', logo: '/images/ESLA_Sponsor_Logo_TEKO_Schweizer_Fachschule.png', url: 'https://www.teko.ch/' },
-    { name: 'ZK Automobile AG', logo: '/images/ESLA_Sponsor_Logo_ZK_Automobile_AG.png', url: 'https://zk-automobile-ag.ch/' },
+    { name: 'MAGAS', logo: '/images/esla-sponsor-logo-magas-black-logo.png', url: 'https://magas.ch' },
+    { name: 'Go Gemba', logo: '/images/esla-sponsor-logo-go-gemba.png', url: 'https://gogemba.ch' },
+    { name: 'TEKO', logo: '/images/esla-sponsor-logo-teko-schweizer-fachschule.png', url: 'https://www.teko.ch/' },
+    { name: 'ZK Automobile AG', logo: '/images/esla-sponsor-logo-zk-automobile-ag.png', url: 'https://zk-automobile-ag.ch/' },
   ];
 
   const partners = [
-    { name: 'Superheldenwerkstatt Flavio Räber', logo: '/images/Superheldenwerkstatt_Flavio_Raeber_Logo.png', url: 'https://www.superheldenwerkstatt.ch/' },
-    { name: 'D3 Webstudio Olivier Durand', logo: '/images/D3Webstudio_Olivier_Durand.png', url: 'https://d3webstudio.ch/' },
+    { name: 'Superheldenwerkstatt Flavio Räber', logo: '/images/superheldenwerkstatt-flavio-raeber-logo.png', url: 'https://www.superheldenwerkstatt.ch/' },
+    { name: 'D3 Webstudio Olivier Durand', logo: '/images/d3webstudio-olivier-durand.png', url: 'https://d3webstudio.ch/' },
   ];
 
   const goenner = [
@@ -41,7 +41,7 @@ export default function Footer() {
                 </h3>
               </div>
               <a
-                href="/kontakt"
+                href="/sponsoren-angebote"
                 className="hidden md:inline-flex items-center gap-x-2 bg-esla-primary hover:bg-esla-accent text-white px-6 py-3 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 shadow-lg shadow-esla-primary/30"
               >
                 Team unterstützen
@@ -119,7 +119,7 @@ export default function Footer() {
             {/* Mobile Button */}
             <div className="text-center mt-8 md:hidden">
               <a
-                href="/kontakt"
+                href="/sponsoren-angebote"
                 className="inline-flex items-center gap-x-2 bg-esla-primary hover:bg-esla-accent text-white px-6 py-3 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 shadow-lg shadow-esla-primary/30"
               >
                 Team unterstützen
@@ -144,7 +144,7 @@ export default function Footer() {
                 aria-label="Zur Startseite"
               >
                 <Image
-                  src="/images/ESLA_Website_logo.png"
+                  src="/images/esla-website-logo.png"
                   alt="ESLA Logo"
                   width={80}
                   height={80}

@@ -43,7 +43,7 @@
 
 body {
   background-color: #000;
-  background-image: radial-gradient(1200px 800px at top left, #e3c41d 0%, rgba(227, 196, 29, 0.85) 18%, rgba(0, 0, 0, 0.4) 45%, #000 70%);
+  background-image: radial-gradient(1200px 800px at top left, #c52958 0%, rgba(197, 41, 88, 0.85) 18%, rgba(0, 0, 0, 0.4) 45%, #000 70%);
   background-repeat: no-repeat;
   background-attachment: fixed;
   color: var(--foreground);

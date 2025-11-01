@@ -8,19 +8,22 @@ import { Menu, X, Instagram, Facebook, Linkedin, ChevronDown } from 'lucide-reac
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
 
+  const competitionLinks = [
+    { href: '/germany-cup', label: 'Germany Cup 2026', featured: true },
+    { href: '/turniere/d9-meisterschaft', label: 'Meisterschaft D-9', featured: true },
+    { href: '/turniere/d7-meisterschaft', label: 'Meisterschaft D-7', featured: true },
+    { href: '/turniere/cups', label: 'Cups', featured: true },
+    { href: '/turniere/d9-cup', label: 'D9er Cup', featured: false },
+    { href: '/turniere/d7-cup', label: 'D7er Cup', featured: false },
+    { href: '/turniere/e-cup', label: 'E Cup', featured: false },
+  ];
+
   const navLinks = [
     { href: '/spiele', label: 'Spiele' },
     { href: '/team', label: 'Team' },
     {
-      label: 'Wettbewerbe',
-      children: [
-        { href: '/germany-cup', label: 'Germany Cup 2026' },
-        { href: '/turniere/d9-meisterschaft', label: 'Meisterschaft D-9' },
-        { href: '/turniere/d7-meisterschaft', label: 'Meisterschaft D-7' },
-        { href: '/turniere/d9-cup', label: 'D9er Cup' },
-        { href: '/turniere/d7-cup', label: 'D7er Cup' },
-        { href: '/turniere/e-cup', label: 'E Cup' },
-      ],
+      label: 'Meisterschaften/Cups',
+      children: competitionLinks.filter((link) => link.featured),
     },
     { href: '/ueber-uns', label: 'Über uns' },
     { href: '/trainingszeiten', label: 'Trainingszeiten' },
@@ -36,7 +39,7 @@ export default function Navbar() {
           <Link href="/" className="relative flex items-center space-x-2 shrink-0 mr-6 xl:mr-12">
             <div className="relative">
               <Image
-                src="/images/ESLA_Website_logo.png?v=20251013"
+                src="/images/esla-website-logo.png?v=20251013"
                 alt="ESLA Logo"
                 width={68}
                 height={68}

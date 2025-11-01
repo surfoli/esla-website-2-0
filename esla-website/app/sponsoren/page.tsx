@@ -5,15 +5,15 @@ import Link from 'next/link';
 import { Dumbbell, Star, Sprout, Heart, Users, Sparkles } from 'lucide-react';
 
 const sponsors = [
-  { name: 'MAGAS', logo: '/images/ESLA_Sponsor_Logo_Magas_black_logo.png', url: 'https://magas.ch' },
-  { name: 'Go Gemba', logo: '/images/ESLA_Sponsor_Logo_Go_Gemba.png', url: 'https://gogemba.ch' },
-  { name: 'TEKO Schweizer Fachschule', logo: '/images/ESLA_Sponsor_Logo_TEKO_Schweizer_Fachschule.png', url: 'https://www.teko.ch/' },
-  { name: 'ZK Automobile AG', logo: '/images/ESLA_Sponsor_Logo_ZK_Automobile_AG.png', url: 'https://zk-automobile-ag.ch/' },
+  { name: 'MAGAS', logo: '/images/esla-sponsor-logo-magas-black-logo.png', url: 'https://magas.ch' },
+  { name: 'Go Gemba', logo: '/images/esla-sponsor-logo-go-gemba.png', url: 'https://gogemba.ch' },
+  { name: 'TEKO Schweizer Fachschule', logo: '/images/esla-sponsor-logo-teko-schweizer-fachschule.png', url: 'https://www.teko.ch/' },
+  { name: 'ZK Automobile AG', logo: '/images/esla-sponsor-logo-zk-automobile-ag.png', url: 'https://zk-automobile-ag.ch/' },
 ];
 
 const partners = [
-  { name: 'Superheldenwerkstatt Flavio Räber', logo: '/images/Superheldenwerkstatt_Flavio_Raeber_Logo.png', url: 'https://www.superheldenwerkstatt.ch/' },
-  { name: 'D3 Webstudio Olivier Durand', logo: '/images/D3Webstudio_Olivier_Durand.png', url: 'https://d3webstudio.ch/' },
+  { name: 'Superheldenwerkstatt Flavio Räber', logo: '/images/superheldenwerkstatt-flavio-raeber-logo.png', url: 'https://www.superheldenwerkstatt.ch/' },
+  { name: 'D3 Webstudio Olivier Durand', logo: '/images/d3webstudio-olivier-durand.png', url: 'https://d3webstudio.ch/' },
 ];
 
 const goenner = [

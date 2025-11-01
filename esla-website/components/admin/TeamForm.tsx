@@ -103,7 +103,7 @@ export default function TeamForm({ initial }: { initial?: TeamFormData }) {
         </div>
         <div>
           <label className="block text-white/80 text-sm font-semibold mb-2">Logo URL</label>
-          <input value={logoUrl} onChange={(e)=>setLogoUrl(e.target.value)} className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white" placeholder="/images/ESLA_9.jpg oder https://..." />
+          <input value={logoUrl} onChange={(e)=>setLogoUrl(e.target.value)} className="w-full bg-white/10 border border-white/20 rounded-xl px-4 py-3 text-white" placeholder="/images/esla-9.jpg oder https://..." />
         </div>
         <div>
           <label className="block text-white/80 text-sm font-semibold mb-2">Primärfarbe (Hex)</label>

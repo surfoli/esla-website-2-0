@@ -17,7 +17,7 @@ export const metadata: Metadata = {
     siteName: "Team Elitesoccer",
     images: [
       {
-        url: "/images/ESLA_Website_logo.png",
+        url: "/images/esla-website-logo.png",
         width: 1200,
         height: 630,
         alt: "Team Elitesoccer Logo",
@@ -67,7 +67,7 @@ export default function RootLayout({
               "name": "Team Elitesoccer | ESLA",
               "alternateName": "Elite Soccer Luqmon Adekunle",
               "url": "https://www.teamelitesoccer.ch",
-              "logo": "https://www.teamelitesoccer.ch/images/ESLA_Website_logo.png",
+              "logo": "https://www.teamelitesoccer.ch/images/esla-website-logo.png",
               "description": "ESLA steht für mehr als Fussball. Wir fördern Talent und formen Charakter. Unser Fokus liegt auf gezielter Nachwuchsförderung sowie auf der ganzheitlichen Persönlichkeitsentwicklung junger Spieler.",
               "foundingDate": "2024",
               "areaServed": {

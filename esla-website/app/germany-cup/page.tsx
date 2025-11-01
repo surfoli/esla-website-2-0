@@ -15,7 +15,7 @@ export default async function GermanyCupPage() {
           <div className="relative z-10 max-w-4xl mx-auto text-center">
             <div className="mx-auto mb-6 flex h-24 w-24 sm:h-32 sm:w-32 items-center justify-center rounded-full bg-white shadow-xl ring-2 ring-inset ring-[#e2c218]/50 border border-[#e2c218]/20">
               <Image
-                src="/images/Germany_cup_logo.avif"
+                src="/images/germany-cup-logo.avif"
                 alt="Germany Cup Logo"
                 width={192}
                 height={192}

@@ -19,7 +19,7 @@ export default function LuqmonBio() {
             <div className="grid lg:grid-cols-[400px_1fr] gap-12 items-center">
               <div className="relative aspect-[3/4] rounded-2xl overflow-hidden shadow-xl border border-white/10">
                 <Image
-                  src="/images/ESLA_Profilbild_Staff_Cheftrainer_Luqmon_Adekunle_Nah.jpg"
+                  src="/images/esla-profilbild-staff-cheftrainer-luqmon-adekunle-nah.jpg"
                   alt="Cheftrainer Luqmon Adekunle"
                   fill
                   className="object-cover object-[center_25%]"
@@ -35,7 +35,12 @@ export default function LuqmonBio() {
                   <span className="bg-white/10 px-4 py-2 rounded-full flex items-center gap-x-2"><MapPin size={16} />Lagos, Nigeria</span>
                   <span className="bg-white/10 px-4 py-2 rounded-full flex items-center gap-x-2"><Shield size={16} />1.77 m • Innenverteidiger</span>
                 </div>
-                <p className="text-white/85 leading-relaxed text-lg">Als ehemaliger Profispieler in 4 Ländern und 3 Ligen prägte Luqmon Adekunle den Schweizer Fussball – heute gibt er seine Erfahrung als Gründer und Visionär der Elite Soccer Academy an die nächste Generation weiter.</p>
+                <p className="text-white/85 leading-relaxed text-lg">Als ehemaliger Profispieler in 4 Ländern und 3 Ligen prägte Luqmon Adekunle den Schweizer Fussball – heute gibt er seine Erfahrung als Gründer und Visionär von Team Elite Soccer an die nächste Generation weiter.</p>
+                <div className="space-y-4 text-white/85 leading-relaxed">
+                  <p className="text-lg">Als 20-Jähriger wechselte Luqmon in die serbische Prva Liga zu <span className="font-semibold text-white">Borac Čačak</span> und schloss sich kurz darauf dem mazedonischen Topklub <span className="font-semibold text-white">Vëllazërimi</span> an. Von 2006 bis 2008 trug er das Trikot von <span className="font-semibold text-white">FK Rabotnički Skopje</span> und spielte eine Schlüsselrolle bei der Qualifikation zur <span className="font-semibold text-white">UEFA Champions League 2008/09</span>.</p>
+                  <p className="text-lg">Am 22. Dezember 2008 verpflichtete ihn der <span className="font-semibold text-white">FC Luzern</span> nach einem spektakulären Champions-League-Qualifikationsspiel gegen Inter Baku. Mit den Innerschweizern gelang ihm ein glänzender Start in der Super League.</p>
+                  <p className="text-lg">In der Saison 2011/12 sammelte Luqmon als Leihspieler beim <span className="font-semibold text-white">SC Kriens</span> wertvolle Einsätze in der Swiss Challenge League. 2014 folgte der Wechsel zu <span className="font-semibold text-white">Zug 94</span>, wo er gleich im Debüt beim 9:0 gegen den FC Grenchen traf. Seine letzte Station als Aktiver war <span className="font-semibold text-white">FC Sursee</span>, bevor er sich ganz auf den Aufbau von Team ESLA konzentrierte.</p>
+                </div>
               </div>
             </div>
           </div>
@@ -69,7 +74,7 @@ export default function LuqmonBio() {
       <Section noContainer>
         <Container>
           <h2 className="text-3xl md:text-4xl font-black text-center text-white mb-12">Professionelle <span className="text-esla-primary">Karriere</span></h2>
-          <div className="grid md:grid-cols-2 gap-8 text-white">
+          <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-8 text-white">
             <div className="bg-white/5 rounded-2xl p-8 border border-white/10 space-y-6">
               <h3 className="text-xl font-bold text-esla-primary">Internationale Stationen</h3>
               <div className="space-y-4">
@@ -94,6 +99,29 @@ export default function LuqmonBio() {
                   </div>
                 </div>
               </div>
+            </div>
+            <div className="bg-white/5 rounded-2xl p-8 border border-white/10 space-y-6">
+              <h3 className="text-xl font-bold text-esla-primary">Erfolge & Auszeichnungen</h3>
+              <ul className="space-y-3 text-sm text-white/80">
+                <li className="flex items-start gap-x-3">
+                  <span className="w-5 flex-none inline-flex justify-center">
+                    <Trophy className="mt-[2px] text-esla-accent" size={18} />
+                  </span>
+                  <span><span className="font-semibold">Mazedonische Meisterschaft & Pokalsieg</span> mit FK Rabotnički (2007/08)</span>
+                </li>
+                <li className="flex items-start gap-x-3">
+                  <span className="w-5 flex-none inline-flex justify-center">
+                    <Shield className="mt-[2px] text-esla-accent" size={18} />
+                  </span>
+                  <span><span className="font-semibold">Swiss Cup Finalist</span> mit dem FC Luzern (2011/12)</span>
+                </li>
+                <li className="flex items-start gap-x-3">
+                  <span className="w-5 flex-none inline-flex justify-center">
+                    <Globe2 className="mt-[2px] text-esla-accent" size={18} />
+                  </span>
+                  <span><span className="font-semibold">UEFA Champions League Qualifikation</span> 2008/09</span>
+                </li>
+              </ul>
             </div>
             <div className="bg-white/5 rounded-2xl p-8 border border-white/10 space-y-6">
               <h3 className="text-xl font-bold text-esla-primary">Schweizer Vereine</h3>
@@ -140,17 +168,17 @@ export default function LuqmonBio() {
           <div className="bg-gradient-to-br from-esla-primary to-black rounded-3xl p-8 md:p-12 text-white shadow-2xl">
             <div className="grid md:grid-cols-3 gap-8">
               <div className="text-center space-y-3">
-                <Trophy className="mx-auto text-yellow-400" size={44} />
+                <Trophy className="mx-auto text-white" size={44} />
                 <div className="font-bold">Champions League</div>
                 <div className="text-white/80 text-sm">Qualifikation 2008/09 mit FK Rabotnički Skopje</div>
               </div>
               <div className="text-center space-y-3">
-                <Shield className="mx-auto text-yellow-400" size={44} />
+                <Shield className="mx-auto text-white" size={44} />
                 <div className="font-bold">Meister Mazedonien</div>
                 <div className="text-white/80 text-sm">Nationale Meisterschaft und internationale Erfahrung</div>
               </div>
               <div className="text-center space-y-3">
-                <Globe2 className="mx-auto text-yellow-400" size={44} />
+                <Globe2 className="mx-auto text-white" size={44} />
                 <div className="font-bold">4 Länder • 3 Ligen</div>
                 <div className="text-white/80 text-sm">Internationale Karriere auf höchstem Niveau</div>
               </div>
