@@ -2,6 +2,7 @@ import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/footer/Footer';
 import Link from 'next/link';
 import Image from 'next/image';
+import { getTotalPlayers, getTotalStaff } from '@/data/team';
 import {
   ArrowRight,
   Award,
@@ -17,24 +18,6 @@ import {
   Users,
   Zap,
 } from 'lucide-react';
-
-const stats = [
-  {
-    label: 'Spieler in Ausbildung',
-    value: '120+',
-    description: 'Talente aus der ganzen Zentralschweiz trainieren regelmässig mit uns.',
-  },
-  {
-    label: 'Lizenzen & Partnerschaften',
-    value: '6',
-    description: 'Offiziell anerkannte Kooperationen & Zertifizierungen für erstklassige Förderung.',
-  },
-  {
-    label: 'Trainingseinheiten pro Jahr',
-    value: '450',
-    description: 'Strukturiertes Coaching mit klaren Entwicklungszielen pro Altersstufe.',
-  },
-];
 
 const pillars = [
   {
@@ -90,27 +73,6 @@ const values = [
   },
 ];
 
-const milestones = [
-  {
-    year: '2019',
-    title: 'Start der Akademie',
-    description:
-      'Gründung von TEAM ELITESOCCER in Luzern – mit dem Ziel, professionelles Training zugänglich zu machen.',
-  },
-  {
-    year: '2021',
-    title: 'Offizielle Anerkennung',
-    description:
-      'Anerkennung durch den SFV und Aufbau eines leistungsorientierten Ausbildungsprogramms.',
-  },
-  {
-    year: '2025',
-    title: 'Neustart im Sommer',
-    description:
-      'Wir richten Strukturen, Trainingspläne und Team neu aus und starten 2025 mit frischer Energie in die nächste Etappe.',
-  },
-];
-
 const highlights = [
   {
     icon: <Award className="w-6 h-6 text-esla-primary" aria-hidden="true" />,
@@ -133,6 +95,35 @@ const highlights = [
 ];
 
 export default function AboutPage() {
+  const totalPlayers = getTotalPlayers();
+  const totalStaff = getTotalStaff();
+  const trainingSessionsPerWeek = 2;
+  const trainingWeeksPerYear = 52;
+  const trainingSessionsPerYear = trainingSessionsPerWeek * trainingWeeksPerYear;
+
+  const stats = [
+    {
+      label: 'Spieler im Kader',
+      value: String(totalPlayers),
+      description: 'Aktiv im Trainings- und Spielbetrieb auf allen Positionen.',
+    },
+    {
+      label: 'Trainer & Staff',
+      value: String(totalStaff),
+      description: 'Coaches und Support, die Training, Betreuung und Organisation tragen.',
+    },
+    {
+      label: 'Trainingseinheiten pro Jahr',
+      value: String(trainingSessionsPerYear),
+      description: 'Durchschnittlich zwei geregelte Einheiten pro Woche über die Saison hinweg.',
+    },
+    {
+      label: 'Offizielle Anerkennung',
+      value: 'SFV',
+      description: 'Offiziell anerkannt vom Schweizerischen Fussballverband (SFV).',
+    },
+  ];
+
   return (
     <main className="min-h-screen bg-esla-light text-slate-900">
       <Navbar />
@@ -149,6 +140,10 @@ export default function AboutPage() {
                 priority
               />
             </div>
+            <div
+              className="absolute inset-0 bg-gradient-to-br from-esla-primary/60 via-transparent to-esla-secondary/80"
+              aria-hidden="true"
+            />
             <div className="relative grid gap-12 px-8 pb-12 pt-12 md:grid-cols-[1.2fr_0.8fr] md:px-14 md:pb-16 md:pt-16">
               <div className="flex flex-col justify-between space-y-10">
                 <div className="space-y-6">
@@ -158,7 +153,7 @@ export default function AboutPage() {
                     Luzern
                   </span>
                   <h1 className="text-4xl font-black leading-tight tracking-tight md:text-5xl lg:text-6xl">
-                    Wir formen Talente zu Charakterspielern.
+                    Wir formen Talent.
                   </h1>
                   <p className="text-lg text-white/80 md:text-xl">
                     TEAM ELITESOCCER – ESLA verbindet professionelle Fussballausbildung mit konsequenter Persönlichkeitsentwicklung. Wir schaffen einen Raum, in dem Leidenschaft auf Haltung trifft und junge Athlet:innen ihr Potenzial entfalten.
@@ -183,7 +178,7 @@ export default function AboutPage() {
               </div>
 
               <div className="relative flex flex-col justify-end">
-                <div className="rounded-[28px] bg-white/10 p-8 backdrop-blur-lg">
+                <div className="rounded-[28px] border border-white/10 bg-gradient-to-br from-white/20 via-white/10 to-esla-primary/25 p-8 backdrop-blur-lg">
                   <div className="flex items-center gap-3 text-sm font-medium uppercase tracking-[0.25em] text-white/70">
                     <span className="inline-flex h-2 w-2 rounded-full bg-esla-primary" aria-hidden="true" />
                     Fakten
@@ -211,13 +206,13 @@ export default function AboutPage() {
                 Fussball, der Haltung zeigt – Willkommen bei TEAM ESLA.
               </h2>
               <p className="text-lg leading-relaxed text-slate-700">
-                TEAM ELITESOCCER – ESLA wurde von <Link href="/team/luqmon" className="text-esla-primary underline decoration-2 underline-offset-4 transition-colors hover:text-esla-accent">Luqmon Adekunle</Link> gegründet. Als ehemaliger Profispieler kennt er die Herausforderungen auf und neben dem Platz aus erster Hand. Unsere Akademie bietet jungen Talenten aus Luzern und der gesamten Zentralschweiz eine professionelle Heimat.
+                TEAM ELITESOCCER – ESLA wurde von <Link href="/team/luqmon" className="text-esla-accent underline decoration-2 underline-offset-4 transition-colors hover:text-esla-accent">Luqmon Adekunle</Link> gegründet. Als ehemaliger Profispieler kennt er die Herausforderungen auf und neben dem Platz aus erster Hand. Unsere Akademie bietet jungen Talenten aus Luzern und der gesamten Zentralschweiz eine professionelle Heimat.
               </p>
               <p className="text-lg leading-relaxed text-slate-700">
                 Wir kombinieren moderne Trainingsmethoden mit gezieltem Mental- und Persönlichkeitstraining. Technik, Taktik und Athletik sind wichtige Bausteine – entscheidend ist aber, dass junge Menschen lernen, Verantwortung zu übernehmen, resilient zu sein und mit Freude jeden Fortschritt zu feiern.
               </p>
-              <div className="flex flex-wrap items-center gap-6 rounded-2xl bg-white p-6 shadow-lg shadow-black/5">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-esla-primary/10">
+              <div className="flex flex-wrap items-center gap-6 rounded-2xl border border-esla-primary/10 bg-gradient-to-r from-white via-white to-esla-primary/10 p-6 shadow-lg shadow-esla-primary/15">
+                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-esla-primary/15">
                   <Shield className="h-7 w-7 text-esla-primary" aria-hidden="true" />
                 </div>
                 <div>
@@ -235,7 +230,7 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <div className="relative overflow-hidden rounded-[30px] bg-white shadow-[0_25px_60px_-20px_rgba(0,0,0,0.25)]">
+            <div className="relative overflow-hidden rounded-[30px] border border-esla-primary/10 bg-gradient-to-br from-white via-white to-esla-primary/10 shadow-[0_25px_60px_-20px_rgba(0,0,0,0.25)]">
               <Image
                 src="/images/ESLA_Fussball_Stock_5.jpg"
                 alt="Trainingseinheit bei ESLA"
@@ -267,38 +262,13 @@ export default function AboutPage() {
                 {values.map((value) => (
                   <div
                     key={value.title}
-                    className="group rounded-2xl border border-slate-200 bg-slate-50/50 p-6 transition duration-200 hover:-translate-y-1 hover:border-esla-primary/50 hover:bg-white hover:shadow-[0_14px_35px_-20px_rgba(197,41,88,0.6)]"
+                    className="group rounded-2xl border border-slate-200 bg-gradient-to-br from-white via-slate-50/70 to-esla-primary/5 p-6 transition duration-200 hover:-translate-y-1 hover:border-esla-primary/50 hover:bg-white hover:shadow-[0_14px_35px_-20px_rgba(197,41,88,0.6)]"
                   >
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-inner">
+                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-esla-primary/10 shadow-inner">
                       {value.icon}
                     </div>
                     <h4 className="text-lg font-semibold text-esla-secondary">{value.title}</h4>
                     <p className="mt-2 text-sm text-slate-600">{value.description}</p>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </section>
-
-          <section className="rounded-[32px] bg-gradient-to-br from-esla-secondary via-esla-secondary to-esla-primary px-8 py-14 text-white shadow-[0_28px_70px_-20px_rgba(0,0,0,0.6)] md:px-14">
-            <div className="grid gap-10 lg:grid-cols-[1fr_1fr] lg:items-center">
-              <div className="space-y-6">
-                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/70">Meilensteine</p>
-                <h3 className="text-3xl font-black md:text-4xl">Unsere Reise – gestern, heute und morgen.</h3>
-                <p className="text-lg text-white/80">
-                  Wir wachsen konsequent weiter. Der Neustart im Sommer 2025 markiert den nächsten Schritt, damit junge Spieler:innen bei uns die beste Ausbildung und echte Perspektiven finden.
-                </p>
-              </div>
-
-              <div className="space-y-8">
-                {milestones.map((milestone) => (
-                  <div key={milestone.year} className="flex flex-col gap-3 rounded-2xl bg-white/10 p-6 backdrop-blur">
-                    <div className="flex items-center gap-3 text-sm font-semibold uppercase tracking-[0.3em] text-esla-primary">
-                      <span className="inline-flex h-2 w-2 rounded-full bg-esla-primary" aria-hidden="true" />
-                      {milestone.year}
-                    </div>
-                    <h4 className="text-xl font-semibold text-white">{milestone.title}</h4>
-                    <p className="text-sm text-white/80">{milestone.description}</p>
                   </div>
                 ))}
               </div>
@@ -314,7 +284,7 @@ export default function AboutPage() {
               </p>
               <div className="space-y-4">
                 {pillars.map((pillar) => (
-                  <div key={pillar.title} className="flex items-start gap-4 rounded-2xl bg-white p-6 shadow-lg shadow-black/5">
+                  <div key={pillar.title} className="flex items-start gap-4 rounded-2xl border border-esla-primary/10 bg-gradient-to-r from-white via-white to-esla-primary/10 p-6 shadow-lg shadow-esla-primary/10">
                     <div className="flex h-14 w-14 items-center justify-center rounded-full bg-esla-primary/10">
                       {pillar.icon}
                     </div>
@@ -327,20 +297,20 @@ export default function AboutPage() {
               </div>
             </div>
 
-            <div className="grid gap-6 rounded-[30px] border border-slate-200 bg-white p-8 shadow-sm">
-              <div className="rounded-2xl bg-esla-light p-6">
+            <div className="grid gap-6 rounded-[30px] border border-esla-primary/10 bg-white/95 p-8 shadow-sm shadow-esla-primary/10">
+              <div className="rounded-2xl border border-esla-primary/10 bg-gradient-to-r from-white via-esla-light to-esla-primary/10 p-6">
                 <h4 className="text-base font-semibold text-esla-secondary">Ganzheitliches Coaching</h4>
                 <p className="mt-2 text-sm text-slate-600">
                   Wir arbeiten mit individuellen Entwicklungsplänen, Feedbackgesprächen und mentalem Coaching. Jede Spielerin und jeder Spieler erhält eine klare Roadmap.
                 </p>
               </div>
-              <div className="rounded-2xl bg-esla-primary/10 p-6">
+              <div className="rounded-2xl border border-esla-primary/10 bg-gradient-to-r from-esla-primary/15 via-esla-primary/10 to-esla-accent/15 p-6">
                 <h4 className="text-base font-semibold text-esla-secondary">Community & Elternarbeit</h4>
                 <p className="mt-2 text-sm text-slate-600">
                   Eltern werden aktiv eingebunden – Transparenz, Dialog und gemeinsame Werte prägen die Zusammenarbeit.
                 </p>
               </div>
-              <div className="rounded-2xl bg-esla-accent/10 p-6">
+              <div className="rounded-2xl border border-esla-primary/10 bg-gradient-to-r from-esla-accent/15 via-esla-accent/10 to-esla-primary/15 p-6">
                 <h4 className="text-base font-semibold text-esla-secondary">Netzwerk & Perspektiven</h4>
                 <p className="mt-2 text-sm text-slate-600">
                   Wir vernetzen unsere Talente mit Partnervereinen, Schulen und Förderprogrammen – für den nächsten Schritt im Fussball und im Leben.

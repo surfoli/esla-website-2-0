@@ -14,8 +14,8 @@ export default function CupsPage() {
               <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-white h-full">
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-xl font-bold text-white mb-3">Wettbewerb</h2>
-                    <p className="text-white/80">Junioren E – Cup (IFV, Physio Sportiv)</p>
+                    <h2 className="text-xl font-bold text-white mb-1">Physio Sportiv Junioren E-Cup (IFV)</h2>
+                    <p className="text-white/60">Austragung durch Physio Sportiv &amp; IFV</p>
                   </div>
                   <div>
                     <h2 className="text-xl font-bold text-white mb-3">Altersklasse</h2>
@@ -66,8 +66,8 @@ export default function CupsPage() {
               <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-white h-full">
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-xl font-bold text-white mb-3">Wettbewerb</h2>
-                    <p className="text-white/80">Physio Sportiv Junioren D7er – Cup (IFV)</p>
+                    <h2 className="text-xl font-bold text-white mb-1">Physio Sportiv Junioren D7er-Cup (IFV)</h2>
+                    <p className="text-white/60">Austragung durch Physio Sportiv &amp; IFV</p>
                   </div>
                   <div>
                     <h2 className="text-xl font-bold text-white mb-3">Altersklasse</h2>
@@ -118,8 +118,8 @@ export default function CupsPage() {
               <div className="bg-white/5 border border-white/10 rounded-2xl p-8 text-white h-full">
                 <div className="space-y-6">
                   <div>
-                    <h2 className="text-xl font-bold text-white mb-3">Wettbewerb</h2>
-                    <p className="text-white/80">Physio Sportiv Junioren D9er – Cup (IFV)</p>
+                    <h2 className="text-xl font-bold text-white mb-1">Physio Sportiv Junioren D9er-Cup (IFV)</h2>
+                    <p className="text-white/60">Austragung durch Physio Sportiv &amp; IFV</p>
                   </div>
                   <div>
                     <h2 className="text-xl font-bold text-white mb-3">Altersklasse</h2>
