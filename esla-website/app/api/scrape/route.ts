@@ -56,10 +56,20 @@ async function fetchHtml(url: string): Promise<string> {
   const { data } = await axios.get<string>(url, {
     timeout: 15000,
     headers: {
-      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0 Safari/537.36',
-      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+      'User-Agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36',
+      'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8',
       'Accept-Language': 'de-CH,de;q=0.9,en;q=0.8',
-      'Referer': 'https://matchcenter.ifv.ch/'
+      'Referer': 'https://matchcenter.ifv.ch/',
+      'Upgrade-Insecure-Requests': '1',
+      'Sec-Fetch-Dest': 'document',
+      'Sec-Fetch-Mode': 'navigate',
+      'Sec-Fetch-Site': 'none',
+      'Sec-Fetch-User': '?1',
+      'sec-ch-ua': '"Chromium";v="122", "Not(A:Brand";v="24", "Google Chrome";v="122"',
+      'sec-ch-ua-platform': '"macOS"',
+      'sec-ch-ua-mobile': '?0',
+      'Cache-Control': 'no-cache',
+      'Pragma': 'no-cache',
     },
     responseType: 'text',
     withCredentials: false,
@@ -77,13 +87,25 @@ function selectCompetition($: cheerio.CheerioAPI): string | null {
 
 function extractMatches($: cheerio.CheerioAPI): MatchItem[] {
   const comp = selectCompetition($)
-  const rows = $('tr.matchRow, tr[data-matchid]')
+  let rows = $('tr.matchRow, tr[data-matchid]')
   const list: MatchItem[] = []
+  if (rows.length === 0) {
+    // Fallback: generic table rows with at least 4 tds and a score-like cell
+    rows = $('table tr').filter((_: number, el: any) => {
+      const tds = $(el).find('td')
+      if (tds.length < 4) return false
+      let hasScore = false
+      tds.each((__: number, c: any) => {
+        if (/(\d+)\s*[:–-]\s*(\d+)/.test($(c).text())) hasScore = true
+      })
+      return hasScore
+    })
+  }
   if (rows.length === 0) return list
   rows.each((_: number, el: any) => {
     const row = $(el)
     const matchId = row.attr('data-matchid') || null
-    const dateText = clean(row.find('.date').text()) || null
+    const dateText = clean(row.find('.date').text()) || clean(row.find('td').eq(0).text()) || null
     const home = clean(row.find('.homeTeam').text()) || clean(row.find('td').eq(1).text())
     const away = clean(row.find('.awayTeam').text()) || clean(row.find('td').eq(3).text())
     const scoreText = clean(row.find('.score').text()) || clean(row.find('td').filter((__: number, c: any) => /(\d+)\s*[:–-]\s*(\d+)/.test($(c).text())).first().text())
