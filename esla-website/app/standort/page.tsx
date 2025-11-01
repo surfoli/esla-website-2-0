@@ -110,7 +110,7 @@ export default function StandortPage() {
                 <div className="flex justify-center mb-4">
                   <div className="bg-white p-5 rounded-full">
                     <Image
-                      src="/images/fussbalfeld_icon.png"
+                      src="/images/fussbalfeld-icon.png"
                       alt="Sportplatz"
                       width={56}
                       height={56}
@@ -124,7 +124,7 @@ export default function StandortPage() {
                 <div className="flex justify-center mb-4">
                   <div className="bg-white p-5 rounded-full">
                     <Image
-                      src="/images/spinnden_and_duschen_icon.png"
+                      src="/images/spinnden-and-duschen-icon.png"
                       alt="Umkleidekabinen"
                       width={56}
                       height={56}

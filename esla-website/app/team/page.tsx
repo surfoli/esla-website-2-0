@@ -1,53 +1,29 @@
-'use client';
-
-import { useEffect, useState } from 'react';
-import Navbar from '@/components/navigation/Navbar';
-import Footer from '@/components/footer/Footer';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Users, Shield, Zap, Target } from 'lucide-react';
-import { teams, playerGroups } from '@/data/team';
+import Navbar from '@/components/navigation/Navbar';
+import Footer from '@/components/footer/Footer';
 import Container from '@/components/ui/Container';
+import { teams, playerGroups, getTotalPlayers } from '@/data/team';
 
- 
-
-const positionIcons = {
-  staff: Users,
-  goalkeepers: Shield,
-  defenders: Shield,
-  midfielders: Target,
-  wingers: Zap,
-  strikers: Target,
-  players: Users,
-};
-
-type PlayerGroup = 'goalkeepers' | 'defenders' | 'midfielders' | 'wingers' | 'strikers';
-
-const positionNames: Record<PlayerGroup, string> = {
+const positionNames = {
   goalkeepers: 'TORHÜTER',
   defenders: 'VERTEIDIGER',
-  midfielders: 'MITTELFELDSPIELER',
-  wingers: 'FLÜGELSPIELER',
+  midfielders: 'MITTELFELD',
+  wingers: 'FLÜGEL',
   strikers: 'STÜRMER',
-};
+} as const;
 
-const positionLabel: Record<PlayerGroup, string> = {
+const positionLabel = {
   goalkeepers: 'Torhüter',
-  defenders: 'Verteidigungsspieler',
-  midfielders: 'Mittelfeldspieler',
+  defenders: 'Verteidigung',
+  midfielders: 'Mittelfeld',
   wingers: 'Flügelspieler',
   strikers: 'Stürmer',
-};
+} as const;
 
-const filterOptions: Record<'players' | 'staff', string> = {
-  players: 'SPIELER',
-  staff: 'STAFF',
-};
-
- 
+type PlayerGroupKey = keyof typeof positionNames;
 
 function encodePublicPath(path: string): string {
-  // Encode only path segments after '/images' and normalize to NFD to match FS on deploy
   const parts = path.split('/');
   return parts
     .map((seg, idx) => {
@@ -58,148 +34,143 @@ function encodePublicPath(path: string): string {
     .join('/');
 }
 
-export default function TeamPage() {
-  type PositionKey = 'players' | 'staff';
-  const [selectedPosition, setSelectedPosition] = useState<PositionKey>('players');
-  // Preselect via query: /team?section=staff | /team?section=players (ohne useSearchParams)
-  useEffect(() => {
-    if (typeof window === 'undefined') return;
-    const params = new URLSearchParams(window.location.search);
-    const section = params.get('section');
-    if (section === 'staff') setSelectedPosition('staff');
-    if (section === 'players') setSelectedPosition('players');
-  }, []);
+type TeamCardProps = {
+  name: string;
+  role: string;
+  image: string;
+};
 
+function TeamCard({ name, role, image }: TeamCardProps) {
   return (
-    <main className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
+    <div className="group relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-black/30 shadow-[0_28px_60px_-25px_rgba(8,8,8,0.65)] transition-all duration-500 hover:-translate-y-1 hover:shadow-[0_40px_90px_-25px_rgba(8,8,8,0.7)]">
+      <Image
+        src={encodePublicPath(image)}
+        alt={name}
+        fill
+        sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
+        className="object-cover object-top transition-transform duration-700 group-hover:scale-105"
+      />
+      <div className="absolute inset-x-0 bottom-0 h-28 md:h-32">
+        <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/60 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-r from-transparent via-esla-primary/35 to-esla-primary/65 opacity-95" />
+        <div className="relative z-10 flex h-full flex-col justify-end gap-1.5 px-5 pb-6">
+          <h3 className="text-white font-bold text-2xl leading-tight drop-shadow-sm">{name}</h3>
+          <p className="text-white/85 text-sm md:text-base leading-snug">{role}</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function TeamPage() {
+  return (
+    <main className="min-h-screen bg-gradient-to-b from-slate-100 via-white to-slate-100">
       <Navbar />
-      
-      <div className="pt-32 pb-20">
-        <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
-          
-          {/* Header */}
-          <div className="text-center mb-12 bg-black text-white p-10 rounded-3xl">
-            <h1 className="text-5xl md:text-7xl font-black text-white mb-4">
+
+      <div className="pt-32 pb-24">
+        <div className="mx-auto max-w-[1920px] px-4 sm:px-6 lg:px-8">
+          <div className="mb-16 overflow-hidden rounded-3xl bg-gradient-to-r from-black via-esla-dark to-esla-primary p-10 text-center text-white shadow-2xl">
+            <p className="text-xs font-semibold uppercase tracking-[0.38em] text-white/70">ESLA FAMILIE</p>
+            <h1 className="mt-4 text-5xl md:text-7xl font-black">
               UNSER <span className="text-esla-primary">TEAM</span>
             </h1>
-            <p className="text-white/90 text-xl">
-              Die Gesichter hinter dem Erfolg
+            <p className="mx-auto mt-6 max-w-2xl text-lg md:text-xl text-white/85">
+              Lerne die Menschen kennen, die ESLA formen – mit Herzblut auf dem Rasen, an der Seitenlinie und hinter den Kulissen.
             </p>
           </div>
 
-          {/* Position Filter */}
-          <div className="flex flex-wrap justify-center gap-3 mb-12">
-            {Object.entries(filterOptions).map(([key, label]) => {
-              const Icon = positionIcons[key as PositionKey];
-              const active = selectedPosition === key;
-              return (
-                <button
-                  key={key}
-                  onClick={() => setSelectedPosition(key as PositionKey)}
-                  aria-pressed={active}
-                  className={`px-8 py-4 rounded-full font-semibold text-base md:text-lg transition-all duration-200 flex items-center gap-x-3 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-esla-primary focus-visible:ring-offset-2 ring-offset-white ${
-                    active
-                      ? 'bg-esla-primary text-white shadow-lg shadow-esla-primary/50 scale-105'
-                      : 'bg-black/10 text-black border border-black/30 hover:bg-black/20'
-                  }`}
-                >
-                  <Icon size={24} />
-                  <span>{label}</span>
-                </button>
-              );
-            })}
-          </div>
+          <Container>
+            <div className="mb-16 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-[0.38em] text-esla-primary">
+                  TEAM AUF DEM PLATZ
+                </p>
+                <h2 className="mt-3 text-4xl md:text-5xl font-black text-black">SPIELER</h2>
+                <p className="mt-4 max-w-2xl text-base text-black/70">
+                  Unsere Spieler bringen Tempo, Technik und Leidenschaft auf den Rasen – vom Tor bis zum Sturm in jeder Position top vorbereitet.
+                </p>
+              </div>
+              <div className="text-sm font-semibold uppercase tracking-[0.28em] text-black/45">
+                {getTotalPlayers().toString().padStart(2, '0')} Spieler
+              </div>
+            </div>
+          </Container>
 
-          {/* Content */}
-          {selectedPosition === 'players' ? (
-            <>
-              {playerGroups.map((group) => (
-                <section key={group} className="mb-12">
-                  <Container>
-                    <h2 className="text-black font-extrabold text-4xl md:text-5xl mb-6 text-left">{positionNames[group]}</h2>
-                    <div className="grid items-stretch justify-items-center md:justify-items-start gap-6 md:gap-8 xl:gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                    {teams[group].map((player, index) => (
-                      <div
-                        key={`${group}-${player.name}`}
-                          className="max-w-[340px] w-full bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] animate-scale-in"
-                        style={{ animationDelay: `${index * 0.05}s` }}
-                      >
-                        {/* Image */}
-                        <div className="relative aspect-[3/4] bg-gradient-to-b from-esla-secondary to-esla-dark overflow-hidden">
-                          <Image
-                            src={encodePublicPath(player.image)}
-                            alt={player.name}
-                            fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                        className="object-cover object-[center_30%] rounded-t-2xl"
-                          />
-                        </div>
-
-                        {/* Info */}
-                        <div
-                          className="rounded-b-2xl p-5 bg-gradient-to-r from-black via-esla-dark to-esla-primary"
-                        >
-                          <h3 className="text-white font-bold text-2xl mb-3 leading-tight">{player.name}</h3>
-                          <p className="text-white/90 font-semibold text-base leading-tight">{positionLabel[group]}</p>
-                        </div>
-                      </div>
-                    ))}
+          {playerGroups.map((group) => (
+            <section key={group} className="mb-24">
+              <Container>
+                <div className="mb-10 flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+                  <div>
+                    <p className="text-xs font-semibold uppercase tracking-[0.38em] text-esla-primary">
+                      POSITION
+                    </p>
+                    <h2 className="mt-3 text-4xl md:text-5xl font-black text-black">
+                      {positionNames[group as PlayerGroupKey]}
+                    </h2>
                   </div>
-                  </Container>
-                </section>
-              ))}
-            </>
-          ) : (
+                  <div className="text-sm font-semibold uppercase tracking-[0.28em] text-black/45">
+                    {teams[group].length.toString().padStart(2, '0')} Spieler
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-8">
+                  {teams[group].map((player) => (
+                    <TeamCard
+                      key={`${group}-${player.name}`}
+                      name={player.name}
+                      role={positionLabel[group as PlayerGroupKey]}
+                      image={player.image}
+                    />
+                  ))}
+                </div>
+              </Container>
+            </section>
+          ))}
+
+          <section className="mb-24">
             <Container>
-              <div className="grid items-stretch justify-items-center md:justify-items-start gap-6 md:gap-8 xl:gap-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                {teams.staff.map((member, index) => {
-                  const isLuqmon = member.name === 'Luqmon Adekunle';
-                  const content = (
-                    <div
-                      className="max-w-[340px] md:max-w-[360px] w-full bg-white/5 backdrop-blur-xl rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:scale-[1.02] animate-scale-in"
-                      style={{ animationDelay: `${index * 0.05}s` }}
-                    >
-                      <div className="relative aspect-[3/4] bg-gradient-to-b from-esla-secondary to-esla-dark overflow-hidden group">
-                        <Image
-                          src={encodePublicPath(member.image)}
-                          alt={member.name}
-                          fill
-                          sizes="(max-width: 768px) 100vw, (max-width: 1280px) 50vw, 25vw"
-                          className={`object-cover object-[center_30%] rounded-t-2xl transition-transform duration-300 group-hover:scale-105`}
-                        />
-                        {isLuqmon && (
-                          <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
-                            <span className="bg-esla-primary text-white px-6 py-3 rounded-lg font-semibold text-lg shadow-lg flex items-center gap-x-2">
-                              Biografie ansehen
-                            </span>
-                          </div>
-                        )}
-                      </div>
-                      <div
-                        className="rounded-b-2xl p-5 bg-gradient-to-r from-black via-esla-dark to-esla-primary h-28 flex flex-col justify-center"
-                      >
-                        <h3 className="text-white font-bold text-2xl mb-2 leading-tight truncate">{member.name}</h3>
-                        <p className="text-white/90 font-semibold text-base leading-tight truncate">{member.position}</p>
-                      </div>
-                    </div>
+              <div className="mb-10 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-[0.38em] text-esla-primary">
+                    TEAM HINTER DEM TEAM
+                  </p>
+                  <h2 className="mt-3 text-4xl md:text-5xl font-black text-black">STAFF</h2>
+                  <p className="mt-4 max-w-2xl text-base text-black/70">
+                    Hinter jedem Spieltag steht ein engagiertes Team aus Trainer:innen, Strateg:innen und Support. Sie kümmern sich um Ausbildung, Auftritt und Organisation – damit du ESLA in Bestform erlebst.
+                  </p>
+                </div>
+                <div className="text-sm font-semibold uppercase tracking-[0.28em] text-black/45">
+                  {teams.staff.length.toString().padStart(2, '0')} Teammitglieder
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-8">
+                {teams.staff.map((member) => {
+                  const card = (
+                    <TeamCard
+                      name={member.name}
+                      role={member.position}
+                      image={member.image}
+                    />
                   );
 
-                  return member.name === 'Luqmon Adekunle' ? (
-                    <Link
-                      key={`staff-${member.name}`}
-                      href="/team/luqmon"
-                      className="block cursor-pointer"
-                    >
-                      {content}
-                    </Link>
-                  ) : (
-                    <div key={`staff-${member.name}`}>{content}</div>
+                  if (member.name === 'Luqmon Adekunle') {
+                    return (
+                      <Link key={`staff-${member.name}`} href="/team/luqmon" className="block">
+                        {card}
+                      </Link>
+                    );
+                  }
+
+                  return (
+                    <div key={`staff-${member.name}`} className="block">
+                      {card}
+                    </div>
                   );
                 })}
               </div>
             </Container>
-          )}
-
+          </section>
         </div>
       </div>
 

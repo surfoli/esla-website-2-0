@@ -66,7 +66,7 @@ export default function AboutPage() {
               <div className="group rounded-2xl overflow-hidden shadow-lg shadow-black/30 hover:shadow-2xl hover:shadow-black/40 transition-all duration-300 transform hover:scale-105 bg-esla-primary flex flex-col">
                 <div className="relative aspect-[3/4]">
                   <Image
-                    src="/images/ESLA_Fussball_Stock_1.jpg"
+                    src="/images/esla-fussball-stock-1.jpg"
                     alt="Professionelle Leitung"
                     fill
                     sizes="(max-width: 768px) 50vw, 25vw"
@@ -90,7 +90,7 @@ export default function AboutPage() {
               <div className="group rounded-2xl overflow-hidden shadow-lg shadow-black/30 hover:shadow-2xl hover:shadow-black/40 transition-all duration-300 transform hover:scale-105 bg-esla-primary flex flex-col">
                 <div className="relative aspect-[3/4]">
                   <Image
-                    src="/images/ESLA_Fussball_Stock_2.jpg"
+                    src="/images/esla-fussball-stock-2.jpg"
                     alt="Ganzheitliche Förderung"
                     fill
                     sizes="(max-width: 768px) 50vw, 25vw"
@@ -114,7 +114,7 @@ export default function AboutPage() {
               <div className="group rounded-2xl overflow-hidden shadow-lg shadow-black/30 hover:shadow-2xl hover:shadow-black/40 transition-all duration-300 transform hover:scale-105 bg-esla-primary flex flex-col">
                 <div className="relative aspect-[3/4]">
                   <Image
-                    src="/images/ESLA_Fussball_Stock_3.jpg"
+                    src="/images/esla-fussball-stock-3.jpg"
                     alt="Nachhaltige Perspektive"
                     fill
                     sizes="(max-width: 768px) 50vw, 25vw"
@@ -138,7 +138,7 @@ export default function AboutPage() {
               <div className="group rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105 bg-gradient-to-b from-black to-esla-primary flex flex-col">
                 <div className="relative aspect-[3/4]">
                   <Image
-                    src="/images/ESLA_Fussball_Stock_5.jpg"
+                    src="/images/esla-fussball-stock-5.jpg"
                     alt="Starke Gemeinschaft"
                     fill
                     sizes="(max-width: 768px) 50vw, 25vw"

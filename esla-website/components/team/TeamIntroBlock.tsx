@@ -39,7 +39,7 @@ export default function TeamIntroBlock() {
                 <div className="relative">
                   <div className="absolute inset-0 bg-esla-primary rounded-lg blur-xl opacity-50"></div>
                   <img
-                    src="/images/luqmon.jpg"
+                    src="/images/esla-profilbild-staff-cheftrainer-luqmon-adekunle.jpg"
                     alt="Luqmon - ESLA Team"
                     className="relative rounded-lg shadow-2xl w-full max-w-xs md:max-w-md h-auto object-cover"
                     onError={(e) => {
