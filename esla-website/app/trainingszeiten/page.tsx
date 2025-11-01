@@ -2,6 +2,7 @@ import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/footer/Footer';
 import Image from 'next/image';
 import { Clock, MapPin, Calendar } from 'lucide-react';
+import HeroGradientCard from '@/components/ui/HeroGradientCard';
 
 const trainingSessions = [
   {
@@ -39,14 +40,14 @@ export default function TrainingsPage() {
         <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* Header */}
-          <div className="text-center mb-16 bg-esla-secondary text-white p-6 md:p-10 rounded-3xl overflow-hidden">
+          <HeroGradientCard className="mb-16 p-8 md:p-12 text-center">
             <h1 className="text-4xl sm:text-5xl md:text-7xl leading-tight break-words font-black text-white mb-4">
-              TRAININGS{' '}<span className="text-esla-primary">ZEITEN</span>
+              TRAININGS <span className="text-esla-primary">ZEITEN</span>
             </h1>
-            <p className="text-white/90 text-lg sm:text-xl">
+            <p className="mx-auto max-w-2xl text-white/90 text-lg sm:text-xl">
               Wann und wo wir trainieren
             </p>
-          </div>
+          </HeroGradientCard>
 
           {/* Training Cards */}
           <div className="grid md:grid-cols-3 gap-8 mb-16">

@@ -9,7 +9,8 @@ import NowBadge from '@/components/ui/NowBadge';
 import StatsBadge from '@/components/ui/StatsBadge';
 import Container from '@/components/ui/Container';
 import MatchCard from '@/components/matches/MatchCard';
-import { computedStatus, compareByDateAsc, compareByDateDesc, comparatorForStatus, displayTeamName } from '@/lib/match';
+import { computedStatus, compareByDateAsc, compareByDateDesc, comparatorForStatus } from '@/lib/match';
+import HeroGradientCard from '@/components/ui/HeroGradientCard';
 
 export const dynamic = 'force-dynamic';
 
@@ -131,7 +132,7 @@ export default async function SpielePage({ searchParams }: { searchParams?: Prom
       <div className="pt-40 md:pt-32 pb-20">
         {/* Header breit wie Über-uns */}
         <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative text-center mb-12 bg-esla-secondary text-white p-10 pb-16 rounded-3xl">
+          <HeroGradientCard className="relative mb-12 p-8 md:p-12 text-center">
             <div className="flex items-center justify-between mb-4 gap-4">
               <NowBadge />
               <div className="flex flex-col items-end gap-2 text-right">
@@ -145,7 +146,7 @@ export default async function SpielePage({ searchParams }: { searchParams?: Prom
             <div className="absolute bottom-6 right-6 inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/10 text-sm font-semibold text-white/90">
               {total === 1 ? '1 Suchergebnis' : `${total} Suchergebnisse`}
             </div>
-          </div>
+          </HeroGradientCard>
         </div>
         <Container>
           {statusParam === 'all' ? (

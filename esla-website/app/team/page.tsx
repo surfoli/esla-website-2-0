@@ -4,6 +4,7 @@ import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/footer/Footer';
 import Container from '@/components/ui/Container';
 import { teams, playerGroups, getTotalPlayers } from '@/data/team';
+import HeroGradientCard from '@/components/ui/HeroGradientCard';
 
 const positionNames = {
   goalkeepers: 'TORHÜTER',
@@ -69,7 +70,7 @@ export default function TeamPage() {
 
       <div className="pt-32 pb-24">
         <div className="mx-auto max-w-[1920px] px-4 sm:px-6 lg:px-8">
-          <div className="mb-16 overflow-hidden rounded-3xl bg-gradient-to-r from-black via-esla-dark to-esla-primary p-10 text-center text-white shadow-2xl">
+          <HeroGradientCard className="mb-16 p-10 text-center">
             <p className="text-xs font-semibold uppercase tracking-[0.38em] text-white/70">ESLA FAMILIE</p>
             <h1 className="mt-4 text-5xl md:text-7xl font-black">
               UNSER <span className="text-esla-primary">TEAM</span>
@@ -77,7 +78,7 @@ export default function TeamPage() {
             <p className="mx-auto mt-6 max-w-2xl text-lg md:text-xl text-white/85">
               Lerne die Menschen kennen, die ESLA formen – mit Herzblut auf dem Rasen, an der Seitenlinie und hinter den Kulissen.
             </p>
-          </div>
+          </HeroGradientCard>
 
           <Container>
             <div className="mb-16 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
