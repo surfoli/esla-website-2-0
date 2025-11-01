@@ -56,6 +56,23 @@ export default function DatenschutzPage() {
             </div>
 
             <div className="bg-white rounded-3xl p-8 border border-slate-200 text-esla-secondary/80">
+              <h2 className="text-2xl font-black text-esla-secondary mb-4">5a. Automatisierte Spiel- &amp; Resultatsdaten</h2>
+              <p>
+                Daten zu Spielen und Resultaten werden automatisch vom{' '}
+                <a
+                  href="https://matchcenter.ifv.ch"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-esla-primary"
+                >
+                  IFV Matchcenter
+                </a>{' '}
+                aktualisiert. Quelle: © Innerschweizer Fussballverband (IFV). Es handelt sich um öffentlich zugängliche Informationen, die wir ausschliesslich zu
+                Informationszwecken für Vereinswebsites anzeigen.
+              </p>
+            </div>
+
+            <div className="bg-white rounded-3xl p-8 border border-slate-200 text-esla-secondary/80">
               <h2 className="text-2xl font-black text-esla-secondary mb-4"><span id="cookies"></span>6. Cookies &amp; Cookie‑Einstellungen</h2>
               <p className="mb-4">Sie können Cookies im Browser verwalten (zulassen, blockieren, löschen). Technisch notwendige Cookies sind für den Betrieb erforderlich; Analyse‑Cookies – falls genutzt – erst nach Einwilligung.</p>
               <div className="grid md:grid-cols-2 gap-6">

@@ -7,6 +7,12 @@ import { Menu, X, Instagram, Facebook, Linkedin, ChevronDown } from 'lucide-reac
 
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false);
+  const [openMobileGroups, setOpenMobileGroups] = useState<Record<string, boolean>>({});
+
+  const handleMobileLinkClick = () => {
+    setIsOpen(false);
+    setOpenMobileGroups({});
+  };
 
   const competitionLinks = [
     { href: '/germany-cup', label: 'Germany Cup 2026', featured: true },
@@ -22,6 +28,7 @@ export default function Navbar() {
     { href: '/spiele', label: 'Spiele' },
     { href: '/team', label: 'Team' },
     {
+      href: '/turniere',
       label: 'Meisterschaften/Cups',
       children: competitionLinks.filter((link) => link.featured),
     },
@@ -57,10 +64,13 @@ export default function Navbar() {
               <div key={link.label} className="relative group">
                 {link.children ? (
                   <>
-                    <button className="text-white hover:text-esla-primary transition-colors duration-200 font-bold whitespace-nowrap flex items-center gap-1">
+                    <Link
+                      href={link.href ?? '#'}
+                      className="text-white hover:text-esla-primary transition-colors duration-200 font-bold whitespace-nowrap flex items-center gap-1"
+                    >
                       {link.label}
                       <ChevronDown size={16} className="group-hover:rotate-180 transition-transform duration-200" />
-                    </button>
+                    </Link>
                     <div className="absolute top-full left-0 mt-2 w-48 bg-black border border-white/10 rounded-lg shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50">
                       {link.children.map((child) => (
                         <Link
@@ -103,7 +113,7 @@ export default function Navbar() {
             </a>
             <Link
               href="/kontakt"
-              className="bg-esla-primary hover:bg-esla-accent text-white px-7 py-3 rounded-full font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg shadow-esla-primary/30"
+              className="bg-gradient-to-r from-esla-primary via-esla-accent to-esla-primary hover:from-esla-accent hover:via-esla-primary hover:to-esla-accent text-white px-7 py-3 rounded-full font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg shadow-esla-primary/30"
             >
               Kontakt
             </Link>
@@ -125,29 +135,54 @@ export default function Navbar() {
           <div className="px-4 pt-2 pb-4 space-y-2">
             {navLinks.map((link) => (
               link.children ? (
-                <div key={link.label}>
-                  <div className="px-3 py-2 text-white/90 font-bold">
-                    {link.label}
+                <div key={link.label} className="rounded-lg border border-white/10">
+                  <div className="flex items-center justify-between px-3 py-2">
+                    <Link
+                      href={link.href ?? '#'}
+                      className="text-white/90 hover:text-esla-primary transition-colors font-bold"
+                      onClick={handleMobileLinkClick}
+                    >
+                      {link.label}
+                    </Link>
+                    <button
+                      type="button"
+                      onClick={() =>
+                        setOpenMobileGroups((prev) => ({
+                          ...prev,
+                          [link.label]: !prev[link.label],
+                        }))
+                      }
+                      className="p-2 text-white/70 hover:text-white transition-colors"
+                      aria-label={`${link.label} Menü umschalten`}
+                      aria-expanded={!!openMobileGroups[link.label]}
+                    >
+                      <ChevronDown
+                        size={18}
+                        className={`transition-transform duration-200 ${openMobileGroups[link.label] ? 'rotate-180' : ''}`}
+                      />
+                    </button>
                   </div>
-                  <div className="pl-6 space-y-1">
-                    {link.children.map((child) => (
-                      <Link
-                        key={child.href}
-                        href={child.href}
-                        className="block px-3 py-2 text-white/70 hover:bg-white/10 rounded-lg transition-colors font-medium"
-                        onClick={() => setIsOpen(false)}
-                      >
-                        {child.label}
-                      </Link>
-                    ))}
-                  </div>
+                  {openMobileGroups[link.label] && (
+                    <div className="px-3 pb-3 space-y-1 border-t border-white/10">
+                      {link.children.map((child) => (
+                        <Link
+                          key={child.href}
+                          href={child.href}
+                          className="block px-3 py-2 text-white/70 hover:bg-white/10 rounded-lg transition-colors font-medium"
+                          onClick={handleMobileLinkClick}
+                        >
+                          {child.label}
+                        </Link>
+                      ))}
+                    </div>
+                  )}
                 </div>
               ) : (
                 <Link
                   key={link.href}
                   href={link.href}
                   className="block px-3 py-2 text-white/90 hover:bg-white/10 rounded-lg transition-colors font-bold"
-                  onClick={() => setIsOpen(false)}
+                  onClick={handleMobileLinkClick}
                 >
                   {link.label}
                 </Link>
@@ -155,7 +190,7 @@ export default function Navbar() {
             ))}
             <Link
               href="/kontakt"
-              className="block px-3 py-3 bg-esla-primary text-white rounded-lg text-center font-semibold mt-4 shadow-md shadow-esla-primary/40"
+              className="block px-3 py-3 bg-gradient-to-r from-esla-primary via-esla-accent to-esla-primary text-white rounded-lg text-center font-semibold mt-4 shadow-md shadow-esla-primary/40"
               onClick={() => setIsOpen(false)}
             >
               Kontakt

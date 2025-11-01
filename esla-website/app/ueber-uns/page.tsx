@@ -6,10 +6,13 @@ import { getTotalPlayers, getTotalStaff } from '@/data/team';
 import {
   ArrowRight,
   Award,
+  Brain,
   Compass,
   Heart,
   Lightbulb,
   MapPin,
+  MessageCircle,
+  Network,
   Shield,
   Sparkles,
   Star,
@@ -37,6 +40,27 @@ const pillars = [
     title: 'Gemeinschaft',
     description:
       'Familiengefühl und Teamgeist prägen unseren Alltag – wir gewinnen und wachsen zusammen.',
+  },
+];
+
+const focusAreas = [
+  {
+    icon: <Brain className="w-7 h-7 text-white" aria-hidden="true" />,
+    title: 'Ganzheitliches Coaching',
+    description:
+      'Individuelle Entwicklungspläne, Feedbackgespräche und mentales Coaching geben jeder Spielerin und jedem Spieler eine klare Roadmap.',
+  },
+  {
+    icon: <MessageCircle className="w-7 h-7 text-white" aria-hidden="true" />,
+    title: 'Community & Elternarbeit',
+    description:
+      'Eltern werden aktiv eingebunden – Transparenz, Dialog und gemeinsame Werte prägen die Zusammenarbeit.',
+  },
+  {
+    icon: <Network className="w-7 h-7 text-white" aria-hidden="true" />,
+    title: 'Netzwerk & Perspektiven',
+    description:
+      'Wir vernetzen unsere Talente mit Partnervereinen, Schulen und Förderprogrammen – für den nächsten Schritt im Fussball und im Leben.',
   },
 ];
 
@@ -124,14 +148,26 @@ export default function AboutPage() {
     },
   ];
 
+  const valueCardClasses =
+    'group relative overflow-hidden rounded-2xl border border-white/12 bg-gradient-to-br from-[#171024] via-[#2c1433] to-[#782046] p-6 text-white shadow-[0_25px_60px_-28px_rgba(28,12,48,0.58)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_30px_70px_-26px_rgba(32,14,54,0.62)]';
+
+  const infoCardClasses =
+    'rounded-2xl border border-slate-200/70 bg-gradient-to-br from-white via-slate-900/6 to-white p-6 shadow-[0_18px_40px_-28px_rgba(15,15,25,0.5)] transition duration-200 hover:-translate-y-1 hover:border-slate-900/30 hover:shadow-[0_22px_48px_-26px_rgba(15,15,25,0.58)]';
+
+  const dnaPillarCardClasses =
+    'group relative flex items-start gap-4 rounded-2xl border border-white/70 bg-white/90 p-6 shadow-[0_18px_40px_-32px_rgba(15,15,25,0.6)] transition-all duration-300 hover:-translate-y-1 hover:border-esla-primary/35 hover:shadow-[0_26px_58px_-30px_rgba(197,41,88,0.45)]';
+
+  const dnaFocusCardClasses =
+    'group relative overflow-hidden rounded-2xl border border-white/20 bg-gradient-to-br from-[#f8c6d7] via-[#f6d9e3] to-[#fef2f6] p-6 text-esla-secondary shadow-[0_18px_46px_-28px_rgba(197,41,88,0.55)] transition-all duration-300 hover:-translate-y-1 hover:border-white/45 hover:shadow-[0_24px_60px_-26px_rgba(197,41,88,0.62)]';
+
   return (
     <main className="min-h-screen bg-esla-light text-slate-900">
       <Navbar />
 
       <div className="pt-32 pb-24">
         <div className="mx-auto max-w-[1200px] px-4 sm:px-6 lg:px-8 space-y-20">
-          <section className="relative overflow-hidden rounded-[36px] bg-gradient-to-br from-esla-secondary via-esla-secondary to-esla-primary text-white shadow-[0_30px_80px_-25px_rgba(0,0,0,0.45)]">
-            <div className="absolute -left-10 top-[-10%] h-60 w-60 rounded-full bg-esla-accent/50 blur-[120px]" aria-hidden="true" />
+          <section className="relative overflow-hidden rounded-[36px] bg-gradient-to-br from-[#07070d] via-esla-secondary to-esla-primary text-white shadow-[0_30px_80px_-25px_rgba(0,0,0,0.45)]">
+            <div className="absolute -left-10 top-[-10%] h-60 w-60 rounded-full bg-white/15 blur-[120px]" aria-hidden="true" />
             <div className="absolute -right-16 bottom-[-20%] h-72 w-72 rounded-full bg-white/30 blur-[140px]" aria-hidden="true" />
             <div className="absolute inset-0 opacity-25">
               <Image
@@ -229,41 +265,44 @@ export default function AboutPage() {
               <p className="text-lg leading-relaxed text-slate-700">
                 Wir kombinieren moderne Trainingsmethoden mit gezieltem Mental- und Persönlichkeitstraining. Technik, Taktik und Athletik sind wichtige Bausteine – entscheidend ist aber, dass junge Menschen lernen, Verantwortung zu übernehmen, resilient zu sein und mit Freude jeden Fortschritt zu feiern.
               </p>
-              <div className="flex flex-wrap items-center gap-6 rounded-2xl bg-white/90 p-6 shadow-lg shadow-esla-secondary/10 backdrop-blur">
-                <div className="flex h-14 w-14 items-center justify-center rounded-full bg-esla-primary/10">
+              <Link
+                href="https://matchcenter.ifv.ch/default.aspx?v=1761431&oid=7&lng=1"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex flex-wrap items-center gap-6 rounded-2xl bg-gradient-to-r from-[#09090f] via-esla-secondary to-esla-primary p-6 text-white shadow-[0_24px_55px_-28px_rgba(0,0,0,0.65)] transition-transform duration-200 hover:-translate-y-1 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white/60"
+              >
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-esla-primary/10 aspect-square">
                   <Shield className="h-7 w-7 text-esla-primary" aria-hidden="true" />
                 </div>
                 <div>
-                  <p className="text-base font-semibold text-esla-secondary">Offiziell anerkannt vom SFV</p>
-                  <Link
-                    href="https://matchcenter.ifv.ch/default.aspx?v=1761431&oid=7&lng=1"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 text-sm font-semibold text-esla-primary transition-colors hover:text-esla-accent"
-                  >
+                  <p className="text-base font-semibold text-white">Offiziell anerkannt vom SFV</p>
+                  <span className="mt-1 inline-flex items-center gap-2 text-sm font-semibold text-white/80 transition-colors group-hover:text-white">
                     Matchcenter öffnen
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
-                  </Link>
+                  </span>
                 </div>
-              </div>
+              </Link>
             </div>
 
-            <div className="relative overflow-hidden rounded-[30px] bg-white shadow-[0_25px_60px_-20px_rgba(0,0,0,0.25)]">
+            <Link
+              href="/standort"
+              className="group relative block overflow-hidden rounded-[30px] bg-white shadow-[0_25px_60px_-20px_rgba(0,0,0,0.25)] transition-transform duration-200 hover:-translate-y-1 hover:shadow-[0_32px_70px_-24px_rgba(0,0,0,0.32)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-esla-primary/40"
+            >
               <Image
                 src="/images/esla-fussball-stock-1.jpg"
                 alt="Trainingseinheit bei ESLA"
                 width={900}
                 height={900}
-                className="h-full w-full object-cover"
+                className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
               />
-              <div className="absolute inset-x-6 bottom-6 rounded-2xl bg-white/90 p-6 text-sm text-slate-700 shadow-xl">
+              <div className="absolute inset-x-6 bottom-6 rounded-2xl bg-white/90 p-6 text-sm text-slate-700 shadow-xl transition-colors duration-200 group-hover:bg-white">
                 <p className="font-semibold text-esla-secondary">Luzern – Sportplatz RUAG</p>
                 <p className="mt-1 flex items-center gap-2 text-sm text-slate-600">
                   <MapPin className="h-4 w-4 text-esla-primary" aria-hidden="true" />
                   Zentral gelegen, modern ausgestattet und perfekt für ambitionierte Spieler:innen.
                 </p>
               </div>
-            </div>
+            </Link>
           </section>
 
           <section className="rounded-[34px] border border-slate-200 bg-white/95 p-10 shadow-[0_24px_55px_-30px_rgba(197,41,88,0.55)]">
@@ -278,62 +317,72 @@ export default function AboutPage() {
 
               <div className="grid gap-6 sm:grid-cols-2">
                 {values.map((value) => (
-                  <div
-                    key={value.title}
-                    className="group rounded-2xl border border-white/20 bg-gradient-to-br from-esla-light/70 via-white to-white p-6 shadow-[0_18px_40px_-28px_rgba(16,24,40,0.45)] transition duration-200 hover:-translate-y-1 hover:border-esla-accent/50 hover:shadow-[0_18px_45px_-20px_rgba(197,41,88,0.55)]"
-                  >
-                    <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-inner">
+                  <div key={value.title} className={valueCardClasses}>
+                    <div className="pointer-events-none absolute inset-0 bg-gradient-to-br from-white/15 via-transparent to-transparent opacity-40 transition-opacity duration-200 group-hover:opacity-55" aria-hidden="true" />
+                    <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-white/30 bg-white/10 text-white shadow-inner aspect-square">
                       {value.icon}
                     </div>
-                    <h4 className="text-lg font-semibold text-esla-secondary">{value.title}</h4>
-                    <p className="mt-2 text-sm text-slate-600">{value.description}</p>
+                    <div className="relative mt-4 space-y-2">
+                      <h4 className="text-lg font-semibold text-white">{value.title}</h4>
+                      <p className="text-sm text-white/80">{value.description}</p>
+                    </div>
                   </div>
                 ))}
               </div>
             </div>
           </section>
-          <section className="relative grid gap-10 rounded-[34px] border border-slate-200 bg-white/95 p-10 shadow-[0_20px_55px_-35px_rgba(0,0,0,0.5)] lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
-            <div className="absolute -top-12 right-10 h-24 w-24 rounded-full bg-esla-primary/15 blur-[90px]" aria-hidden="true" />
-            <div className="absolute -bottom-14 left-8 h-28 w-28 rounded-full bg-esla-accent/15 blur-[110px]" aria-hidden="true" />
-            <div className="space-y-5">
-              <p className="text-xs font-semibold uppercase tracking-[0.3em] text-esla-primary">Unsere DNA</p>
-              <h3 className="text-3xl font-black text-esla-secondary md:text-4xl">Struktur, die Vertrauen schafft.</h3>
-              <p className="text-lg text-slate-700">
-                Jedes Training folgt einem klaren Plan. Von Technik über Spielintelligenz bis zu mentaler Stärke – wir begleiten unsere Athlet:innen Schritt für Schritt und dokumentieren jeden Fortschritt transparent.
-              </p>
-              <div className="space-y-4">
-                {pillars.map((pillar) => (
-                  <div key={pillar.title} className="flex items-start gap-4 rounded-2xl bg-gradient-to-br from-white via-esla-light/50 to-white p-6 shadow-[0_20px_40px_-32px_rgba(16,24,40,0.6)]">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-full bg-esla-primary/10">
-                      {pillar.icon}
+          <section className="relative overflow-hidden rounded-[36px] border border-white/60 bg-gradient-to-br from-white via-rose-50/80 to-white p-10 shadow-[0_26px_60px_-34px_rgba(0,0,0,0.55)]">
+            <div className="absolute -top-20 left-10 h-48 w-48 rounded-full bg-esla-primary/12 blur-[110px]" aria-hidden="true" />
+            <div className="absolute -bottom-24 right-4 h-56 w-56 rounded-full bg-esla-secondary/12 blur-[130px]" aria-hidden="true" />
+            <div className="relative grid gap-12 lg:grid-cols-[1.05fr_0.95fr] lg:items-start">
+              <div className="space-y-6">
+                <p className="text-xs font-semibold uppercase tracking-[0.3em] text-esla-primary">Unsere DNA</p>
+                <div className="space-y-4">
+                  <h3 className="text-3xl font-black text-esla-secondary md:text-4xl">Struktur, die Vertrauen schafft.</h3>
+                  <p className="text-lg leading-relaxed text-slate-700">
+                    Jedes Training folgt einem klaren Plan. Von Technik über Spielintelligenz bis zu mentaler Stärke – wir begleiten unsere Athlet:innen Schritt für Schritt und dokumentieren jeden Fortschritt transparent.
+                  </p>
+                </div>
+                <div className="grid gap-4">
+                  {pillars.map((pillar) => (
+                    <div key={pillar.title} className={dnaPillarCardClasses}>
+                      <div className="relative flex h-14 w-14 shrink-0 items-center justify-center rounded-full border border-esla-primary/20 bg-esla-primary/10 text-esla-primary shadow-inner aspect-square">
+                        {pillar.icon}
+                      </div>
+                      <div>
+                        <h4 className="text-lg font-semibold text-slate-900">{pillar.title}</h4>
+                        <p className="mt-1 text-sm text-slate-600">{pillar.description}</p>
+                      </div>
                     </div>
-                    <div>
-                      <h4 className="text-lg font-semibold text-esla-secondary">{pillar.title}</h4>
-                      <p className="mt-1 text-sm text-slate-600">{pillar.description}</p>
-                    </div>
-                  </div>
-                ))}
+                  ))}
+                </div>
               </div>
-            </div>
 
-            <div className="grid gap-6 rounded-[30px] border border-white/30 bg-white/90 p-8 shadow-[0_20px_50px_-35px_rgba(197,41,88,0.45)] backdrop-blur">
-              <div className="rounded-2xl bg-gradient-to-br from-esla-light/90 via-white to-white p-6">
-                <h4 className="text-base font-semibold text-esla-secondary">Ganzheitliches Coaching</h4>
-                <p className="mt-2 text-sm text-slate-600">
-                  Wir arbeiten mit individuellen Entwicklungsplänen, Feedbackgesprächen und mentalem Coaching. Jede Spielerin und jeder Spieler erhält eine klare Roadmap.
-                </p>
-              </div>
-              <div className="rounded-2xl bg-gradient-to-br from-esla-primary/20 via-esla-primary/10 to-white p-6">
-                <h4 className="text-base font-semibold text-esla-secondary">Community & Elternarbeit</h4>
-                <p className="mt-2 text-sm text-slate-600">
-                  Eltern werden aktiv eingebunden – Transparenz, Dialog und gemeinsame Werte prägen die Zusammenarbeit.
-                </p>
-              </div>
-              <div className="rounded-2xl bg-gradient-to-br from-esla-accent/20 via-esla-accent/10 to-white p-6">
-                <h4 className="text-base font-semibold text-esla-secondary">Netzwerk & Perspektiven</h4>
-                <p className="mt-2 text-sm text-slate-600">
-                  Wir vernetzen unsere Talente mit Partnervereinen, Schulen und Förderprogrammen – für den nächsten Schritt im Fussball und im Leben.
-                </p>
+              <div className="relative rounded-[34px] border border-white/40 bg-gradient-to-br from-[#e75f8c] via-[#f18da8] to-[#fbd8e2] p-8 shadow-[0_26px_58px_-30px_rgba(197,41,88,0.58)]">
+                <div className="absolute -right-10 top-6 h-36 w-36 rounded-full bg-white/25 blur-[100px]" aria-hidden="true" />
+                <div className="absolute -left-12 bottom-0 h-40 w-40 rounded-full bg-esla-primary/25 blur-[120px]" aria-hidden="true" />
+                <div className="relative space-y-6">
+                  <div className="space-y-2 text-white">
+                    <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/80">Wir begleiten ganzheitlich</p>
+                    <h4 className="text-2xl font-black tracking-tight">Coaching, Community und Perspektiven.</h4>
+                    <p className="text-sm text-white/85">
+                      Talententwicklung endet nicht nach dem Training. Wir schaffen einen geschützten Rahmen, fördern Austausch und öffnen neue Wege für unsere Athlet:innen.
+                    </p>
+                  </div>
+                  <div className="grid gap-4">
+                    {focusAreas.map((focus) => (
+                      <div key={focus.title} className={dnaFocusCardClasses}>
+                        <div className="relative flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-white/20 shadow-inner aspect-square">
+                          {focus.icon}
+                        </div>
+                        <div className="mt-4 space-y-1 text-left">
+                          <h5 className="text-lg font-semibold">{focus.title}</h5>
+                          <p className="text-sm text-esla-secondary/90">{focus.description}</p>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
               </div>
             </div>
           </section>
@@ -343,9 +392,9 @@ export default function AboutPage() {
               {highlights.map((highlight) => (
                 <div
                   key={highlight.title}
-                  className="flex flex-col gap-4 rounded-2xl border border-white/25 bg-gradient-to-br from-esla-light/40 via-white to-white p-8 transition duration-200 hover:border-esla-primary/40 hover:shadow-[0_18px_44px_-20px_rgba(197,41,88,0.55)]"
+                  className="flex flex-col gap-4 rounded-2xl border border-esla-primary/10 bg-gradient-to-br from-[#fff3f8] via-white/97 to-[#fff7fb] p-8 transition duration-200 hover:-translate-y-1 hover:border-esla-primary/40 hover:shadow-[0_18px_44px_-20px_rgba(197,41,88,0.45)]"
                 >
-                  <div className="flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-inner">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-esla-primary/20 bg-esla-primary/10 text-esla-primary shadow-inner aspect-square">
                     {highlight.icon}
                   </div>
                   <div>
@@ -357,10 +406,10 @@ export default function AboutPage() {
 
               <div className="flex h-full flex-col justify-between rounded-2xl bg-gradient-to-br from-esla-secondary via-esla-primary to-esla-accent p-8 text-white shadow-[0_24px_55px_-22px_rgba(197,41,88,0.7)]">
                 <div className="space-y-3">
-                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/70">Versprechen</p>
-                  <h4 className="text-2xl font-black">Wir investieren in Menschen.</h4>
+                  <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/70">Unterstütze uns</p>
+                  <h4 className="text-2xl font-black">Gemeinsam investieren wir in Menschen.</h4>
                   <p className="text-sm text-white/80">
-                    Unsere Athlet:innen sollen nicht nur bessere Spieler:innen werden – sie sollen wachsen, Verantwortung übernehmen und bereit sein für jeden nächsten Schritt.
+                    Mit deiner Unterstützung wachsen unsere Athlet:innen nicht nur sportlich, sondern auch als Persönlichkeiten – sie übernehmen Verantwortung und sind bereit für jeden nächsten Schritt.
                   </p>
                 </div>
                 <div className="mt-6">
@@ -368,7 +417,7 @@ export default function AboutPage() {
                     href="/sponsoren-angebote"
                     className="inline-flex items-center gap-3 rounded-full bg-white px-6 py-3 text-sm font-semibold text-esla-primary transition-transform duration-200 hover:-translate-y-1"
                   >
-                    Engagement entdecken
+                    Sponsoring & Gönner entdecken
                     <ArrowRight className="h-4 w-4" aria-hidden="true" />
                   </Link>
                 </div>
@@ -376,10 +425,11 @@ export default function AboutPage() {
             </div>
           </section>
 
-          <section className="relative overflow-hidden rounded-[36px] bg-gradient-to-br from-esla-secondary/90 via-esla-primary/90 to-esla-accent/85 p-12 text-center text-white shadow-[0_30px_80px_-40px_rgba(0,0,0,0.55)]">
-            <div className="absolute -left-16 top-6 h-40 w-40 rounded-full bg-white/15 blur-[120px]" aria-hidden="true" />
-            <div className="absolute -right-10 bottom-6 h-44 w-44 rounded-full bg-white/10 blur-[120px]" aria-hidden="true" />
-            <div className="mx-auto max-w-3xl space-y-6">
+          <section className="relative overflow-hidden rounded-[36px] bg-gradient-to-br from-[#1a0d1f] via-esla-primary to-[#ff5f8f] p-12 text-center text-white shadow-[0_30px_80px_-40px_rgba(0,0,0,0.52)]">
+            <div className="absolute inset-0 bg-gradient-to-br from-black/40 via-transparent to-white/10" aria-hidden="true" />
+            <div className="absolute -left-20 top-4 h-48 w-48 rounded-full bg-esla-primary/35 blur-[140px]" aria-hidden="true" />
+            <div className="absolute -right-16 bottom-0 h-56 w-56 rounded-full bg-esla-accent/30 blur-[150px]" aria-hidden="true" />
+            <div className="relative mx-auto max-w-3xl space-y-6">
               <p className="text-xs font-semibold uppercase tracking-[0.3em] text-white/70">Next Step</p>
               <h3 className="text-3xl font-black md:text-4xl">Bereit, unsere Werte zu erleben?</h3>
               <p className="text-lg text-white/85">

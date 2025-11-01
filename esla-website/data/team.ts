@@ -14,8 +14,6 @@ export const playerGroups: PlayerGroup[] = [
 export const teams: Record<PlayerGroup, Player[]> & { staff: Staff[] } = {
   staff: [
     { name: 'Luqmon Adekunle', position: 'Cheftrainer', image: '/images/esla-profilbild-staff-cheftrainer-luqmon-adekunle-nah.jpg' },
-    { name: 'Walid Kahlouni', position: 'Assistenztrainer', image: '/images/esla-profilbild-staff-assistenz-trainer-walid-kahlouni-nah.jpg' },
-    { name: 'Badr Kahlouni', position: 'Assistenztrainer', image: '/images/esla-profilbild-staff-assistenz-trainer-badr-kahlouni-nah.jpg' },
     { name: 'Issafar Kamal', position: 'Assistenztrainer', image: '/images/esla-profilbild-staff-assistenz-trainer-issafar-kamal-nah.jpg' },
     { name: 'Flavio Räber', position: 'Head of Brand', image: '/images/esla-profilbild-staff-head-of-brand-flavio-raeber-nah.jpg' },
     { name: 'Olivier Durand', position: 'Digital Architect', image: '/images/esla-profilbild-staff-head-of-digital-media-olivier-durand-nah.jpg' },

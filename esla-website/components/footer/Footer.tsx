@@ -3,58 +3,45 @@ import Link from 'next/link';
 import { Instagram, Facebook, Linkedin, Mail, Phone, MapPin } from 'lucide-react';
 import Container from '@/components/ui/Container';
 import CoachQuote from '@/components/about/CoachQuote';
+import { getBrandsData } from '@/lib/brands';
 
-export default function Footer() {
-  const sponsors = [
-    { name: 'MAGAS', logo: '/images/esla-sponsor-logo-magas-black-logo.png', url: 'https://magas.ch' },
-    { name: 'Go Gemba', logo: '/images/esla-sponsor-logo-go-gemba.png', url: 'https://gogemba.ch' },
-    { name: 'TEKO', logo: '/images/esla-sponsor-logo-teko-schweizer-fachschule.png', url: 'https://www.teko.ch/' },
-    { name: 'ZK Automobile AG', logo: '/images/esla-sponsor-logo-zk-automobile-ag.png', url: 'https://zk-automobile-ag.ch/' },
-  ];
-
-  const partners = [
-    { name: 'Superheldenwerkstatt Flavio Räber', logo: '/images/superheldenwerkstatt-flavio-raeber-logo.png', url: 'https://www.superheldenwerkstatt.ch/' },
-    { name: 'D3 Webstudio Olivier Durand', logo: '/images/d3webstudio-olivier-durand.png', url: 'https://d3webstudio.ch/' },
-  ];
-
-  const goenner = [
-    'Eva Marti aus Winznau',
-    'Familie Völlmin aus Ormalingen',
-    'Edi Häusler aus Olten',
-    'Nikola Ivanovic aus Küttingen',
-    'Anton Balaj aus Dagmersellen',
-  ];
+export default async function Footer() {
+  const { sponsors, partners, goenner } = await getBrandsData();
 
   return (
     <footer className="bg-black text-white">
-      {/* Sponsors & Gönner Section */}
       <div className="py-16 md:py-20">
         <Container>
-          {/* Sponsoren */}
-          <div className="mb-12">
-            <div className="flex items-center justify-between mb-8">
-              <div className="flex items-center gap-x-4">
-                <div className="w-1 h-16 bg-white"></div>
-                <h3 className="flex flex-col">
-                  <span className="text-xs text-white/60 font-medium tracking-[0.2em] mb-0.5 uppercase">UNSERE</span>
-                  <span className="text-2xl md:text-3xl font-black text-esla-primary">SPONSOREN</span>
-                </h3>
+          <div className="flex flex-col gap-16">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <span className="hidden sm:inline-block h-12 w-[3px] rounded-full bg-esla-primary" />
+                <div>
+                  <span className="block text-xs font-semibold uppercase tracking-[0.35em] text-white/60">
+                    Unsere
+                  </span>
+                  <span className="block text-3xl md:text-4xl font-black tracking-tight text-esla-primary">
+                    SPONSOREN
+                  </span>
+                </div>
               </div>
-              <a
+              <Link
                 href="/sponsoren-angebote"
-                className="hidden md:inline-flex items-center gap-x-2 bg-esla-primary hover:bg-esla-accent text-white px-6 py-3 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 shadow-lg shadow-esla-primary/30"
+                className="inline-flex items-center justify-center rounded-full bg-esla-primary px-6 py-3 text-sm font-semibold uppercase tracking-[0.2em] text-white shadow-[0_12px_35px_-20px_rgba(226,24,115,0.9)] transition-transform duration-200 hover:scale-105 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-esla-primary/40"
               >
                 Team unterstützen
-              </a>
+              </Link>
             </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-7 md:gap-10 items-center justify-items-center">
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 justify-items-center">
               {sponsors.map((sponsor) => (
                 <a
                   key={sponsor.name}
-                  href={sponsor.url}
+                  href={sponsor.url || '#'}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="relative w-full h-24 bg-white rounded-xl p-4 hover:scale-105 transition-all duration-300 shadow-xl shadow-black/20 cursor-pointer"
+                  className="group relative block w-full h-24 sm:h-28 rounded-2xl bg-white px-6 py-4 shadow-[0_30px_60px_-35px_rgba(0,0,0,0.6)] transition-transform duration-200 hover:-translate-y-1"
+                  aria-label={sponsor.name}
                 >
                   <Image
                     src={sponsor.logo}
@@ -63,73 +50,61 @@ export default function Footer() {
                     className="object-contain"
                     quality={95}
                     priority
-                    {...(sponsor.name === 'MAGAS' && { unoptimized: true })}
+                    {...((sponsor.logo.startsWith('http') || sponsor.name === 'MAGAS') && { unoptimized: true })}
                   />
                 </a>
               ))}
             </div>
-          </div>
 
-          <div className="mb-12">
-            <div className="flex items-center gap-x-4 mb-6">
-              <div className="w-1 h-16 bg-white"></div>
-              <h3 className="flex flex-col">
-                <span className="text-xs text-white/60 font-medium tracking-[0.2em] mb-0.5 uppercase">UNSERE</span>
-                <span className="text-2xl md:text-3xl font-black text-esla-primary">PARTNER</span>
-              </h3>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-7 md:gap-10 items-center justify-items-center">
-              {partners.map((partner) => (
-                <a
-                  key={partner.name}
-                  href={partner.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="relative w-full h-24 bg-white rounded-xl p-4 hover:scale-105 transition-all duration-300 shadow-xl shadow-black/20 cursor-pointer"
-                >
-                  <Image
-                    src={partner.logo}
-                    alt={partner.name}
-                    fill
-                    className="object-contain"
-                    quality={95}
-                    priority
-                  />
-                </a>
-              ))}
-            </div>
-          </div>
+            <div className="flex flex-col gap-12">
+              <div>
+                <div className="mb-6 flex items-center gap-4">
+                  <span className="hidden sm:inline-block h-12 w-[3px] rounded-full bg-esla-primary" />
+                  <div>
+                    <span className="block text-xs font-semibold uppercase tracking-[0.35em] text-white/60">
+                      Unsere
+                    </span>
+                    <span className="block text-2xl font-bold tracking-[0.2em] text-esla-primary">
+                      PARTNER
+                    </span>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8 justify-items-center">
+                  {partners.map((partner) => (
+                    <a
+                      key={partner.name}
+                      href={partner.url || '#'}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group relative block w-full h-24 sm:h-28 rounded-2xl bg-white px-6 py-4 shadow-[0_30px_60px_-35px_rgba(0,0,0,0.6)] transition-transform duration-200 hover:-translate-y-1"
+                      aria-label={partner.name}
+                    >
+                      <Image
+                        src={partner.logo}
+                        alt={partner.name}
+                        fill
+                        className="object-contain"
+                        quality={95}
+                        priority
+                        {...(partner.logo.startsWith('http') && { unoptimized: true })}
+                      />
+                    </a>
+                  ))}
+                </div>
+              </div>
 
-          {/* Gönner */}
-          <div>
-            <div className="flex items-center gap-x-4 mb-6">
-              <div className="w-1 h-16 bg-white"></div>
-              <h3 className="flex flex-col">
-                <span className="text-xs text-white/60 font-medium tracking-[0.2em] mb-0.5 uppercase">UNSERE</span>
-                <span className="text-2xl md:text-3xl font-black text-esla-primary">GÖNNER</span>
-              </h3>
-            </div>
-            <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-3 text-white/70 text-sm md:text-base">
-              {goenner.map((name, index) => (
-                <span key={index} className="whitespace-nowrap">
-                  {name}
-                </span>
-              ))}
-            </div>
-            {/* Mobile Button */}
-            <div className="text-center mt-8 md:hidden">
-              <a
-                href="/sponsoren-angebote"
-                className="inline-flex items-center gap-x-2 bg-esla-primary hover:bg-esla-accent text-white px-6 py-3 rounded-full font-semibold text-sm transition-all duration-200 transform hover:scale-105 shadow-lg shadow-esla-primary/30"
-              >
-                Team unterstützen
-              </a>
+              <div>
+                <div className="flex flex-wrap justify-center gap-x-10 gap-y-3 text-sm text-white/70 text-center">
+                  {goenner.map((name) => (
+                    <span key={name}>{name}</span>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </Container>
       </div>
 
-      {/* Coach Quote */}
       <CoachQuote />
 
       {/* Main Footer */}
@@ -262,6 +237,8 @@ export default function Footer() {
               </ul>
             </div>
           </div>
+
+          
         </Container>
       </div>
 

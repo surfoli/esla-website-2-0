@@ -216,10 +216,11 @@ export default function MatchesAdmin() {
     const competitionRe = /(Meisterschaft|Cup|Freundschaftsspiel|Testspiel|Turnier|Zwischenrunde|Liga|Gruppe|Runde|Pokal|Saison|Qualifikation|Stärkeklasse)/i;
     const compAnyRe = competitionRe;
     const matchNumberRe = /^Spielnummer\s*(.+)$/i;
-    const dateTimeLineRe = /^(?:(?:Mo|Di|Mi|Do|Fr|Sa|So|Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)\s+)?\d{1,2}[.\/\-]\d{1,2}(?:[.\/\-]\d{2,4})?\s*\d{1,2}:\d{2}$/;
+    const dateTimeLineRe = /^(?:(?:Mo|Di|Mi|Do|Fr|Sa|So|Montag|Dienstag|Mittwoch|Donnerstag|Freitag|Samstag|Sonntag)\s+)?\d{1,2}[.\/-]\d{1,2}(?:[.\/-]\d{2,4})?\s*\d{1,2}:\d{2}$/;
     const scoreSingleRe = /^(\d{1,2})\s*[:x]\s*(\d{1,2})$/;
     const placeholderRe = /^(?:\*|f|forfait)$/i;
     const combinedTeamsRe = /^(.+?)\s+(?:-|–|—|:|x|vs\.?|v\.?|VS|Vs)\s+(.+)$/i;
+    const normalizeCompetition = (value?: string) => (value || '').replace(/\s+/g, ' ').trim().toLowerCase();
     let currentDateISO: string | undefined = undefined;
     let currentCompetition: string | undefined = undefined;
 
@@ -331,6 +332,10 @@ export default function MatchesAdmin() {
               const matchMatchNumber = look.match(matchNumberRe);
               if (matchMatchNumber) { matchNumber = matchMatchNumber[1].trim(); k += 1; continue; }
               if (competitionRe.test(look) && !timeRe.test(look) && !dateRe.test(look) && !dateTimeLineRe.test(look)) {
+                const lookNormalized = normalizeCompetition(look);
+                const currentNormalized = normalizeCompetition(currentCompetition);
+                if (competition) break;
+                if (currentNormalized && currentNormalized !== lookNormalized) break;
                 competition = look;
                 k += 1;
                 continue;

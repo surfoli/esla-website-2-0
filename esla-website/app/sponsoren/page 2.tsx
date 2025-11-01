@@ -3,11 +3,28 @@ import Footer from '@/components/footer/Footer';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Dumbbell, Star, Sprout, Heart, Users, Sparkles } from 'lucide-react';
-import HeroGradientCard from '@/components/ui/HeroGradientCard';
-import { getBrandsData } from '@/lib/brands';
 
-export default async function SponsorenPage() {
-  const { sponsors, partners, goenner } = await getBrandsData();
+const sponsors = [
+  { name: 'MAGAS', logo: '/images/esla-sponsor-logo-magas-black-logo.png', url: 'https://magas.ch' },
+  { name: 'Go Gemba', logo: '/images/esla-sponsor-logo-go-gemba.png', url: 'https://gogemba.ch' },
+  { name: 'TEKO Schweizer Fachschule', logo: '/images/esla-sponsor-logo-teko-schweizer-fachschule.png', url: 'https://www.teko.ch/' },
+  { name: 'ZK Automobile AG', logo: '/images/esla-sponsor-logo-zk-automobile-ag.png', url: 'https://zk-automobile-ag.ch/' },
+];
+
+const partners = [
+  { name: 'Superheldenwerkstatt Flavio Räber', logo: '/images/superheldenwerkstatt-flavio-raeber-logo.png', url: 'https://www.superheldenwerkstatt.ch/' },
+  { name: 'D3 Webstudio Olivier Durand', logo: '/images/d3webstudio-olivier-durand.png', url: 'https://d3webstudio.ch/' },
+];
+
+const goenner = [
+  'Eva Marti, Winznau',
+  'Familie Völlmin, Ormalingen',
+  'Edi Häusler, Olten',
+  'Nikola Ivanovic, Küttingen',
+  'Anton Balaj, Dagmersellen',
+];
+
+export default function SponsorenPage() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50">
       <Navbar />
@@ -16,16 +33,16 @@ export default async function SponsorenPage() {
         <div className="max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8">
           
           {/* Header */}
-          <HeroGradientCard className="mb-16 p-10 text-center">
-            <h1 className="text-5xl md:text-7xl font-black text-white mb-6">
+          <div className="text-center mb-16">
+            <h1 className="text-5xl md:text-7xl font-black text-esla-secondary mb-6">
               <span className="text-esla-primary">Herzlichen Dank</span> an alle Sponsoren, Partner und Gönner
             </h1>
-            <p className="mx-auto max-w-4xl text-white/85 text-xl leading-relaxed">
+            <p className="text-esla-secondary/80 text-xl max-w-4xl mx-auto leading-relaxed">
               Ohne Ihre grosszügige Unterstützung wäre der Start von Team Elitesoccer (ESLA) nicht möglich gewesen.
-              Dank Ihnen können wir unseren Traum verwirklichen – ein professionelles Fussballteam aufzubauen,
+              Dank Ihnen können wir unseren Traum verwirklichen – ein professionelles Fussballteam aufzubauen, 
               das Leidenschaft, Teamgeist und Entwicklung verbindet.
             </p>
-          </HeroGradientCard>
+          </div>
 
           {/* Was Ihre Partnerschaft ermöglicht */}
           <div className="rounded-3xl p-10 md:p-12 shadow-lg mb-16 bg-esla-secondary text-white">
@@ -73,13 +90,13 @@ export default async function SponsorenPage() {
             <div className="flex flex-col sm:flex-row gap-3 justify-center mb-10">
               <Link
                 href="/sponsoren-angebote"
-                className="bg-esla-primary text-white px-6 py-3 rounded-full font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg shadow-esla-primary/40 hover:bg-esla-accent"
+                className="bg-esla-primary hover:bg-esla-accent text-white px-6 py-3 rounded-full font-semibold transition-all duration-200 shadow-lg shadow-esla-primary/40"
               >
                 Sponsoring-Pakete ansehen
               </Link>
               <Link
                 href="/kontakt"
-                className="bg-black text-white px-6 py-3 rounded-full font-semibold transition-all duration-200 transform hover:scale-105 shadow-lg shadow-esla-primary/40 hover:bg-esla-accent"
+                className="bg-black text-white hover:bg-slate-900 px-6 py-3 rounded-full font-semibold transition-all duration-200"
               >
                 Kontakt
               </Link>
@@ -89,7 +106,7 @@ export default async function SponsorenPage() {
               {sponsors.map((sponsor) => (
                 <a
                   key={sponsor.name}
-                  href={sponsor.url || '#'}
+                  href={sponsor.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-white rounded-2xl p-6 flex items-center justify-center hover:scale-105 transition-transform duration-300 shadow-xl cursor-pointer"
@@ -102,7 +119,7 @@ export default async function SponsorenPage() {
                       className="object-contain"
                       quality={95}
                       priority
-                      {...((sponsor.logo.startsWith('http') || sponsor.name === 'MAGAS') && { unoptimized: true })}
+                      {...(sponsor.name === 'MAGAS' && { unoptimized: true })}
                     />
                   </div>
                 </a>
@@ -118,21 +135,13 @@ export default async function SponsorenPage() {
               {partners.map((partner) => (
                 <a
                   key={partner.name}
-                  href={partner.url || '#'}
+                  href={partner.url}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-white rounded-2xl p-6 flex items-center justify-center shadow-xl hover:scale-105 transition-transform duration-300 cursor-pointer"
                 >
                   <div className="relative w-full h-24 md:h-28 lg:h-32">
-                    <Image
-                      src={partner.logo}
-                      alt={partner.name}
-                      fill
-                      className="object-contain"
-                      quality={95}
-                      priority
-                      {...(partner.logo.startsWith('http') && { unoptimized: true })}
-                    />
+                    <Image src={partner.logo} alt={partner.name} fill className="object-contain" quality={95} priority />
                   </div>
                 </a>
               ))}

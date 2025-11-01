@@ -1,5 +1,3 @@
-'use client';
-
 import Navbar from '@/components/navigation/Navbar';
 import Footer from '@/components/footer/Footer';
 import { Mail, Phone, MapPin, Instagram, Facebook, Linkedin } from 'lucide-react';

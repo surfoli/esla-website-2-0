@@ -19,6 +19,7 @@ export default function Home() {
       <EslaStorySection />
       <GermanyCupBox />
       <SocialMediaSection />
+      
       <Footer />
     </main>
   );

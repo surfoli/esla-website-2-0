@@ -278,6 +278,7 @@ function parseFromText(text: string): Match[] {
   const matchNumberRe = /^Spielnummer\s*(.+?)\.?$/i;
   const placeholderTokenRe = /^(?:\*|f|forfait)$/i;
   const competitionRe = /(Meisterschaft|Cup|Freundschaftsspiel|Testspiel|Turnier|Zwischenrunde|Liga|Gruppe|Runde|Pokal|Saison|Qualifikation|Stärkeklasse)/i;
+  const normalizeCompetition = (value?: string) => (value || '').replace(/\s+/g, ' ').trim().toLowerCase();
 
   const normalizeTeam = (s: string) => {
     const base = s.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
@@ -363,7 +364,15 @@ function parseFromText(text: string): Match[] {
           if (!look) { k++; continue; }
           const mn = look.match(matchNumberRe);
           if (mn) { matchNumber = mn[1].trim(); k++; continue; }
-          if (competitionRe.test(look) && !timeRe.test(look) && !dateRe.test(look) && !dateTimeInlineRe.test(look)) { competition = look; k++; continue; }
+          if (competitionRe.test(look) && !timeRe.test(look) && !dateRe.test(look) && !dateTimeInlineRe.test(look)) {
+            const lookNormalized = normalizeCompetition(look);
+            const currentNormalized = normalizeCompetition(currentCompetition);
+            if (competition) break;
+            if (currentNormalized && currentNormalized !== lookNormalized) break;
+            competition = look;
+            k++;
+            continue;
+          }
           if (dashRe.test(look)) { k++; continue; }
           break;
         }
@@ -430,7 +439,15 @@ function parseFromText(text: string): Match[] {
       if (!look) { k++; continue; }
       const mn = look.match(matchNumberRe);
       if (mn) { matchNumber = mn[1].trim(); k++; continue; }
-      if (competitionRe.test(look) && !timeRe.test(look) && !dateRe.test(look) && !dateTimeInlineRe.test(look)) { competition = look; k++; continue; }
+      if (competitionRe.test(look) && !timeRe.test(look) && !dateRe.test(look) && !dateTimeInlineRe.test(look)) {
+        const lookNormalized = normalizeCompetition(look);
+        const currentNormalized = normalizeCompetition(currentCompetition);
+        if (competition) break;
+        if (currentNormalized && currentNormalized !== lookNormalized) break;
+        competition = look;
+        k++;
+        continue;
+      }
       if (dashRe.test(look)) { k++; continue; }
       break;
     }
